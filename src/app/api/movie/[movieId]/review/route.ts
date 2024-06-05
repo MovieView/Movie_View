@@ -1,4 +1,5 @@
 import { db } from '@/app/db/db';
+import { FieldPacket, RowDataPacket } from 'mysql2';
 
 // 영화별 리뷰 조회
 const MAX_RESULT = 8;
@@ -18,7 +19,16 @@ export async function GET(
       Number(maxResults),
       Number(page)
     );
-    return Response.json(reviews);
+
+    const count = await reviewsCount(params.movieId);
+    const result = {
+      reviews,
+      pagination: {
+        currentPage: +page,
+        totalCount: count ? count.totalCount : 0,
+      },
+    };
+    return Response.json(result);
   } catch (err) {
     console.error(err);
     // TODO: 에러처리
@@ -28,7 +38,7 @@ export async function GET(
   }
 }
 
-// TODO: user 정보 join
+// TODO: 정렬 방식 수정 필요
 async function getReviews(movieId: number, maxResults: number, page: number) {
   const offset = maxResults * (page - 1);
   const sql = `SELECT HEX(r.id) AS id, r.movies_id AS movieId, r.users_id AS userId, r.rating, r.title,
@@ -36,13 +46,29 @@ async function getReviews(movieId: number, maxResults: number, page: number) {
                 (SELECT COUNT(*) FROM reviews_likes AS rl WHERE HEX(rl.reviews_id) = HEX(r.id)) AS likes
                 FROM reviews AS r
                 JOIN users AS u ON u.id = r.users_id
-                LEFT JOIN users_profile_pictures AS upp ON u.id = upp.users_id
-                WHERE r.movies_id = ?
+                LEFT JOIN users_profile_pictures AS upp ON u.id=upp.users_id
+                WHERE r.movies_id=?
+                ORDER BY updatedAt
                 LIMIT ?, ?`;
   const values: Array<string | number> = [movieId, offset, maxResults];
   try {
     const [result] = await db.promise().query(sql, values);
     return result;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+async function reviewsCount(movieId: number) {
+  const sql = `SELECT COUNT(*) AS totalCount FROM reviews WHERE movies_id=?`;
+  const values = [movieId];
+  try {
+    const [result]: [RowDataPacket[], FieldPacket[]] = await db
+      .promise()
+      .query(sql, values);
+
+    return result[0];
   } catch (err) {
     console.error(err);
     throw err;
