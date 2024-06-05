@@ -2,6 +2,8 @@ import { db } from '@/app/db/db';
 import { IReviewData } from '../route';
 import { FieldPacket, RowDataPacket } from 'mysql2';
 
+const USER_ID = 2;
+
 // id별 리뷰 삭제
 export async function DELETE(
   _req: Request,
@@ -9,7 +11,7 @@ export async function DELETE(
 ) {
   try {
     // TODO: userId 받아오기 구현 필요
-    const userId = '1';
+    const userId = USER_ID;
 
     if (!userId) {
       return new Response('Authentication Error', { status: 401 });
@@ -36,7 +38,6 @@ export async function DELETE(
     );
   } catch (err) {
     console.error(err);
-    // TODO: 에러처리
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
@@ -50,7 +51,7 @@ export async function PUT(
 ) {
   try {
     // TODO: userId 받아오기 구현 필요
-    const userId = '1';
+    const userId = USER_ID;
 
     if (!userId) {
       return new Response('Authentication Error', { status: 401 });
@@ -70,6 +71,7 @@ export async function PUT(
     const data: IReviewData = await req.json();
 
     await updateReview(params.reviewId, userId, data);
+
     return new Response(
       JSON.stringify({ message: 'Review has been updated.' }),
       {
@@ -78,16 +80,15 @@ export async function PUT(
     );
   } catch (err) {
     console.error(err);
-    // TODO: 에러처리
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
   }
 }
 
-async function getReviewById(reviewId: number, userId: string) {
+async function getReviewById(reviewId: number, userId: number) {
   const sql = `SELECT * FROM reviews WHERE id=UNHEX(?) AND users_id=? `;
-  const values: Array<string | number> = [reviewId, parseInt(userId)];
+  const values: Array<string | number> = [reviewId, userId];
   try {
     const [result]: [RowDataPacket[], FieldPacket[]] = await db
       .promise()
@@ -99,9 +100,9 @@ async function getReviewById(reviewId: number, userId: string) {
   }
 }
 
-async function deleteReview(reviewId: number, userId: string) {
+async function deleteReview(reviewId: number, userId: number) {
   const sql = `DELETE FROM reviews WHERE id=UNHEX(?) AND users_id=? `;
-  const values: Array<string | number> = [reviewId, parseInt(userId)];
+  const values: Array<string | number> = [reviewId, userId];
 
   try {
     const [result] = await db.promise().query(sql, values);
@@ -114,15 +115,16 @@ async function deleteReview(reviewId: number, userId: string) {
 
 async function updateReview(
   reviewId: number,
-  userId: string,
+  userId: number,
   data: IReviewData
 ) {
-  const sql = `UPDATE reviews SET rating=?, content=? WHERE id=UNHEX(?) AND users_id=? `;
+  const sql = `UPDATE reviews SET title=?, rating=?, content=? WHERE id=UNHEX(?) AND users_id=? `;
   const values: Array<string | number> = [
+    data.title,
     data.rating,
     data.content,
     reviewId,
-    parseInt(userId),
+    userId,
   ];
 
   try {
