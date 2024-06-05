@@ -36,3 +36,53 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
 
 # Movie_View
+
+## 프로젝트 소개 (Description)
+
+- 영화 정보 조회와 리뷰 작성을 할 수 있는 웹 프로젝트.
+- This is a website that provides movie information, as well as the ability to write reviews and ratings.
+
+## 기술 스택 (Tech Stack)
+
+- Frontend: Next.js, TypeScript, Tailwind CSS, TanStack Query
+- Backend: Node.js, MariaDB, Redis
+
+## 설치 (Installation)
+
+### 패키지 설치
+
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+# or
+bun install
+```
+
+### .env 설정
+
+```
+DATABASE_HOST=**<DB 아이피>**
+DATABASE_PORT=**<DB 포트>**
+DATABASE_USER=**<DB 유저>**
+DATABASE_PASSWORD=**<DB 유저 비밀번호>**
+DATABASE_NAME=**<DB 이름>**
+
+## Redis
+REDIS_URL=**<Redis URL>**
+
+## TMDB
+TMDB_API_KEY=**<TMDB API KEY>**
+TMDB_ACCESS_TOKEN=**<TMDB ACCESS TOKEN>**
+```
+* 설치 전에 .env 파일을 생성하고 위와 같이 설정해주세요.
+  * Before the installation, create a .env file in the root of the project, and set it up as above.
+
+* TMDB API KEY는 [TMDB](https://www.themoviedb.org/)에서 발급받을 수 있습니다.
+  * You can get the TMDB API KEY from [TMDB](https://www.themoviedb.org/).
+
+* DB 관련 정보는 보안을 위해 설정하지 않았습니다. 직접 설정해주세요.
+  * For security reasons, we did not set up the DB information. Please set it up yourself. 
+  * Contact us for the information on the schema and tables.
