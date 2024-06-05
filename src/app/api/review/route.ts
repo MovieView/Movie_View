@@ -3,17 +3,18 @@ import { ResultSetHeader } from 'mysql2';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface IReviewData {
-  movies_id: number;
+  movieId: number;
   title: string;
   rating: number;
   content: string;
 }
 
+const USER_ID = 2;
 // 리뷰 작성
 export async function POST(req: Request) {
   try {
     // TODO: userId 받아오기 구현 필요
-    const userId = '1';
+    const userId = USER_ID;
 
     if (!userId) {
       return new Response('Authentication Error', { status: 401 });
@@ -22,7 +23,9 @@ export async function POST(req: Request) {
     const data: IReviewData = await req.json();
 
     const review = await addReview(userId, data);
-    //TODO: movies 테이블에 데이터 movies_id 저장 구현
+
+    const movie = await addMovieId(data.movieId);
+
     if (!review) {
       return new Response(JSON.stringify({ message: 'Bad Request' }), {
         status: 400,
@@ -44,13 +47,13 @@ export async function POST(req: Request) {
   }
 }
 
-async function addReview(userId: string, data: IReviewData) {
+async function addReview(userId: number, data: IReviewData) {
   const id = uuidv4().replace(/-/g, '');
   const sql = `INSERT INTO reviews (id, movies_id, users_id, rating, title, content) VALUES(UNHEX(?), ?, ?, ?, ?, ?)`;
   const values = [
     id,
-    data.movies_id,
-    parseInt(userId),
+    data.movieId,
+    userId,
     data.rating,
     data.title,
     data.content,
@@ -59,6 +62,18 @@ async function addReview(userId: string, data: IReviewData) {
   try {
     const [result] = await db.promise().query(sql, values);
 
+    return (result as ResultSetHeader).affectedRows;
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+async function addMovieId(movieId: number) {
+  const sql = `INSERT IGNORE INTO movies (id) VALUES (?)`;
+  const values = [movieId];
+  try {
+    const [result] = await db.promise().query(sql, values);
     return (result as ResultSetHeader).affectedRows;
   } catch (err) {
     console.error(err);
