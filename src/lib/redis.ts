@@ -6,27 +6,20 @@ const client = createClient({
   url: process.env.REDIS_URL
 });
 
+export type RedisClient = typeof client;
+
 export const setRedisData = async (
-  redisClient : typeof client,
+  redisClient : RedisClient,
   key: string, 
   value: string,
   options: Object = {}
 ) => {
-  await redisClient.connect();
   await redisClient.set(key, value, options);
-  await redisClient.quit();
 };
 
 export const getRedisData = async (
-    redisClient : typeof client,
+    redisClient : RedisClient,
     key: string
 ) => {
-  await redisClient.connect();
-  try {
-    return await redisClient.get(key);
-  } catch (error) {
-    return null;
-  } finally {
-    await redisClient.quit();
-  }
+  return await redisClient.get(key);
 };
