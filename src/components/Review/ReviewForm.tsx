@@ -32,6 +32,13 @@ export default function ReviewForm({ movieId, onAddReview }: IProps) {
     setContent(e.target.value);
   };
 
+  const handleCloseForm = () => {
+    setIsFormOpen(false);
+    setTitle('');
+    setContent('');
+    setRating(0);
+  };
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     const newReview = {
@@ -110,7 +117,7 @@ export default function ReviewForm({ movieId, onAddReview }: IProps) {
             </button>
             <button
               type='button'
-              onClick={() => setIsFormOpen(false)}
+              onClick={handleCloseForm}
               className='hover:bg-[#D6E6F2] transition ease-linear duration-300 border h-10 p-2 rounded-md flex-1 hover:opacity-70'
             >
               취소
