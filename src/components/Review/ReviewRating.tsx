@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { FaStar, FaStarHalf } from 'react-icons/fa';
 
 interface IProps {
+  rating: number;
   onRatingChange: (newRating: number) => void;
 }
 
-export default function ReviewRating({ onRatingChange }: IProps) {
-  const [score, setScore] = useState(0);
-  const [position, setPosition] = useState(0);
+export default function ReviewRating({ rating, onRatingChange }: IProps) {
+  const [score, setScore] = useState(rating / 2);
+  const [position, setPosition] = useState(rating / 2);
 
   const handleLeftHalfEnter = (index: number) => setScore(index + 0.5);
   const handleRightHalfEnter = (index: number) => setScore(index + 1);
@@ -36,17 +37,13 @@ export default function ReviewRating({ onRatingChange }: IProps) {
             onClick={handleStarClick}
           >
             {halfStar && (
-              <FaStarHalf
-                className='absolute z-[5] fill-amber-400 hover:fill-amber-400'
-                size={32}
-              />
+              <FaStarHalf className='absolute z-[5] h-8 w-8 fill-amber-400 hover:fill-amber-400' />
             )}
 
             <FaStar
-              className={`absolute hover:fill-amber-400 ${
+              className={`absolute hover:fill-amber-400 h-8 w-8 ${
                 filledStar ? 'fill-amber-400' : 'fill-gray-300'
               }`}
-              size={32}
             />
             <div
               className='w-4 h-full z-10'
