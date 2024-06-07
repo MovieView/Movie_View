@@ -40,6 +40,8 @@ export async function GET(
   }
 }
 
+//  LEFT JOIN users_profile_pictures AS upp ON u.id=upp.users_id
+//  upp.filepath,
 async function getReviews(
   movieId: number,
   maxResults: number,
@@ -51,11 +53,10 @@ async function getReviews(
   const orderBy =
     sort === 'like' ? 'likes DESC, createdAt DESC' : 'createdAt DESC';
   const sql = `SELECT HEX(r.id) AS id, r.movies_id AS movieId, r.users_id AS userId, r.rating, r.title,
-                r.content, r.created_at AS createdAt, r.updated_at AS updatedAt, u.nickname, upp.filepath,
+                r.content, r.created_at AS createdAt, r.updated_at AS updatedAt, u.nickname,
                 (SELECT COUNT(*) FROM reviews_likes AS rl WHERE HEX(rl.reviews_id) = HEX(r.id)) AS likes
                 FROM reviews AS r
                 JOIN users AS u ON u.id = r.users_id
-                LEFT JOIN users_profile_pictures AS upp ON u.id=upp.users_id
                 WHERE r.movies_id=?
                 ORDER BY ${orderBy}
                 LIMIT ?, ?`;
