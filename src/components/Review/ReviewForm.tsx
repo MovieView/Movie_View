@@ -1,8 +1,9 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
+import ReviewRating from './ReviewRating';
 
 interface IProps {
   movieId: number;
-  onAdd: (
+  onAddReview: (
     movieId: number,
     title: string,
     rating: number,
@@ -10,20 +11,21 @@ interface IProps {
   ) => void;
 }
 
-export default function ReviewForm({ movieId, onAdd }: IProps) {
-  const [isShow, setIsShow] = useState(false);
+export default function ReviewForm({ movieId, onAddReview }: IProps) {
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const [title, setTitle] = useState('');
   const [rating, setRating] = useState(0);
   const [content, setContent] = useState('');
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const name = e.target.name;
-    const value = e.target.value;
-    if (name === 'rating') {
-      setRating(Number(value));
-    } else if (name === 'title') {
+    const { name, value } = e.target;
+    if (name === 'title') {
       setTitle(value);
     }
+  };
+
+  const handleRatingChange = (rating: number) => {
+    setRating(rating);
   };
 
   const handleChangeContent = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -43,7 +45,7 @@ export default function ReviewForm({ movieId, onAdd }: IProps) {
       window.alert('리뷰 제목과 내용은 최소 한 글자 이상 입력해 주세요.');
       return;
     }
-    onAdd(
+    onAddReview(
       newReview.movieId,
       newReview.title,
       newReview.rating,
@@ -53,17 +55,18 @@ export default function ReviewForm({ movieId, onAdd }: IProps) {
     setTitle('');
     setContent('');
     setRating(0);
-    setIsShow(false);
+    setIsFormOpen(false);
   };
 
   return (
     <div className='w-full max-w-3xl mx-auto'>
-      {!isShow && (
-        <div className='flex mb-4' onClick={() => setIsShow(true)}>
+      {!isFormOpen && (
+        <div className='flex mb-4' onClick={() => setIsFormOpen(true)}>
           <input
             className='border px-2 h-10 flex-grow outline-none'
             type='text'
             placeholder='리뷰를 작성해 주세요.'
+            readOnly
           />
           <button className='bg-[#769FCD] h-10 text-white p-2 rounded-tr-md rounded-br-md'>
             등록
@@ -71,17 +74,12 @@ export default function ReviewForm({ movieId, onAdd }: IProps) {
         </div>
       )}
 
-      {isShow && (
+      {isFormOpen && (
         <form onSubmit={handleSubmit} className='mb-4 flex flex-col gap-3'>
-          <input
-            type='number'
-            name='rating'
-            value={rating}
-            min={0}
-            max={10}
-            onChange={handleChange}
-            required
-          />
+          <div className='flex items-center gap-4 justify-center'>
+            <ReviewRating onRatingChange={handleRatingChange} />
+            <span className='text-2xl font-semibold'>{rating}</span>
+          </div>
           <input
             className='border px-2 h-10 flex-grow outline-none placeholder:text-sm rounded-md'
             type='text'
@@ -112,7 +110,7 @@ export default function ReviewForm({ movieId, onAdd }: IProps) {
             </button>
             <button
               type='button'
-              onClick={() => setIsShow(false)}
+              onClick={() => setIsFormOpen(false)}
               className='hover:bg-[#D6E6F2] transition ease-linear duration-300 border h-10 p-2 rounded-md flex-1 hover:opacity-70'
             >
               취소

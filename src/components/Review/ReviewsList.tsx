@@ -59,8 +59,8 @@ export default function ReviewsList({ movieId }: IProps) {
   }
 
   return (
-    <div className='mx-auto p-2'>
-      <ReviewForm movieId={movieId} onAdd={addMyReview} />
+    <div className='mx-auto p-2 my-10'>
+      <ReviewForm movieId={movieId} onAddReview={addMyReview} />
 
       {isLoading ? (
         <ReviewLoadingSpinner />
@@ -80,6 +80,7 @@ export default function ReviewsList({ movieId }: IProps) {
                   />
                 ))}
               </div>
+
               <ul className='flex flex-col gap-4'>
                 {reviews?.pages.flatMap((group: any, i: number) => (
                   <React.Fragment key={i}>
