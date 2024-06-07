@@ -1,51 +1,40 @@
-import { API_URL } from "@/app/detail/[id]/page";
+import { API_URL } from "@/app/detail/[movieId]/page";
+import { Cast, Credits, Genre, Movie } from "@/models/movie.model";
 
-interface Genre {
-  id: number;
-  name: string;
+interface Props {
+  movieId: string;
 }
 
-interface Movie {
-  title: string;
-  release_date: string;
-  runtime: number;
-  genres: Genre[];
-  poster_path: string;
-  vote_average: number;
-  overview: string;
-  origin_country: string;
+export async function getMovie(movieId: string): Promise<Movie> {
+  try {
+    const response = await fetch(`${API_URL}/${movieId}?api_key=${process.env.API_KEY}&language=ko-KR`);
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching movie:", error);
+    throw error;
+  }
 }
 
-interface Cast {
-  id: number;
-  name: string;
-  profile_path: string;
+export async function getMovieCredits(movieId: string): Promise<Credits> {
+  try {
+    const response = await fetch(`${API_URL}/${movieId}/credits?api_key=${process.env.API_KEY}&language=ko-KR`);
+    return response.json();
+  } catch (error) {
+    console.error("Error fetching movie credits:", error);
+    throw error;
+  }
 }
 
-interface Credits {
-  cast: Cast[];
-}
+export default async function MovieInfo({movieId}: Props) {
+  const movie = await getMovie(movieId);
+  const credits = await getMovieCredits(movieId);
 
-export async function getMovie(id: string): Promise<Movie> {
-  const response = await fetch(`${API_URL}/${id}?api_key=${process.env.API_KEY}&language=ko-KR`);
-  return response.json();
-}
-
-export async function getMovieCredits(id: string): Promise<Credits> {
-  const response = await fetch(`${API_URL}/${id}/credits?api_key=${process.env.API_KEY}&language=ko-KR`);
-  return response.json();
-}
-
-export default async function MovieInfo({id}: {id: string}) {
-  const movie = await getMovie(id);
-  const credits = await getMovieCredits(id);
-  
   return (
     <div>
       <div className="mx-auto mt-6 max-w-5xl sm:px-6 lg:max-w-5xl lg:grid lg:grid-cols-3 lg:gap-x-8 lg:px-8">
         <div className="col-span-1">
           <img 
-            className="w-full h-auto rounded-lg shadow-lg" 
+            className="w-full max-w-sm h-auto rounded-lg shadow-lg sm:mb-4" 
             src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`} 
             alt={movie.title}/>
         </div>
