@@ -1,0 +1,1 @@
+export const DEFAULT_IMAGE_URL = 'https://image.tmdb.org/t/p/w500/plNOSbqkSuGEK2i15A5btAXtB7t.jpg';
