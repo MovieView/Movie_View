@@ -3,9 +3,16 @@ import { IReview, useReview } from '@/hooks/useReview';
 import ReviewItem from './ReviewItem';
 import React, { useEffect, useRef, useState } from 'react';
 import ReviewEmpty from './ReviewEmpty';
-import ReviewForm from './ReviewForm';
 import ReviewLoadingSpinner from './ReviewLoadingSpinner';
 import ReviewButton from './ReviewButton';
+import ReviewFakeForm from './ReviewFakeForm';
+import ReviewFormContainer from './ReviewFormContainer';
+
+export interface IReviewFormData {
+  title: string;
+  rating: number;
+  content: string;
+}
 
 interface IProps {
   movieId: number;
@@ -18,6 +25,7 @@ const sortOptions = [
 
 export default function ReviewsList({ movieId }: IProps) {
   const [sort, setSort] = useState<string>('latest');
+  const [isFormOpen, setIsFormOpen] = useState(false);
   const {
     reviews,
     isLoading,
@@ -60,7 +68,18 @@ export default function ReviewsList({ movieId }: IProps) {
 
   return (
     <div className='mx-auto p-2 my-10'>
-      <ReviewForm movieId={movieId} onAddReview={addMyReview} />
+      <div className='w-full max-w-3xl mx-auto'>
+        {!isFormOpen && <ReviewFakeForm setIsFormOpen={setIsFormOpen} />}
+
+        {isFormOpen && (
+          <ReviewFormContainer
+            movieId={movieId}
+            onSubmit={addMyReview}
+            setIsFormOpen={setIsFormOpen}
+            text='리뷰 등록'
+          />
+        )}
+      </div>
 
       {isLoading ? (
         <ReviewLoadingSpinner />
