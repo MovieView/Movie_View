@@ -1,4 +1,4 @@
-import LikeList from "@/components/Like/LikeList";
+import LikeList from "@/components/like/LikeList";
 import MovieInfo, { getMovie } from "@/components/movie/MovieInfo";
 import { Suspense } from "react";
 
@@ -23,9 +23,9 @@ export default async function MovieDetail({
       <Suspense fallback={<h1>Loading movie info</h1>}>
         <MovieInfo movieId={movieId} />
       </Suspense>
-      {/* <Suspense fallback={<h1>Loading review likes list</h1>}>
+      <Suspense fallback={<h1>Loading review likes list</h1>}>
         <LikeList />
-      </Suspense> */}
+      </Suspense>
     </div>
   );
 };

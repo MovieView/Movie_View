@@ -31,6 +31,7 @@ export const GET = async() => {
 
 async function getLikes(userId: number): Promise<ILike[]> {
   const sql = ` SELECT 
+                  MIN(CONVERT(id, UNSIGNED)) AS id,
                   CONVERT(reviews_id, UNSIGNED) AS reviews_id, 
                   COUNT(*) AS liked_count,
                   SUM(users_id = ${userId}) > 0 AS liked

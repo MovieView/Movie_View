@@ -22,7 +22,7 @@ export const POST = async (
 
     const result = await postLike(like);
     return new Response(JSON.stringify(result), {
-      status: 200,
+      status: 201,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
