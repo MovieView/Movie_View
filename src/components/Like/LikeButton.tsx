@@ -1,18 +1,34 @@
-import { ILike } from "@/app/api/like/route";
+import { useLike } from "@/hooks/useLike";
+import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 
-interface Props {
-  like: ILike;
-  onClick: (like: ILike) => void;
+interface IProps {
+  reviewId: string;
+  liked: number;
+  likesCount: number;
 }
 
-const LikeButton = ({ like, onClick }: Props) => {
+const LikeButton = ({
+  reviewId,
+  liked,
+  likesCount
+}: IProps) => {
+  const { likes, likeToggle, isLoading, isError } = useLike(reviewId);
+
   return (
-    <button 
-      style={like.liked ? {color: "red"} : {color: "black"}}
-      onClick={() => onClick(like)}  
-    >
-      ♥ {like.liked_count}
-    </button>
+    <>
+      { isError ? (
+        <span>Error loading likes</span>
+      ) : (
+        <button 
+          onClick={() => likeToggle((likes ? Number(likes.liked) : liked))} 
+          className="bg-transparent text-md inline-flex items-center gap-1 border px-2 rounded-lg hover:bg-[#D6E6F2] transition ease-linear duration-300 w-fit"
+          disabled={isLoading}
+        >
+          <div>{(likes ? Number(likes.liked) : liked) ? <AiFillLike /> : <AiOutlineLike />}</div>
+          {likes ? likes.likes : likesCount}
+        </button>
+      )}
+    </>
   );
 };
 
