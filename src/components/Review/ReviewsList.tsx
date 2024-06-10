@@ -68,7 +68,7 @@ export default function ReviewsList({ movieId }: IProps) {
   }
 
   return (
-    <div className='mx-auto p-2 my-10'>
+    <div className='p-2 my-10'>
       <div className='w-full max-w-3xl mx-auto'>
         {!isFormOpen && <ReviewFakeForm setIsFormOpen={setIsFormOpen} />}
 
