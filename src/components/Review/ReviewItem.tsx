@@ -1,13 +1,14 @@
 import { IReview } from '@/hooks/useReview';
 import Image from 'next/image';
 import { FormEvent, useEffect, useRef, useState } from 'react';
-import { AiOutlineLike } from 'react-icons/ai';
 import { FaStar } from 'react-icons/fa';
 import { IoIosArrowDown } from 'react-icons/io';
-import ReviewButton from './ReviewButton';
 import ReviewDropDownMenu from './ReviewDropDownMenu';
 import ReviewForm from './ReviewForm';
 import { IReviewFormData } from './ReviewsList';
+import LikeButton from '../like/LikeButton';
+import ReviewButton from './ReviewButton';
+import { AiOutlineLike } from 'react-icons/ai';
 
 interface IProps {
   review: IReview;
@@ -165,11 +166,18 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
           )}
         </div>
 
-        <ReviewButton
-          text={review.likes.toString()}
-          icon={<AiOutlineLike />}
-          onClick={() => {}}
-        />
+        { userId 
+          ? <LikeButton
+              reviewId={review.id}
+              liked={review.liked}
+              likesCount={review.likes}
+            />
+          : <ReviewButton 
+             text={review.likes.toString()}
+             icon={<AiOutlineLike />}
+             state={true}
+            />
+        }
       </div>
     </div>
   );

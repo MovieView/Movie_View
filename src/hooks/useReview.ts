@@ -17,6 +17,7 @@ export interface IReview {
   nickname: string;
   filepath: string | null;
   likes: number;
+  liked: number;
 }
 
 interface IPagination {

@@ -1,4 +1,4 @@
-import { API_URL } from "@/app/detail/[movieId]/page";
+import { API_URL } from "@/constants";
 import { Cast, Credits, Genre, Movie } from "@/models/movie.model";
 
 interface Props {

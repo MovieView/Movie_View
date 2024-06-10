@@ -6,8 +6,6 @@ interface IParams {
   params: { movieId: string };
 }
 
-export const API_URL = 'https://api.themoviedb.org/3/movie/'
-
 export async function generateMetadata({params: {movieId}}: IParams) {
   const movie = await getMovie(movieId)
   return {
@@ -21,7 +19,7 @@ export default async function MovieDetail({ params: {movieId} }: IParams) {
       <Suspense fallback={<h1>Loading movie info</h1>}>
         <MovieInfo movieId={movieId} />
       </Suspense>
-      <Suspense fallback={<h1>Loading review list</h1>}>
+      <Suspense fallback={<h1>Loading review lists</h1>}>
         <ReviewsList movieId={Number(movieId)} />
       </Suspense>
     </div>
