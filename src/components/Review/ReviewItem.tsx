@@ -6,7 +6,7 @@ import { IoIosArrowDown } from 'react-icons/io';
 import ReviewDropDownMenu from './ReviewDropDownMenu';
 import ReviewForm from './ReviewForm';
 import { IReviewFormData } from './ReviewsList';
-import LikeButton from '../like/LikeButton';
+import LikeButton from '../Like/LikeButton';
 import ReviewButton from './ReviewButton';
 import { AiOutlineLike } from 'react-icons/ai';
 
@@ -71,17 +71,18 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
     }
   };
 
+  const debouncedHandleResize = debounce(handleResize, 100);
+
+  useEffect(() => {
+    window.addEventListener('resize', debouncedHandleResize);
+    return () => {
+      window.removeEventListener('resize', debouncedHandleResize);
+    };
+  }, [debouncedHandleResize]);
+
   useEffect(() => {
     setReviewData({ ...review });
   }, [review]);
-
-  useEffect(() => {
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
 
   return (
     <div className='flex p-4 border max-w-3xl rounded-xl mx-auto shadow-sm relative'>
@@ -166,18 +167,19 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
           )}
         </div>
 
-        { userId 
-          ? <LikeButton
-              reviewId={review.id}
-              liked={review.liked}
-              likesCount={review.likes}
-            />
-          : <ReviewButton 
-             text={review.likes.toString()}
-             icon={<AiOutlineLike />}
-             state={true}
-            />
-        }
+        {userId ? (
+          <LikeButton
+            reviewId={review.id}
+            liked={review.liked}
+            likesCount={review.likes}
+          />
+        ) : (
+          <ReviewButton
+            text={review.likes.toString()}
+            icon={<AiOutlineLike />}
+            state={true}
+          />
+        )}
       </div>
     </div>
   );
@@ -196,4 +198,13 @@ function format(dateStr: string): string {
   });
   const formattedDate = date && formatter.format(date);
   return formattedDate;
+}
+
+function debounce(callback: () => void, delay: number) {
+  let timeout: ReturnType<typeof setTimeout>;
+
+  return () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(callback, delay);
+  };
 }
