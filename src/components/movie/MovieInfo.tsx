@@ -1,5 +1,6 @@
 import { API_URL } from "@/constants";
-import { Cast, Credits, Genre, Movie } from "@/models/movie.model";
+import { Credits, Genre, Movie } from "@/models/movie.model";
+import MovieCredits from "./MovieCredits";
 
 interface Props {
   movieId: string;
@@ -72,26 +73,7 @@ export default async function MovieInfo({movieId}: Props) {
         </div>
       </div>
 
-      <div className="mx-auto mt-6 max-w-5xl sm:px-6 lg:max-w-5xl lg:grid lg:gap-x-8 lg:px-8  space-y-3">
-        <div className="font-bold text-lg">출연진</div>
-        <div className="flex overflow-x-scroll space-x-3">
-          {credits.cast.map((cast: Cast) => (
-            <div key={cast.id} className="flex-shrink-0 w-20">
-              <div className="flex flex-col items-center">
-                {cast.profile_path 
-                ? <img 
-                    className="w-full h-auto rounded-lg shadow-lg" 
-                    src={`https://image.tmdb.org/t/p/original/${cast.profile_path}`} 
-                    alt={cast.name}
-                  />
-                : <div className="mt-2 w-full h-28 bg-slate-500 rounded-lg shadow-lg"></div>
-                }
-                <div className="mt-2 text-center text-xs">{cast.name}</div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <MovieCredits cast={credits.cast} />
     </div>
   )
 }
