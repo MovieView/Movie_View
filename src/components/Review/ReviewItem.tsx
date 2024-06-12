@@ -82,6 +82,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
 
   useEffect(() => {
     setReviewData({ ...review });
+    handleResize();
   }, [review]);
 
   return (
