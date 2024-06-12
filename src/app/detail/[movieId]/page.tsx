@@ -1,4 +1,4 @@
-import MovieInfo, { getMovie } from "@/components/movie/MovieInfo";
+import MovieInfo, { getMovie } from "@/components/Movie/MovieInfo";
 import ReviewsList from '@/components/Review/ReviewsList';
 import { Suspense } from 'react';
 

@@ -6,7 +6,7 @@ import { IoIosArrowDown } from 'react-icons/io';
 import ReviewDropDownMenu from './ReviewDropDownMenu';
 import ReviewForm from './ReviewForm';
 import { IReviewFormData } from './ReviewsList';
-import LikeButton from '../like/LikeButton';
+import LikeButton from '../Like/LikeButton';
 import ReviewButton from './ReviewButton';
 import { AiOutlineLike } from 'react-icons/ai';
 
