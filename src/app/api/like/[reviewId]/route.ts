@@ -1,4 +1,4 @@
-import { db } from '@/app/db/db';
+import { dbConnection as db } from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,7 +11,7 @@ interface ILike {
   id: string;
   reviews_id: string;
   users_id: number;
-};
+}
 
 const users_id = 2;
 
@@ -25,7 +25,7 @@ export const GET = async (
     }
 
     const result = await getLike(params.reviewId, users_id);
-    
+
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -36,7 +36,7 @@ export const GET = async (
       status: 500,
     });
   }
-}
+};
 
 export const POST = async (
   req: Request,
@@ -64,7 +64,7 @@ export const POST = async (
       status: 500,
     });
   }
-}
+};
 
 export const DELETE = async (
   req: Request,
@@ -82,7 +82,7 @@ export const DELETE = async (
       status: 500,
     });
   }
-}
+};
 
 async function getLike(
   reviewId: string,
@@ -95,7 +95,9 @@ async function getLike(
               WHERE HEX(reviews_id) = ?;`;
 
   try {
-    const [result] = await db.promise().execute<LikeQueryResult[]>(sql, [userId, reviewId]);
+    const [result] = await db
+      .promise()
+      .execute<LikeQueryResult[]>(sql, [userId, reviewId]);
     return result[0];
   } catch (err) {
     console.error(err);
@@ -103,15 +105,14 @@ async function getLike(
   }
 }
 
-
-async function postLike(
-  like : ILike
-) {
+async function postLike(like: ILike) {
   const sql = `INSERT IGNORE INTO movie_view.reviews_likes (id, reviews_id, users_id)
              VALUES ( ?, UNHEX(?), ? );`;
-  
+
   try {
-    const [result] = await db.promise().execute(sql, [like.id, like.reviews_id, like.users_id]);
+    const [result] = await db
+      .promise()
+      .execute(sql, [like.id, like.reviews_id, like.users_id]);
     return result;
   } catch (err) {
     console.error(err);
@@ -119,12 +120,9 @@ async function postLike(
   }
 }
 
-async function deleteLike(
-  reviewId: string,
-  userId: number
-) {
+async function deleteLike(reviewId: string, userId: number) {
   const sql = `DELETE FROM movie_view.reviews_likes WHERE reviews_id=UNHEX(?) AND users_id=?;`;
-  
+
   try {
     const [result] = await db.promise().execute(sql, [reviewId, userId]);
     return result;

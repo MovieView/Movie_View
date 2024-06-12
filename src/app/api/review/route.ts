@@ -1,4 +1,4 @@
-import { db } from '@/app/db/db';
+import { dbConnection as db } from '@/lib/db';
 import { ResultSetHeader } from 'mysql2';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     const data: IReviewData = await req.json();
 
     const movie = await addMovieId(data.movieId);
-    
+
     const review = await addReview(userId, data);
 
     if (!review) {

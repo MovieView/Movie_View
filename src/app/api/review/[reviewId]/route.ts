@@ -1,4 +1,4 @@
-import { db } from '@/app/db/db';
+import { dbConnection as db } from '@/lib/db';
 import { IReviewData } from '../route';
 import { FieldPacket, RowDataPacket } from 'mysql2';
 
