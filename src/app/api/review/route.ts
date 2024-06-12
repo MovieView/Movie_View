@@ -1,4 +1,4 @@
-import { dbConnection as db } from '@/lib/db';
+import { dbConnection } from '@/lib/db';
 import { ResultSetHeader } from 'mysql2';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -60,7 +60,7 @@ async function addReview(userId: number, data: IReviewData) {
   ];
 
   try {
-    const [result] = await db.promise().query(sql, values);
+    const [result] = await dbConnection.promise().query(sql, values);
 
     return (result as ResultSetHeader).affectedRows;
   } catch (err) {
@@ -73,7 +73,7 @@ async function addMovieId(movieId: number) {
   const sql = `INSERT IGNORE INTO movies (id) VALUES (?)`;
   const values = [movieId];
   try {
-    const [result] = await db.promise().query(sql, values);
+    const [result] = await dbConnection.promise().query(sql, values);
     return (result as ResultSetHeader).affectedRows;
   } catch (err) {
     console.error(err);

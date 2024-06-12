@@ -114,6 +114,8 @@ export default function Home(): React.ReactElement {
         )}
         {'다음 페이지 로딩 중'}
         {isSuccess && isFetchingNextPage && <LoadingPing loadMore={true} />}
+        {'다음 페이지 로딩 중'}
+        {isSuccess && isFetchingNextPage && <LoadingPing loadMore={true} />}
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { dbConnection as db } from '@/lib/db';
+import { dbConnection } from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -95,7 +95,7 @@ async function getLike(
               WHERE HEX(reviews_id) = ?;`;
 
   try {
-    const [result] = await db
+    const [result] = await dbConnection
       .promise()
       .execute<LikeQueryResult[]>(sql, [userId, reviewId]);
     return result[0];
@@ -110,7 +110,7 @@ async function postLike(like: ILike) {
              VALUES ( ?, UNHEX(?), ? );`;
 
   try {
-    const [result] = await db
+    const [result] = await dbConnection
       .promise()
       .execute(sql, [like.id, like.reviews_id, like.users_id]);
     return result;
@@ -124,7 +124,9 @@ async function deleteLike(reviewId: string, userId: number) {
   const sql = `DELETE FROM movie_view.reviews_likes WHERE reviews_id=UNHEX(?) AND users_id=?;`;
 
   try {
-    const [result] = await db.promise().execute(sql, [reviewId, userId]);
+    const [result] = await dbConnection
+      .promise()
+      .execute(sql, [reviewId, userId]);
     return result;
   } catch (err) {
     console.error(err);
