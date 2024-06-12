@@ -1,14 +1,13 @@
 import React, { useRef } from "react";
 
 import Image from "next/image";
-import { DEFAULT_IMAGE_URL } from "@/constants/image";
 import Link from "next/link";
 
 
-type SearchMoviePosterProps = {
+interface SearchMoviePosterProps {
   id: number;
   posterUrl: string;
-};
+}
 
 const SearchMoviePoster : React.FC<SearchMoviePosterProps> = ({posterUrl, id}) => {
   const thisElement = useRef(null);
@@ -35,9 +34,11 @@ const SearchMoviePoster : React.FC<SearchMoviePosterProps> = ({posterUrl, id}) =
             />
             <p className='text-white'>No Image</p>
           </div>
-          <img 
-            src={DEFAULT_IMAGE_URL}
+          <Image
+            src={'/default_movie_poster.jpeg'}
             alt='no image'
+            height={0}
+            width={0}
             className='w-full h-full rounded-lg opacity-0'
           />
         </div>
