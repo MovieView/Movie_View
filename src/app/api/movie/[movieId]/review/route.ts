@@ -53,8 +53,8 @@ async function getReviews(
   const offset = maxResults * (page - 1);
   const values: Array<string | number> = [movieId, offset, maxResults];
   let liked = ``;
-  
-  if(userId) {
+
+  if (userId) {
     liked = `, (SELECT COUNT(*) FROM movie_view.reviews_likes AS rl WHERE HEX(rl.reviews_id) = HEX(r.id) AND rl.users_id = ?) > 0 AS liked`;
     values.unshift(userId);
   }

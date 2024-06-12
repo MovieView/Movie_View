@@ -22,8 +22,9 @@ interface IProps {
 }
 
 export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
-  const contentRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLPreElement>(null);
   const [expanded, setExpanded] = useState(false);
+  const [showButton, setShowButton] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [reviewData, setReviewData] = useState<IReviewFormData>(review);
   const userId = 2;
@@ -57,8 +58,31 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
     setIsFormOpen(!isFormOpen);
   };
 
+  const handleResize = () => {
+    if (contentRef.current) {
+      const lineHeight = parseFloat(
+        getComputedStyle(contentRef.current).lineHeight
+      );
+
+      const height = contentRef.current.offsetHeight;
+      const lines = height / lineHeight;
+
+      lines > 1 ? setShowButton(true) : setShowButton(false);
+    }
+  };
+
+  const debouncedHandleResize = debounce(handleResize, 100);
+
+  useEffect(() => {
+    window.addEventListener('resize', debouncedHandleResize);
+    return () => {
+      window.removeEventListener('resize', debouncedHandleResize);
+    };
+  }, [debouncedHandleResize]);
+
   useEffect(() => {
     setReviewData({ ...review });
+    handleResize();
   }, [review]);
 
   return (
@@ -81,7 +105,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
         className='flex flex-col gap-1'
         style={{ width: 'calc(100% - 3rem)' }}
       >
-        {isFormOpen && (
+        {isFormOpen ? (
           <ReviewForm
             handleCloseForm={handleCloseForm}
             review={reviewData}
@@ -89,9 +113,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
             onSubmit={handleUpdate}
             text='리뷰 수정'
           />
-        )}
-
-        {!isFormOpen && (
+        ) : (
           <>
             <div className='flex w-full'>
               <div className='text-sm flex items-center gap-1'>
@@ -111,8 +133,9 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
             </div>
 
             <p className='font-semibold text-sm break-words'>{review.title}</p>
-            <div ref={contentRef}>
+            <div>
               <pre
+                ref={contentRef}
                 className={`break-words whitespace-pre-wrap ${
                   expanded ? 'line-clamp-none ' : 'line-clamp-2'
                 } `}
@@ -121,15 +144,17 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
               </pre>
             </div>
 
-            <div
-              className={`ml-auto transform transition ease-linear duration-300 ${
-                expanded ? 'rotate-180' : 'rotate-0'
-              }`}
-            >
-              <button className='' onClick={() => setExpanded(!expanded)}>
-                <IoIosArrowDown />
-              </button>
-            </div>
+            {showButton && (
+              <div
+                className={`ml-auto transform transition ease-linear duration-300 ${
+                  expanded ? 'rotate-180' : 'rotate-0'
+                }`}
+              >
+                <button className='' onClick={() => setExpanded(!expanded)}>
+                  <IoIosArrowDown />
+                </button>
+              </div>
+            )}
           </>
         )}
 
@@ -143,18 +168,19 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
           )}
         </div>
 
-        { userId 
-          ? <LikeButton
-              reviewId={review.id}
-              liked={review.liked}
-              likesCount={review.likes}
-            />
-          : <ReviewButton 
-             text={review.likes.toString()}
-             icon={<AiOutlineLike />}
-             state={true}
-            />
-        }
+        {userId ? (
+          <LikeButton
+            reviewId={review.id}
+            liked={review.liked}
+            likesCount={review.likes}
+          />
+        ) : (
+          <ReviewButton
+            text={review.likes.toString()}
+            icon={<AiOutlineLike />}
+            state={true}
+          />
+        )}
       </div>
     </div>
   );
@@ -173,4 +199,13 @@ function format(dateStr: string): string {
   });
   const formattedDate = date && formatter.format(date);
   return formattedDate;
+}
+
+function debounce(callback: () => void, delay: number) {
+  let timeout: ReturnType<typeof setTimeout>;
+
+  return () => {
+    clearTimeout(timeout);
+    timeout = setTimeout(callback, delay);
+  };
 }

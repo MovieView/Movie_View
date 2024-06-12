@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     const data: IReviewData = await req.json();
 
     const movie = await addMovieId(data.movieId);
-    
+
     const review = await addReview(userId, data);
 
     if (!review) {
