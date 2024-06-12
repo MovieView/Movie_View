@@ -15,11 +15,12 @@
     "dotenv": "^16.4.5",
     "mysql2": "^3.9.8",
     "next": "14.2.3",
+    "next-auth": "^4.24.7",
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.2.1",
-    "uuid": "^9.0.1",
-    "redis": "^4.6.14"
+    "redis": "^4.6.14",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^20.12.12",
