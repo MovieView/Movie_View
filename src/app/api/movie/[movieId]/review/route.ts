@@ -1,4 +1,4 @@
-import { db } from '@/app/db/db';
+import { dbConnection } from '@/lib/db';
 import { FieldPacket, RowDataPacket } from 'mysql2';
 
 // 영화별 리뷰 조회
@@ -71,7 +71,7 @@ async function getReviews(
                 ORDER BY ${orderBy}
                 LIMIT ?, ?`;
   try {
-    const [result] = await db.promise().query(sql, values);
+    const [result] = await dbConnection.promise().query(sql, values);
     return result;
   } catch (err) {
     console.error(err);
@@ -83,7 +83,7 @@ async function reviewsCount(movieId: number) {
   const sql = `SELECT COUNT(*) AS totalCount FROM reviews WHERE movies_id=?`;
   const values = [movieId];
   try {
-    const [result]: [RowDataPacket[], FieldPacket[]] = await db
+    const [result]: [RowDataPacket[], FieldPacket[]] = await dbConnection
       .promise()
       .query(sql, values);
 

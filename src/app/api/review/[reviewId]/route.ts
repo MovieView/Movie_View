@@ -1,4 +1,4 @@
-import { db } from '@/app/db/db';
+import { dbConnection } from '@/lib/db';
 import { IReviewData } from '../route';
 import { FieldPacket, RowDataPacket } from 'mysql2';
 
@@ -90,7 +90,7 @@ async function getReviewById(reviewId: number, userId: number) {
   const sql = `SELECT * FROM reviews WHERE id=UNHEX(?) AND users_id=? `;
   const values: Array<string | number> = [reviewId, userId];
   try {
-    const [result]: [RowDataPacket[], FieldPacket[]] = await db
+    const [result]: [RowDataPacket[], FieldPacket[]] = await dbConnection
       .promise()
       .execute(sql, values);
     return result[0];
@@ -105,7 +105,7 @@ async function deleteReview(reviewId: number, userId: number) {
   const values: Array<string | number> = [reviewId, userId];
 
   try {
-    const [result] = await db.promise().query(sql, values);
+    const [result] = await dbConnection.promise().query(sql, values);
     return result;
   } catch (err) {
     console.error(err);
@@ -128,7 +128,7 @@ async function updateReview(
   ];
 
   try {
-    const [result] = await db.promise().query(sql, values);
+    const [result] = await dbConnection.promise().query(sql, values);
     return result;
   } catch (err) {
     console.error(err);
