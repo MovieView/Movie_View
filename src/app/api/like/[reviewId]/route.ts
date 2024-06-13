@@ -19,7 +19,6 @@ const getUid = async () => {
   const session = await getServerSession(authOPtions);
   const provider = session?.provider.slice(0,1);
   const social_accounts_uid = provider + '_' + session?.uid
-  console.log(social_accounts_uid)
   return social_accounts_uid;
 }
 
@@ -103,7 +102,7 @@ async function getLike(
   social_accounts_uid: string
 ): Promise<LikeQueryResult> {
   const sql = `SELECT 
-                COALESCE(SUM(CASE WHEN HEX(social_accounts_uid) = ? THEN 1 ELSE 0 END), 0) AS liked,
+                COALESCE(SUM(CASE WHEN social_accounts_uid = ? THEN 1 ELSE 0 END), 0) AS liked,
                 COUNT(*) AS likes
               FROM movie_view.reviews_likes
               WHERE HEX(reviews_id) = ?;`;
@@ -122,9 +121,7 @@ async function getLike(
 async function postLike(like: ILike) {
   const sql = `INSERT IGNORE INTO movie_view.reviews_likes (id, reviews_id, social_accounts_uid)
              VALUES ( UNHEX(?), UNHEX(?), ? );`;
-console.log(1111111111111111111111111111111111111);
-             console.log(sql);
-             console.log(like);
+
   try {
     const [result] = await dbConnection
       .promise()

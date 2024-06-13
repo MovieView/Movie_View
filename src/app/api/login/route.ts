@@ -1,6 +1,5 @@
 import mysql, { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import { NextRequest } from "next/server";
-import { v4 as uuidv4 } from "uuid";
 
 export async function GET(req: NextRequest) {
   try {
@@ -68,7 +67,6 @@ export async function POST(req: Request) {
 
     const usersId = generateUniqueInt();
 
-    // 사용자가 존재하지 않으면 데이터베이스에 추가
     if (count === 0) {
       const [result] = await connection.execute<ResultSetHeader>(
         "INSERT INTO users (id, nickname) VALUES (?, ?)",
@@ -115,17 +113,27 @@ export async function POST(req: Request) {
       );
     };
 
+    const formUid = (provider: string) => {
+      switch (provider) {
+        case "github":
+          return "g_" + userId;
+        case "kakao":
+          return "k_" + userId;
+        case "naver":
+          return "n_" + userId;
+      }
+    };
+
     const providerId = formProviderId(provider);
     const lastLogin = formatDateToMySQL(new Date());
-    const socialAccountsId = uuidv4().replace(/-/g, "");
 
     // social_accounts
     await connection.execute(
       "INSERT INTO social_accounts (users_id, providers_id, uid, last_login, extra_data) VALUES (?, ?, ?, ?, ?)",
-      [myAccountId, providerId, userId, lastLogin, extraData]
+      [myAccountId, providerId, formUid(provider), lastLogin, extraData]
     );
 
-    return new Response(JSON.stringify(""), {
+    return new Response(JSON.stringify({ uid: formUid(provider) }), {
       status: 201,
       headers: {
         "Content-Type": "application/json",

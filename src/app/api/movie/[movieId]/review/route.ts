@@ -81,7 +81,8 @@ async function getReviews(
                 WHERE r.movies_id=?
                 ORDER BY ${orderBy}
                 LIMIT ?, ?`;
-  try {
+
+                try {
     const [result] = await dbConnection.promise().query(sql, values);
     return result;
   } catch (err) {
