@@ -55,7 +55,11 @@ export async function PUT(
 ) {
   try {
     const session = await getServerSession(authOPtions);
-    const userId = session?.uid;
+    if (!session?.provider && !session?.uid) {
+      return;
+    }
+
+    const userId = formatUserId(session.provider, session.uid);
 
     if (!userId) {
       return new Response('Authentication Error', { status: 401 });
@@ -91,7 +95,7 @@ export async function PUT(
 }
 
 async function getReviewById(reviewId: number, userId: string) {
-  const sql = `SELECT * FROM reviews WHERE id=UNHEX(?) AND users_id=? `;
+  const sql = `SELECT * FROM reviews WHERE id=UNHEX(?) AND social_accounts_uid=? `;
   const values: Array<string | number> = [reviewId, userId];
   try {
     const [result]: [RowDataPacket[], FieldPacket[]] = await dbConnection
@@ -105,7 +109,7 @@ async function getReviewById(reviewId: number, userId: string) {
 }
 
 async function deleteReview(reviewId: number, userId: string) {
-  const sql = `DELETE FROM reviews WHERE id=UNHEX(?) AND users_id=? `;
+  const sql = `DELETE FROM reviews WHERE id=UNHEX(?) AND social_accounts_uid=? `;
   const values: Array<string | number> = [reviewId, userId];
 
   try {
@@ -122,7 +126,7 @@ async function updateReview(
   userId: string,
   data: IReviewData
 ) {
-  const sql = `UPDATE reviews SET title=?, rating=?, content=? WHERE id=UNHEX(?) AND users_id=? `;
+  const sql = `UPDATE reviews SET title=?, rating=?, content=? WHERE id=UNHEX(?) AND social_accounts_uid=? `;
   const values: Array<string | number> = [
     data.title,
     data.rating,

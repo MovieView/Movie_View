@@ -15,7 +15,7 @@ export interface IReview {
   createdAt: string;
   updatedAt: string;
   nickname: string;
-  filepath: string | null;
+  filePath: string | null;
   likes: number;
   liked: number;
 }
