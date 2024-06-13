@@ -34,7 +34,7 @@ export default function ReviewDropDownMenu({
       </div>
 
       {isDropMenuOpen && (
-        <div className='flex border absolute right-8 top-7 w-16 flex-col gap-2 text-sm shadow-sm rounded-md'>
+        <div className='flex border absolute right-8 top-7 w-16 flex-col gap-2 text-sm shadow-sm rounded-md bg-white'>
           <button className='hover:bg-[#D6E6F2] py-1' onClick={handleEdit}>
             수정
           </button>

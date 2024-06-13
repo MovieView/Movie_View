@@ -1,5 +1,6 @@
 import { authOPtions } from '@/lib/authOptions';
 import { dbConnection } from '@/lib/db';
+import { formatUserId } from '@/utils/formatUserId';
 import { RowDataPacket } from 'mysql2';
 import { getServerSession } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
@@ -15,19 +16,16 @@ interface ILike {
   social_accounts_uid: string | undefined;
 }
 
-const getUid = async () => {
-  const session = await getServerSession(authOPtions);
-  const provider = session?.provider.slice(0,1);
-  const social_accounts_uid = provider + '_' + session?.uid
-  return social_accounts_uid;
-}
-
 export const GET = async (
   req: Request,
   { params }: { params: { reviewId: string } }
   ) => {
     try {
-    const social_accounts_uid = await getUid();
+    const session = await getServerSession(authOPtions);
+    if (!session?.provider && !session?.uid) {
+      return;
+    }
+    const social_accounts_uid = formatUserId(session.provider, session.uid);
 
     if (!social_accounts_uid) {
       return new Response('Authentication Error', { status: 401 });
@@ -52,7 +50,11 @@ export const POST = async (
   { params }: { params: { reviewId: string } }
 ) => {
   try {
-    const social_accounts_uid = await getUid();
+    const session = await getServerSession(authOPtions);
+    if (!session?.provider && !session?.uid) {
+      return;
+    }
+    const social_accounts_uid = formatUserId(session.provider, session.uid);
 
     if (!social_accounts_uid) {
       return new Response('Authentication Error', { status: 401 });
@@ -82,7 +84,11 @@ export const DELETE = async (
   { params }: { params: { reviewId: string } }
 ) => {
   try {
-    const social_accounts_uid = await getUid();
+    const session = await getServerSession(authOPtions);
+    if (!session?.provider && !session?.uid) {
+      return;
+    }
+    const social_accounts_uid = formatUserId(session.provider, session.uid);
 
     const result = await deleteLike(params.reviewId, social_accounts_uid as string);
     return new Response(JSON.stringify(result), {
