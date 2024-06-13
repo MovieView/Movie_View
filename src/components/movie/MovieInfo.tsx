@@ -1,6 +1,8 @@
 import { API_URL } from '@/constants';
 import { Credits, Genre, Movie } from '@/models/movie.model';
 import MovieCredits from './MovieCredits';
+import ErrorOMG from '@/app/detail/[movieId]/error';
+import ReviewsList from '../Review/ReviewsList';
 
 interface Props {
   movieId: string;
@@ -49,19 +51,11 @@ export default async function MovieInfo({ movieId }: Props) {
   const credits = await getMovieCredits(movieId);
 
   if (!movie) {
-    return (
-      <div className='text-center text-red-500'>
-        영화 정보를 가져올 수 없습니다.
-      </div>
-    );
+    return <ErrorOMG />;
   }
 
   if (!credits) {
-    return (
-      <div className='text-center text-red-500'>
-        영화 출연진 정보를 가져올 수 없습니다.
-      </div>
-    );
+    return <ErrorOMG />;
   }
 
   return (
@@ -109,6 +103,7 @@ export default async function MovieInfo({ movieId }: Props) {
       </div>
 
       <MovieCredits cast={credits.cast} />
+      <ReviewsList movieId={Number(movieId)} />
     </div>
   );
 }
