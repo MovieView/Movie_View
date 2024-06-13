@@ -8,13 +8,13 @@ const UserProfile = () => {
   const { data: session } = useSession();
   const [showAlert, setShowAlert] = useState(false);
 
-  const handleLogOut = () => {
-    signOut({ callbackUrl: "/" });
+  const handleLogOut = async () => {
+    await signOut({ callbackUrl: "/" });
     setShowAlert(true);
   };
 
   const redirectToHome = () => {
-    setShowAlert(false); // 알림 상태 해제
+    setShowAlert(false);
   };
 
   return (
@@ -25,9 +25,10 @@ const UserProfile = () => {
             src={`${session.user?.image}`}
             className="rounded-full h-16 w-16"
           />
+          {/* 로그아웃 알림창 */}
           {showAlert && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-              <div className="bg-white p-4 rounded-lg">
+              <div className="bg-white p-4 rounded-lg w-80">
                 <p className="text-lg">{`${session?.user.name}님 안녕히 가세요!`}</p>
                 <button
                   className="mt-2 bg-slate-300 text-white px-4 py-2 rounded-lg"
@@ -42,7 +43,6 @@ const UserProfile = () => {
         </>
       ) : (
         <>
-          <img className="bg-slate-300 rounded-full h-16 w-16" />
           <Link href={"/login"}>
             <button>LogIn</button>
           </Link>
