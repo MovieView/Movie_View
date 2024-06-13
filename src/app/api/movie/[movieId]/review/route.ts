@@ -1,10 +1,20 @@
+import { authOPtions } from '@/lib/authOptions';
 import { dbConnection } from '@/lib/db';
 import { FieldPacket, RowDataPacket } from 'mysql2';
+import { getServerSession } from 'next-auth';
 
 // 영화별 리뷰 조회
 const MAX_RESULT = 8;
 const PAGE = 1;
 const SORT = 'latest';
+
+const getUid = async () => {
+  const session = await getServerSession(authOPtions);
+  const provider = session?.provider.slice(0,1);
+  const social_accounts_uid = provider + '_' + session?.uid
+  console.log(social_accounts_uid)
+  return social_accounts_uid;
+}
 
 export async function GET(
   req: Request,
@@ -15,12 +25,14 @@ export async function GET(
     let maxResults = searchParams.get('maxResults') ?? MAX_RESULT;
     let page = searchParams.get('page') ?? PAGE;
     let sort = searchParams.get('sort') ?? SORT;
+    const userId = await getUid();
 
     const reviews = await getReviews(
       params.movieId,
       Number(maxResults),
       Number(page),
-      sort
+      sort,
+      userId
     );
 
     const count = await reviewsCount(params.movieId);
@@ -48,25 +60,24 @@ async function getReviews(
   maxResults: number,
   page: number,
   sort: string,
-  userId: number | null = 2
+  userId: string | null
 ) {
   const offset = maxResults * (page - 1);
   const values: Array<string | number> = [movieId, offset, maxResults];
   let liked = ``;
-
   if (userId) {
-    liked = `, (SELECT COUNT(*) FROM movie_view.reviews_likes AS rl WHERE HEX(rl.reviews_id) = HEX(r.id) AND rl.users_id = ?) > 0 AS liked`;
+    liked = `, (SELECT COUNT(*) FROM movie_view.reviews_likes AS rl WHERE HEX(rl.reviews_id) = HEX(r.id) AND rl.social_accounts_uid = ?) > 0 AS liked`;
     values.unshift(userId);
   }
-
   const orderBy =
     sort === 'like' ? 'likes DESC, createdAt DESC' : 'createdAt DESC';
-  const sql = `SELECT HEX(r.id) AS id, r.movies_id AS movieId, r.users_id AS userId, r.rating, r.title,
-                r.content, r.created_at AS createdAt, r.updated_at AS updatedAt, u.nickname,
+  const sql = `SELECT HEX(r.id) AS id, r.movies_id AS movieId, r.social_accounts_uid AS userId, r.rating, r.title,
+                r.content, r.created_at AS createdAt, r.updated_at AS updatedAt, u.nickname, JSON_EXTRACT(extra_data, "s.filepath") AS filepath,
                 (SELECT COUNT(*) FROM reviews_likes AS rl WHERE HEX(rl.reviews_id) = HEX(r.id)) AS likes
                 ${liked}
                 FROM reviews AS r
-                LEFT JOIN users AS u ON u.id = r.users_id
+                LEFT JOIN users AS u ON u.id = r.social_accounts_uid
+                LEFT JOIN social_accounts AS s ON s.users_id = u.id
                 WHERE r.movies_id=?
                 ORDER BY ${orderBy}
                 LIMIT ?, ?`;

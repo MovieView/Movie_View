@@ -14,8 +14,8 @@ const LikeButton = ({
   liked,
   likesCount
 }: IProps) => {
-  const { likes, likeToggle, isLoading, isError } = useLike(reviewId);
 
+  const { likes, likeToggle, isLoading, isError } = useLike(reviewId);
   return (
     <>
       { isError ? (

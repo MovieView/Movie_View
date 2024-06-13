@@ -1,5 +1,7 @@
+import { authOPtions } from '@/lib/authOptions';
 import { dbConnection } from '@/lib/db';
 import { RowDataPacket } from 'mysql2';
+import { getServerSession } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 
 interface LikeQueryResult extends RowDataPacket {
@@ -10,21 +12,29 @@ interface LikeQueryResult extends RowDataPacket {
 interface ILike {
   id: string;
   reviews_id: string;
-  users_id: number;
+  social_accounts_uid: string | undefined;
 }
 
-const users_id = 2;
+const getUid = async () => {
+  const session = await getServerSession(authOPtions);
+  const provider = session?.provider.slice(0,1);
+  const social_accounts_uid = provider + '_' + session?.uid
+  console.log(social_accounts_uid)
+  return social_accounts_uid;
+}
 
 export const GET = async (
   req: Request,
   { params }: { params: { reviewId: string } }
-) => {
-  try {
-    if (!users_id) {
+  ) => {
+    try {
+    const social_accounts_uid = await getUid();
+
+    if (!social_accounts_uid) {
       return new Response('Authentication Error', { status: 401 });
     }
 
-    const result = await getLike(params.reviewId, users_id);
+    const result = await getLike(params.reviewId, social_accounts_uid);
 
     return new Response(JSON.stringify(result), {
       status: 200,
@@ -43,14 +53,16 @@ export const POST = async (
   { params }: { params: { reviewId: string } }
 ) => {
   try {
-    if (!users_id) {
+    const social_accounts_uid = await getUid();
+
+    if (!social_accounts_uid) {
       return new Response('Authentication Error', { status: 401 });
     }
 
     const like = {
       id: uuidv4().replace(/-/g, ''),
       reviews_id: params.reviewId,
-      users_id: users_id,
+      social_accounts_uid: social_accounts_uid,
     };
 
     const result = await postLike(like);
@@ -71,7 +83,9 @@ export const DELETE = async (
   { params }: { params: { reviewId: string } }
 ) => {
   try {
-    const result = await deleteLike(params.reviewId, users_id);
+    const social_accounts_uid = await getUid();
+
+    const result = await deleteLike(params.reviewId, social_accounts_uid as string);
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -86,10 +100,10 @@ export const DELETE = async (
 
 async function getLike(
   reviewId: string,
-  userId: number
+  social_accounts_uid: string
 ): Promise<LikeQueryResult> {
   const sql = `SELECT 
-                COALESCE(SUM(CASE WHEN HEX(users_id) = ? THEN 1 ELSE 0 END), 0) AS liked,
+                COALESCE(SUM(CASE WHEN HEX(social_accounts_uid) = ? THEN 1 ELSE 0 END), 0) AS liked,
                 COUNT(*) AS likes
               FROM movie_view.reviews_likes
               WHERE HEX(reviews_id) = ?;`;
@@ -97,7 +111,7 @@ async function getLike(
   try {
     const [result] = await dbConnection
       .promise()
-      .execute<LikeQueryResult[]>(sql, [userId, reviewId]);
+      .execute<LikeQueryResult[]>(sql, [social_accounts_uid, reviewId]);
     return result[0];
   } catch (err) {
     console.error(err);
@@ -106,13 +120,15 @@ async function getLike(
 }
 
 async function postLike(like: ILike) {
-  const sql = `INSERT IGNORE INTO movie_view.reviews_likes (id, reviews_id, users_id)
-             VALUES ( ?, UNHEX(?), ? );`;
-
+  const sql = `INSERT IGNORE INTO movie_view.reviews_likes (id, reviews_id, social_accounts_uid)
+             VALUES ( UNHEX(?), UNHEX(?), ? );`;
+console.log(1111111111111111111111111111111111111);
+             console.log(sql);
+             console.log(like);
   try {
     const [result] = await dbConnection
       .promise()
-      .execute(sql, [like.id, like.reviews_id, like.users_id]);
+      .execute(sql, [like.id, like.reviews_id, like.social_accounts_uid]);
     return result;
   } catch (err) {
     console.error(err);
@@ -120,13 +136,13 @@ async function postLike(like: ILike) {
   }
 }
 
-async function deleteLike(reviewId: string, userId: number) {
-  const sql = `DELETE FROM movie_view.reviews_likes WHERE reviews_id=UNHEX(?) AND users_id=?;`;
+async function deleteLike(reviewId: string, social_accounts_uid: string) {
+  const sql = `DELETE FROM movie_view.reviews_likes WHERE reviews_id=UNHEX(?) AND social_accounts_uid=?;`;
 
   try {
     const [result] = await dbConnection
       .promise()
-      .execute(sql, [reviewId, userId]);
+      .execute(sql, [reviewId, social_accounts_uid]);
     return result;
   } catch (err) {
     console.error(err);

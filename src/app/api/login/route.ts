@@ -121,8 +121,8 @@ export async function POST(req: Request) {
 
     // social_accounts
     await connection.execute(
-      "INSERT INTO social_accounts (id, users_id, providers_id, uid, last_login, extra_data) VALUES (UNHEX(?), ?, ?, ?, ?, ?)",
-      [socialAccountsId, myAccountId, providerId, userId, lastLogin, extraData]
+      "INSERT INTO social_accounts (users_id, providers_id, uid, last_login, extra_data) VALUES (?, ?, ?, ?, ?)",
+      [myAccountId, providerId, userId, lastLogin, extraData]
     );
 
     return new Response(JSON.stringify(""), {
