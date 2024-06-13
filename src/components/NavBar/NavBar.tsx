@@ -3,9 +3,9 @@ import clsx from "clsx";
 import Link from "next/link";
 
 
-type NavBarProps = {
+interface NavBarProps {
   isFixed: boolean;
-};
+}
 
 const NavBar : React.FC<NavBarProps> = ({isFixed}) => {
   const navBarStyle = clsx(

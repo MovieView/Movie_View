@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 
 import Image from "next/image";
 import Link from "next/link";
@@ -10,11 +10,10 @@ interface SearchMoviePosterProps {
 }
 
 const SearchMoviePoster : React.FC<SearchMoviePosterProps> = ({posterUrl, id}) => {
-  const thisElement = useRef(null);
-
   return (
-    <button className='w-auto h-auto rounded-lg bg-gray-500 block' ref={thisElement}>
+    <button className='w-auto h-auto rounded-lg bg-gray-500 block'>
       <Link href={`/detail/${id}`}>
+      {/* 포스터가 있을 경우 */}
       {posterUrl && (
         <img 
           src={posterUrl}
@@ -22,6 +21,7 @@ const SearchMoviePoster : React.FC<SearchMoviePosterProps> = ({posterUrl, id}) =
           className='w-full h-full rounded-lg'
         />
       ) }
+      {/* 포스터가 없을 경우 */}
       {!posterUrl && (
         <div className="w-full h-full relative">
           <div className="absolute w-full h-full flex flex-col items-center justify-center">
@@ -42,7 +42,7 @@ const SearchMoviePoster : React.FC<SearchMoviePosterProps> = ({posterUrl, id}) =
             className='w-full h-full rounded-lg opacity-0'
           />
         </div>
-      ) }
+      )}
       </Link>
     </button>
   );

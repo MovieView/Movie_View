@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import { createClient } from 'redis';
 import { setRedisData, getRedisData, RedisClient } from '@/lib/redis';
+import { NextRequest } from 'next/server';
+import { getIP } from '@/utils/networkUtils';
 
 
 interface MovieData {
@@ -9,11 +11,14 @@ interface MovieData {
   posterUrl: string
 }
 
-export const GET = async (request: Request) => {
+
+export const GET = async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const title : string | null = searchParams.get('title');
   const page : string | null = searchParams.get('page');
   const accessTokenTMDB : string | undefined = process.env.TMDB_ACCESS_TOKEN;
+
+  const userIP : string = getIP(request);
 
   // Redis 클라이언트 생성 / 연결
   const client : RedisClient = createClient({
@@ -22,7 +27,7 @@ export const GET = async (request: Request) => {
   await client.connect();
   
   // Rate Limiting : 2초에 1번 요청 가능
-  const redisSearchUserKey : string = "search_movie:127.0.0.1";
+  const redisSearchUserKey : string = `search_movie:${userIP}`;
   const redisData : string | null = await getRedisData(client, redisSearchUserKey);
   if (redisData) {
     return new Response(JSON.stringify({
@@ -50,6 +55,7 @@ export const GET = async (request: Request) => {
   // Fetch 설정
   const fetchParams : RequestInit = {
     method: 'GET',
+    body: null,
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${accessTokenTMDB}`,
@@ -59,7 +65,8 @@ export const GET = async (request: Request) => {
   // URL 생성
   let url : string;
   if (title) {
-    url = `https://api.themoviedb.org/3/search/movie?query=${title}&language=ko-KR&include_adult=false`;
+    const encodedTitle : string = encodeURIComponent(title);
+    url = `https://api.themoviedb.org/3/search/movie?query=${encodedTitle}&language=ko-KR&include_adult=false`;
   } else {
     url = 'https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=ko-KR&sort_by=popularity.desc';
   }
