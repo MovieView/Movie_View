@@ -66,7 +66,7 @@ async function getReviews(
                 (SELECT COUNT(*) FROM reviews_likes AS rl WHERE HEX(rl.reviews_id) = HEX(r.id)) AS likes
                 ${liked}
                 FROM reviews AS r
-                JOIN users AS u ON u.id = r.users_id
+                LEFT JOIN users AS u ON u.id = r.users_id
                 WHERE r.movies_id=?
                 ORDER BY ${orderBy}
                 LIMIT ?, ?`;

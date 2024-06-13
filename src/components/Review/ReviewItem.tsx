@@ -7,8 +7,6 @@ import ReviewDropDownMenu from './ReviewDropDownMenu';
 import ReviewForm from './ReviewForm';
 import { IReviewFormData } from './ReviewsList';
 import LikeButton from '../Like/LikeButton';
-import ReviewButton from './ReviewButton';
-import { AiOutlineLike } from 'react-icons/ai';
 
 interface IProps {
   review: IReview;
@@ -168,19 +166,12 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
           )}
         </div>
 
-        {userId ? (
-          <LikeButton
-            reviewId={review.id}
-            liked={review.liked}
-            likesCount={review.likes}
-          />
-        ) : (
-          <ReviewButton
-            text={review.likes.toString()}
-            icon={<AiOutlineLike />}
-            state={true}
-          />
-        )}
+        <LikeButton
+          userId={userId}
+          reviewId={review.id}
+          liked={review.liked}
+          likesCount={review.likes}
+        />
       </div>
     </div>
   );

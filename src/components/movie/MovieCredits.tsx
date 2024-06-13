@@ -10,7 +10,7 @@ const MovieCredits = ({
   const sliderRef = useRef<HTMLDivElement>(null);
   const [isLeftButtonVisible, setIsLeftButtonVisible] = useState(false);
   const [isRightButtonVisible, setIsRightButtonVisible] = useState(true);
-  
+
   const scrollLeft = () => {
     if (sliderRef.current) {
       sliderRef.current.scrollBy({ left: -400, behavior: 'smooth' });
@@ -23,13 +23,24 @@ const MovieCredits = ({
     }
   };
 
+  
   useEffect(() => {
     if (sliderRef.current) {
       const slider = sliderRef.current;
+      const totalItemsWidth = cast.length * 80 + cast.length * 12;
+      const rightWidth =  slider.scrollWidth - slider.clientWidth
+      
+      if (totalItemsWidth < slider.clientWidth) {
+        return setIsRightButtonVisible(false);
+      }
+      
       const scrollHandler = () => {
-        setIsLeftButtonVisible(slider.scrollLeft > 0);
-        setIsRightButtonVisible(slider.scrollLeft < slider.scrollWidth - slider.clientWidth);
+        if (sliderRef.current) {
+          setIsLeftButtonVisible(slider.scrollLeft > 0);
+          setIsRightButtonVisible(slider.scrollLeft + 10 < rightWidth);
+        }
       };
+      
       slider.addEventListener("scroll", scrollHandler);
       return () => {
         slider.removeEventListener("scroll", scrollHandler);
@@ -37,9 +48,8 @@ const MovieCredits = ({
     }
   }, []);
 
-
   return (
-    <div className="mx-auto mt-6 max-w-5xl sm:px-6 lg:max-w-5xl lg:grid lg:gap-x-8 lg:px-8  space-y-3">
+    <div className="mx-auto mt-6 max-w-5xl sm:px-6 lg:max-w-5xl lg:grid lg:gap-x-8 lg:px-8 space-y-3">
       <div className="font-bold text-lg">출연진</div>
       <div className="relative overflow-x-hidden">
         <button
