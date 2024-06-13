@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react';
 export interface IReview {
   id: string;
   movieId: number;
-  userId: number;
+  userId: string;
   rating: number;
   title: string;
   content: string;

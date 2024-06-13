@@ -2,7 +2,7 @@ import { useLike } from '@/hooks/useLike';
 import { AiFillLike, AiOutlineLike } from 'react-icons/ai';
 
 interface IProps {
-  userId?: null | number;
+  userId?: null | string;
   reviewId: string;
   liked: number;
   likesCount: number;

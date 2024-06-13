@@ -1,17 +1,22 @@
 import { dbConnection } from '@/lib/db';
 import { IReviewData } from '../route';
 import { FieldPacket, RowDataPacket } from 'mysql2';
+import { getServerSession } from 'next-auth';
+import { authOPtions } from '@/lib/authOptions';
+import { formatUserId } from '@/utils/formatUserId';
 
-const USER_ID = 2;
-
-// id별 리뷰 삭제
 export async function DELETE(
   _req: Request,
   { params }: { params: { reviewId: number } }
 ) {
   try {
-    // TODO: userId 받아오기 구현 필요
-    const userId = USER_ID;
+    const session = await getServerSession(authOPtions);
+
+    if (!session?.provider && !session?.uid) {
+      return;
+    }
+
+    const userId = formatUserId(session.provider, session.uid);
 
     if (!userId) {
       return new Response('Authentication Error', { status: 401 });
@@ -44,14 +49,13 @@ export async function DELETE(
   }
 }
 
-// id별 리뷰 수정
 export async function PUT(
   req: Request,
   { params }: { params: { reviewId: number } }
 ) {
   try {
-    // TODO: userId 받아오기 구현 필요
-    const userId = USER_ID;
+    const session = await getServerSession(authOPtions);
+    const userId = session?.uid;
 
     if (!userId) {
       return new Response('Authentication Error', { status: 401 });
@@ -86,7 +90,7 @@ export async function PUT(
   }
 }
 
-async function getReviewById(reviewId: number, userId: number) {
+async function getReviewById(reviewId: number, userId: string) {
   const sql = `SELECT * FROM reviews WHERE id=UNHEX(?) AND users_id=? `;
   const values: Array<string | number> = [reviewId, userId];
   try {
@@ -100,7 +104,7 @@ async function getReviewById(reviewId: number, userId: number) {
   }
 }
 
-async function deleteReview(reviewId: number, userId: number) {
+async function deleteReview(reviewId: number, userId: string) {
   const sql = `DELETE FROM reviews WHERE id=UNHEX(?) AND users_id=? `;
   const values: Array<string | number> = [reviewId, userId];
 
@@ -115,7 +119,7 @@ async function deleteReview(reviewId: number, userId: number) {
 
 async function updateReview(
   reviewId: number,
-  userId: number,
+  userId: string,
   data: IReviewData
 ) {
   const sql = `UPDATE reviews SET title=?, rating=?, content=? WHERE id=UNHEX(?) AND users_id=? `;

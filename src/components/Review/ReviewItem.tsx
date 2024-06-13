@@ -7,6 +7,7 @@ import ReviewDropDownMenu from './ReviewDropDownMenu';
 import ReviewForm from './ReviewForm';
 import { IReviewFormData } from './ReviewsList';
 import LikeButton from '../Like/LikeButton';
+import { useSession } from 'next-auth/react';
 
 interface IProps {
   review: IReview;
@@ -20,12 +21,13 @@ interface IProps {
 }
 
 export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
+  const { data: session } = useSession();
+  const userId = session?.uid;
   const contentRef = useRef<HTMLPreElement>(null);
   const [expanded, setExpanded] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [reviewData, setReviewData] = useState<IReviewFormData>(review);
-  const userId = 2;
 
   const handleUpdate = (e: FormEvent) => {
     e.preventDefault();
@@ -121,7 +123,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
                 </>
               </div>
 
-              {userId == review.userId && !isFormOpen && (
+              {userId && userId === review.userId && !isFormOpen && (
                 <ReviewDropDownMenu
                   handleEdit={handleCloseForm}
                   reviewId={review.id}

@@ -1,7 +1,7 @@
-import { NextAuthOptions } from "next-auth";
-import GithubProvider from "next-auth/providers/github";
-import KakaoProvider from "next-auth/providers/kakao";
-import NaverProvider from "next-auth/providers/naver";
+import { NextAuthOptions } from 'next-auth';
+import GithubProvider from 'next-auth/providers/github';
+import KakaoProvider from 'next-auth/providers/kakao';
+import NaverProvider from 'next-auth/providers/naver';
 
 export const authOPtions: NextAuthOptions = {
   providers: [
