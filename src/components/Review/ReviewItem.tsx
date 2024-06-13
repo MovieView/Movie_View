@@ -8,6 +8,7 @@ import ReviewForm from './ReviewForm';
 import { IReviewFormData } from './ReviewsList';
 import LikeButton from '../Like/LikeButton';
 import { useSession } from 'next-auth/react';
+import { formatUserId } from '@/utils/formatUserId';
 
 interface IProps {
   review: IReview;
@@ -22,7 +23,7 @@ interface IProps {
 
 export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
   const { data: session } = useSession();
-  const userId = session?.uid;
+  const [userId, setUserId] = useState<string | undefined>(undefined);
   const contentRef = useRef<HTMLPreElement>(null);
   const [expanded, setExpanded] = useState(false);
   const [showButton, setShowButton] = useState(false);
@@ -84,6 +85,15 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
     setReviewData({ ...review });
     handleResize();
   }, [review]);
+
+  useEffect(() => {
+    if (!session?.provider && !session?.uid) {
+      return;
+    }
+    const id = formatUserId(session?.provider, session?.uid);
+
+    setUserId(id);
+  }, [session?.provider, session?.uid]);
 
   return (
     <div className='flex p-4 border max-w-3xl rounded-xl mx-auto shadow-sm relative'>
