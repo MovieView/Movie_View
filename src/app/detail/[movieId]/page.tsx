@@ -1,6 +1,7 @@
 import ReviewsList from '@/components/Review/ReviewsList';
 import MovieInfo, { getMovie } from '@/components/Movie/MovieInfo';
 import { Suspense } from 'react';
+import Loading from './loading';
 
 interface IParams {
   params: { movieId: string };
@@ -16,10 +17,8 @@ export async function generateMetadata({ params: { movieId } }: IParams) {
 export default async function MovieDetail({ params: { movieId } }: IParams) {
   return (
     <div className='w-full bg-white relative flex flex-col grow'>
-      <Suspense fallback={<h1>Loading movie info</h1>}>
+      <Suspense fallback={<Loading />}>
         <MovieInfo movieId={movieId} />
-      </Suspense>
-      <Suspense fallback={<h1>Loading review lists</h1>}>
         <ReviewsList movieId={Number(movieId)} />
       </Suspense>
     </div>

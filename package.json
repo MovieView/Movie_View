@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.5",
@@ -18,10 +19,11 @@
     "react": "^18",
     "react-dom": "^18",
     "react-icons": "^5.2.1",
-    "uuid": "^9.0.1",
-    "redis": "^4.6.14"
+    "redis": "^4.6.14",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
     "@types/node": "^20.12.12",
     "@types/react": "^18",
     "@types/react-dom": "^18",
@@ -30,6 +32,7 @@
     "eslint-config-next": "14.2.3",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }
