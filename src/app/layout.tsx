@@ -17,6 +17,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // 현재 URL 경로를 가져옴
   const currentLocation = usePathname();
   // 네비게이션 바의 사용으로 인한 길이 조정
   const navBarStyle = clsx(
