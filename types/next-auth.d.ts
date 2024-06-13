@@ -1,13 +1,15 @@
-import NextAuth, { DefaultSession, DefaultJWT } from "next-auth";
+import { AuthUser } from "@/model/user";
+import NextAuth, { DefaultSession } from "next-auth";
 
 declare module "next-auth" {
   interface Session {
-    provider?: string;
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    provider?: string;
+    // user: {
+    //   username: string;
+    //   email: string;
+    // } & DefaultSession['user'];
+    provider: string;
+    user: AuthUser;
+    accessToken: string;
+    uid: string;
   }
 }

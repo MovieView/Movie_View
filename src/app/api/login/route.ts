@@ -1,11 +1,15 @@
 import mysql, { ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import { NextRequest } from "next/server";
 import { v4 as uuidv4 } from "uuid";
-import BigNum from "bignum";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
   try {
-    // @ts-ignore
-    const { username } = req.query;
+    const url = new URL(req.url);
+    const username = new URLSearchParams(url.searchParams).get("username");
+
+    if (!username) {
+      throw new Error("Username is missing in query parameters");
+    }
 
     const connection = await mysql.createConnection({
       host: process.env.DATABASE_HOST,
@@ -40,7 +44,7 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { username, filePath, provider } = await req.json();
+    const { username, filePath, provider, userId } = await req.json();
 
     const connection = await mysql.createConnection({
       host: process.env.DATABASE_HOST,
@@ -57,18 +61,18 @@ export async function POST(req: Request) {
     const count = results[0].count;
 
     const generateUniqueInt = () => {
-      const timestamp = Date.now(); // 현재 시간을 밀리초 단위로 얻음
-      const randomNum = Math.floor(Math.random() * 1000); // 0부터 999까지의 난수 생성
-      return timestamp * 1000 + randomNum; // 고유한 정수 생성
+      const timestamp = Date.now();
+      const randomNum = Math.floor(Math.random() * 1000);
+      return timestamp * 1000 + randomNum;
     };
 
-    const userId = generateUniqueInt();
+    const usersId = generateUniqueInt();
 
     // 사용자가 존재하지 않으면 데이터베이스에 추가
     if (count === 0) {
-      await connection.execute(
+      const [result] = await connection.execute<ResultSetHeader>(
         "INSERT INTO users (id, nickname) VALUES (?, ?)",
-        [userId, username]
+        [usersId, username]
       );
     }
 
@@ -77,14 +81,10 @@ export async function POST(req: Request) {
       [username]
     );
 
-    console.log(myAccount);
-
     let myAccountId;
 
     if (myAccount.length) myAccountId = myAccount[0].id;
-    const socialAccountsId = Date.now();
 
-    const uid = uuidv4();
     const extraData = JSON.stringify({ username, filePath });
 
     const formProviderId = (provider: string) => {
@@ -117,13 +117,13 @@ export async function POST(req: Request) {
 
     const providerId = formProviderId(provider);
     const lastLogin = formatDateToMySQL(new Date());
+    const socialAccountsId = uuidv4().replace(/-/g, "");
 
-    const [social_accounts] = await connection.execute<ResultSetHeader>(
-      "INSERT INTO social_accounts (id, users_id, providers_id, uid, last_login, extra_data) VALUES (?, ?, ?, ?, ?, ?)",
-      [socialAccountsId, myAccountId, providerId, uid, lastLogin, extraData]
+    // social_accounts
+    await connection.execute(
+      "INSERT INTO social_accounts (id, users_id, providers_id, uid, last_login, extra_data) VALUES (UNHEX(?), ?, ?, ?, ?, ?)",
+      [socialAccountsId, myAccountId, providerId, userId, lastLogin, extraData]
     );
-
-    console.log(social_accounts);
 
     return new Response(JSON.stringify(""), {
       status: 201,

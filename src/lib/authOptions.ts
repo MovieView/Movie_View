@@ -21,12 +21,15 @@ export const authOPtions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, account }) {
       if (account) {
-        token.provider = account.provider;
+        token.provider = account?.provider;
       }
+
       return token;
     },
     async session({ session, token }) {
-      session.provider = token.provider;
+      session.provider = token.provider as string;
+      session.uid = token.sub as string;
+
       return session;
     },
   },
