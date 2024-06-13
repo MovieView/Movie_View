@@ -166,6 +166,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
         </div>
 
         <LikeButton
+          userId={userId}
           reviewId={review.id}
           liked={review.liked}
           likesCount={review.likes}

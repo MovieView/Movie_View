@@ -6,24 +6,38 @@ interface Props {
   movieId: string;
 }
 
-export async function getMovie(movieId: string): Promise<Movie> {
+export async function getMovie(movieId: string): Promise<Movie | null> {
   try {
     const response = await fetch(
       `${API_URL}/${movieId}?api_key=${process.env.API_KEY}&language=ko-KR`
     );
-    return response.json();
+    const data = await response.json();
+    if (response.ok) {
+      return data;
+    } else {
+      console.error('Error fetching movie:', data.status_message);
+      return null;
+    }
   } catch (error) {
     console.error('Error fetching movie:', error);
     throw error;
   }
 }
 
-export async function getMovieCredits(movieId: string): Promise<Credits> {
+export async function getMovieCredits(
+  movieId: string
+): Promise<Credits | null> {
   try {
     const response = await fetch(
       `${API_URL}/${movieId}/credits?api_key=${process.env.API_KEY}&language=ko-KR`
     );
-    return response.json();
+    const data = await response.json();
+    if (response.ok) {
+      return data;
+    } else {
+      console.error('Error fetching movie credits:', data.status_message);
+      return null;
+    }
   } catch (error) {
     console.error('Error fetching movie credits:', error);
     throw error;
@@ -33,6 +47,22 @@ export async function getMovieCredits(movieId: string): Promise<Credits> {
 export default async function MovieInfo({ movieId }: Props) {
   const movie = await getMovie(movieId);
   const credits = await getMovieCredits(movieId);
+
+  if (!movie) {
+    return (
+      <div className='text-center text-red-500'>
+        영화 정보를 가져올 수 없습니다.
+      </div>
+    );
+  }
+
+  if (!credits) {
+    return (
+      <div className='text-center text-red-500'>
+        영화 출연진 정보를 가져올 수 없습니다.
+      </div>
+    );
+  }
 
   return (
     <div>

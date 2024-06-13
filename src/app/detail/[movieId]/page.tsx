@@ -1,7 +1,7 @@
 import ReviewsList from '@/components/Review/ReviewsList';
 import MovieInfo, { getMovie } from '@/components/Movie/MovieInfo';
 import { Suspense } from 'react';
-import Loading from './loading';
+import Spinner from '@/components/Common/Spinner';
 
 interface IParams {
   params: { movieId: string };
@@ -10,14 +10,14 @@ interface IParams {
 export async function generateMetadata({ params: { movieId } }: IParams) {
   const movie = await getMovie(movieId);
   return {
-    title: movie.title,
+    title: movie?.title ? movie.title : 'Unknown',
   };
 }
 
 export default async function MovieDetail({ params: { movieId } }: IParams) {
   return (
     <div className='w-full bg-white relative flex flex-col grow'>
-      <Suspense fallback={<Loading />}>
+      <Suspense fallback={<Spinner size='lg' item={true} />}>
         <MovieInfo movieId={movieId} />
         <ReviewsList movieId={Number(movieId)} />
       </Suspense>

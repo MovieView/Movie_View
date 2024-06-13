@@ -40,9 +40,6 @@ export async function GET(
   }
 }
 
-//  LEFT JOIN users_profile_pictures AS upp ON u.id=upp.users_id
-//  upp.filepath,
-// 처음 리뷰 리스트 받아올 때 liked도 같이 추가했습니다. 그러면서 userId도 가져오게 만들었어요! :)
 async function getReviews(
   movieId: number,
   maxResults: number,
@@ -66,7 +63,7 @@ async function getReviews(
                 (SELECT COUNT(*) FROM reviews_likes AS rl WHERE HEX(rl.reviews_id) = HEX(r.id)) AS likes
                 ${liked}
                 FROM reviews AS r
-                JOIN users AS u ON u.id = r.users_id
+                LEFT JOIN users AS u ON u.id = r.users_id
                 LEFT JOIN social_accounts AS s ON s.users_id = u.id
                 WHERE r.movies_id=?
                 ORDER BY ${orderBy}
