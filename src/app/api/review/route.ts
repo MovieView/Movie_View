@@ -22,9 +22,9 @@ export async function POST(req: Request) {
 
     const data: IReviewData = await req.json();
 
-    const review = await addReview(userId, data);
-
     const movie = await addMovieId(data.movieId);
+    
+    const review = await addReview(userId, data);
 
     if (!review) {
       return new Response(JSON.stringify({ message: 'Bad Request' }), {

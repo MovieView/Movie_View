@@ -1,72 +1,34 @@
-import { ILike } from "@/app/api/like/route";
-import { useState } from "react";
+import { useLike } from "@/hooks/useLike";
+import { AiFillLike, AiOutlineLike } from "react-icons/ai";
 
-interface Props {
-  like: ILike;
-  onLiked: (like: ILike) => void;
+interface IProps {
+  reviewId: string;
+  liked: number;
+  likesCount: number;
 }
 
-const addLike = async (reviewId: number) => {  
-  const response = await fetch(`/api/like/${reviewId}`,  {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  });
-  return response.json();
-};
-
-const deleteLike = async (reviewId: number) => {
-  const response = await fetch(`/api/like/${reviewId}`, {
-    method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-    }
-  });
-  return response.json();
-};
-
-const likeToggle = (like: ILike) => {
-  // 권한 확인
-  // if(!isloggedIn) {
-  //   alert("로그인이 필요합니다.");
-  //   return;
-  // }
-  console.log(like.liked);
-
-  if(like.liked) {
-    // 라이크 상태 -> 언라이크를 실행
-    addLike(like.reviews_id).then(() => {
-      // setLikes([
-      //   ...likes,
-      //   like
-      // ])
-    })
-  } else {
-    // 언라이크 상태 -> 라이크를 실행
-    deleteLike(like.reviews_id).then(() => {
-      // setLikes([
-      //   ...likes,
-      //   like
-      // ]);
-    });
-  }
-};
-
-
-const LikeButton = ({ like, onLiked }: Props) => {
-  const handleLiked = () => {
-    likeToggle(like);
-    // onLiked(like);
-  }
+const LikeButton = ({
+  reviewId,
+  liked,
+  likesCount
+}: IProps) => {
+  const { likes, likeToggle, isLoading, isError } = useLike(reviewId);
 
   return (
-    <button 
-      style={like.liked ? {color: "red"} : {color: "black"}}
-      onClick={handleLiked}  
-    >
-      ♥ {like.liked_count}
-    </button>
+    <>
+      { isError ? (
+        <span>Error loading likes</span>
+      ) : (
+        <button 
+          onClick={() => likeToggle((likes ? Number(likes.liked) : liked))} 
+          className="bg-transparent text-md inline-flex items-center gap-1 border px-2 rounded-lg hover:bg-[#D6E6F2] transition ease-linear duration-300 w-fit"
+          disabled={isLoading}
+        >
+          <div>{(likes ? Number(likes.liked) : liked) ? <AiFillLike /> : <AiOutlineLike />}</div>
+          {likes ? likes.likes : likesCount}
+        </button>
+      )}
+    </>
   );
 };
 
