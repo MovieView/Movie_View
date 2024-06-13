@@ -1,5 +1,8 @@
+import { authOPtions } from '@/lib/authOptions';
 import { dbConnection } from '@/lib/db';
+import { formatUserId } from '@/utils/formatUserId';
 import { ResultSetHeader } from 'mysql2';
+import { getServerSession } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 
 export interface IReviewData {
@@ -9,12 +12,14 @@ export interface IReviewData {
   content: string;
 }
 
-const USER_ID = 2;
-// 리뷰 작성
 export async function POST(req: Request) {
   try {
-    // TODO: userId 받아오기 구현 필요
-    const userId = USER_ID;
+    const session = await getServerSession(authOPtions);
+    if (!session?.provider && !session?.uid) {
+      return;
+    }
+
+    const userId = formatUserId(session.provider, session.uid);
 
     if (!userId) {
       return new Response('Authentication Error', { status: 401 });
@@ -40,16 +45,15 @@ export async function POST(req: Request) {
     );
   } catch (err) {
     console.error(err);
-    // TODO: 에러처리
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
   }
 }
 
-async function addReview(userId: number, data: IReviewData) {
+async function addReview(userId: string, data: IReviewData) {
   const id = uuidv4().replace(/-/g, '');
-  const sql = `INSERT INTO reviews (id, movies_id, users_id, rating, title, content) VALUES(UNHEX(?), ?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO reviews (id, movies_id, social_accounts_uid, rating, title, content) VALUES(UNHEX(?), ?, ?, ?, ?, ?)`;
   const values = [
     id,
     data.movieId,
