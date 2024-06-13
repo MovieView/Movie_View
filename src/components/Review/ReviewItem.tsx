@@ -156,7 +156,9 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
           </>
         )}
         <div className='flex gap-2 mt-2 '>
-          <span className='mr-2 text-sm'>{review.nickname}</span>
+          <span className='mr-2 text-sm'>
+            {review.nickname ?? '알 수 없음'}
+          </span>
           <span className='text-gray-400 text-sm'>
             {format(review.createdAt)}
           </span>
