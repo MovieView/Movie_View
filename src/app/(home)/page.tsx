@@ -70,7 +70,7 @@ export default function Home() : React.ReactElement {
   return (
     <div className="w-full bg-white relative flex flex-col grow">
       <div className='flex flex-col w-full grow'>
-        {"검색창 표시하기"}
+        {/* 검색 바 표시하기 */}
         {(!isError && !isLoadingError && !isRefetchError) && (
           <SearchBar 
             searchBarStyle={searchBarStyle}
@@ -79,15 +79,15 @@ export default function Home() : React.ReactElement {
             handleSubmit={handleSubmit}
           />
         )}
-        {"로딩 중"}
+        {/* 로딩 중일 경우 */}
         {(isLoading || isRefetching || isPending) && (
           <LoadingPing />
         )}
-        {"에러 발생"}
+        {/* 에러 발생 시 */}
         {(isError || isRefetchError || isLoadingError) && (
           <LoadingError refetch={refetch} />
         )}
-        {"성공적으로 데이터를 불러올 경우, 포스터 표시하기"}
+        {/* 영화 포스터 표시하기 */}
         {(isSuccess && !(isLoading || isRefetching) && data) && (
           <div className='grid w-[90%] md:w-[70%] mx-auto mb-10 grid-cols-2 gap-6 lg:grid-cols-3 lg:gap-10 xl:grid-cols-4'>
             {data.pages.map((page) => {
@@ -104,15 +104,15 @@ export default function Home() : React.ReactElement {
           </div>
         )}
 
-        {"페이지네이션 관련 컴포넌트"}
-        {"다음 페이지 버튼 표시하기"}
+        {/* 다음 페이지 버튼 */} 
+        {/* 다음 페이지 버튼이 화면에 있을 경우 */}
         {(isSuccess && hasNextPage && !isFetchingNextPage) && (
           <LoadMoreButton
             fetchNextPage={fetchNextPage}
             getNextPageButton={getNextPageButton}
           />
         )}
-        {"다음 페이지 로딩 중"}
+        {/* 다음 페이지 버튼이 로딩 중일 경우 */}
         {(isSuccess && isFetchingNextPage) && (
           <LoadingPing loadMore={true} />
         )}

@@ -2,6 +2,7 @@ import { InfiniteData, QueryObserverResult, RefetchOptions } from '@tanstack/rea
 import Image from 'next/image';
 import React from 'react';
 
+
 interface LoadingErrorProps {
   refetch: (options?: RefetchOptions | undefined) => Promise<QueryObserverResult<InfiniteData<any, unknown>, Error>>;
 }
