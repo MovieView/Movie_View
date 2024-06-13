@@ -62,11 +62,12 @@ async function getReviews(
   const orderBy =
     sort === 'like' ? 'likes DESC, createdAt DESC' : 'createdAt DESC';
   const sql = `SELECT HEX(r.id) AS id, r.movies_id AS movieId, r.users_id AS userId, r.rating, r.title,
-                r.content, r.created_at AS createdAt, r.updated_at AS updatedAt, u.nickname,
+                r.content, r.created_at AS createdAt, r.updated_at AS updatedAt, u.nickname, JSON_EXTRACT(extra_data, "s.filepath") AS filepath, 
                 (SELECT COUNT(*) FROM reviews_likes AS rl WHERE HEX(rl.reviews_id) = HEX(r.id)) AS likes
                 ${liked}
                 FROM reviews AS r
                 JOIN users AS u ON u.id = r.users_id
+                LEFT JOIN social_accounts AS s ON s.users_id = u.id
                 WHERE r.movies_id=?
                 ORDER BY ${orderBy}
                 LIMIT ?, ?`;
