@@ -1,4 +1,3 @@
-import ReviewsList from '@/components/Review/ReviewsList';
 import MovieInfo, { getMovie } from '@/components/Movie/MovieInfo';
 import { Suspense } from 'react';
 import Spinner from '@/components/Common/Spinner';
@@ -19,7 +18,6 @@ export default async function MovieDetail({ params: { movieId } }: IParams) {
     <div className='w-full bg-white relative flex flex-col grow'>
       <Suspense fallback={<Spinner size='lg' item={true} />}>
         <MovieInfo movieId={movieId} />
-        <ReviewsList movieId={Number(movieId)} />
       </Suspense>
     </div>
   );
