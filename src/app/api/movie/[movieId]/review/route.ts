@@ -63,7 +63,6 @@ async function getReviews(
   const offset = maxResults * (page - 1);
   const values: Array<string | number> = [movieId, offset, maxResults];
   let liked = ``;
-
   if (userId) {
     liked = `, (SELECT COUNT(*) FROM movie_view.reviews_likes AS rl WHERE HEX(rl.reviews_id) = HEX(r.id) AND rl.social_accounts_uid = ?) > 0 AS liked`;
     values.unshift(userId);
@@ -84,7 +83,8 @@ async function getReviews(
                 WHERE r.movies_id=?
                 ORDER BY ${orderBy}
                 LIMIT ?, ?`;
-  try {
+
+                try {
     const [result] = await dbConnection.promise().query(sql, values);
     return result;
   } catch (err) {

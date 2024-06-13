@@ -8,9 +8,14 @@ interface IProps {
   likesCount: number;
 }
 
-const LikeButton = ({ userId, reviewId, liked, likesCount }: IProps) => {
-  const { likes, likeToggle, isLoading, isError } = useLike(reviewId);
+const LikeButton = ({
+  userId,
+  reviewId,
+  liked,
+  likesCount
+}: IProps) => {
 
+  const { likes, likeToggle, isLoading, isError } = useLike(reviewId);
   return (
     <>
       {isError ? (
