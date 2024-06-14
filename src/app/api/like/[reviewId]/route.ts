@@ -1,5 +1,5 @@
 import { authOPtions } from '@/lib/authOptions';
-import { dbConnection } from '@/lib/db';
+import { dbConnection, dbConnectionPoolAsync } from '@/lib/db';
 import { formatUserId } from '@/utils/formatUserId';
 import { RowDataPacket } from 'mysql2';
 import { getServerSession } from 'next-auth';
@@ -107,6 +107,7 @@ async function getLike(
   reviewId: string,
   social_accounts_uid: string
 ): Promise<LikeQueryResult> {
+  let connection;
   const sql = `SELECT 
                 COALESCE(SUM(CASE WHEN social_accounts_uid = ? THEN 1 ELSE 0 END), 0) AS liked,
                 COUNT(*) AS likes
@@ -114,41 +115,61 @@ async function getLike(
               WHERE HEX(reviews_id) = ?;`;
 
   try {
-    const [result] = await dbConnection
-      .promise()
-      .execute<LikeQueryResult[]>(sql, [social_accounts_uid, reviewId]);
+    connection = await dbConnectionPoolAsync.getConnection();
+
+    const [result] = await connection
+      .query<LikeQueryResult[]>(sql, [social_accounts_uid, reviewId]);
+
     return result[0];
   } catch (err) {
     console.error(err);
     throw err;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 }
 
 async function postLike(like: ILike) {
+  let connection;
   const sql = `INSERT IGNORE INTO movie_view.reviews_likes (id, reviews_id, social_accounts_uid)
              VALUES ( UNHEX(?), UNHEX(?), ? );`;
 
   try {
-    const [result] = await dbConnection
-      .promise()
-      .execute(sql, [like.id, like.reviews_id, like.social_accounts_uid]);
+    connection = await dbConnectionPoolAsync.getConnection();
+
+    const [result] = await connection
+      .query(sql, [like.id, like.reviews_id, like.social_accounts_uid]);
+
     return result;
   } catch (err) {
     console.error(err);
     throw err;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 }
 
 async function deleteLike(reviewId: string, social_accounts_uid: string) {
+  let connection;
   const sql = `DELETE FROM movie_view.reviews_likes WHERE reviews_id=UNHEX(?) AND social_accounts_uid=?;`;
 
   try {
-    const [result] = await dbConnection
-      .promise()
-      .execute(sql, [reviewId, social_accounts_uid]);
+    connection = await dbConnectionPoolAsync.getConnection();
+
+    const [result] = await connection
+      .query(sql, [reviewId, social_accounts_uid]);
+
     return result;
   } catch (err) {
     console.error(err);
     throw err;
+  } finally {
+    if (connection) {
+      connection.release();
+    }
   }
 }

@@ -68,8 +68,6 @@ async function getReviews(
     values.unshift(userId);
   }
 
-  //                 LEFT JOIN users AS u ON u.id = r.id
-  //                LEFT JOIN social_accounts AS s ON s.users_id = u.id
   const orderBy =
     sort === 'like' ? 'likes DESC, createdAt DESC' : 'createdAt DESC';
   const sql = `SELECT HEX(r.id) AS id, r.movies_id AS movieId, r.social_accounts_uid AS userId, r.rating, r.title,
