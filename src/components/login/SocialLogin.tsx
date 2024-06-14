@@ -20,7 +20,6 @@ const SocialLogin = () => {
         const userId = session.uid;
 
         await saveUser(username, filePath, provider, userId);
-
         setShowAlert(true);
       }
     };
@@ -50,7 +49,12 @@ const SocialLogin = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ username, filePath, provider, userId }),
+        body: JSON.stringify({
+          username,
+          filePath,
+          provider,
+          userId,
+        }),
       });
 
       if (!response.ok) {
@@ -67,7 +71,7 @@ const SocialLogin = () => {
 
   const redirectToHome = () => {
     router.push('/');
-    setShowAlert(false); // 알림 상태 해제
+    setShowAlert(false);
   };
 
   return (

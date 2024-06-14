@@ -1,5 +1,6 @@
 import mysql, { ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { NextRequest } from 'next/server';
+import { dbConnectionPoolAsync } from '@/lib/db';
 
 export async function GET(req: NextRequest) {
   try {
@@ -10,14 +11,6 @@ export async function GET(req: NextRequest) {
     if (!userId || !provider) {
       throw new Error('Username is missing in query parameters');
     }
-
-    const connection = await mysql.createConnection({
-      host: process.env.DATABASE_HOST,
-      port: parseInt(process.env.DATABASE_PORT || '3306'),
-      user: process.env.DATABASE_USER,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_NAME,
-    });
 
     const formUid = (provider: string) => {
       switch (provider) {
@@ -30,12 +23,16 @@ export async function GET(req: NextRequest) {
       }
     };
 
+    const connection = await dbConnectionPoolAsync.getConnection();
+
     const [results] = await connection.execute<RowDataPacket[]>(
       `SELECT COUNT(*) AS count FROM users u LEFT JOIN social_accounts s ON u.id = s.users_id WHERE s.uid = ?`,
       [formUid(provider)]
     );
 
     const count = results[0].count;
+
+    await connection.release();
 
     return new Response(JSON.stringify({ exists: count > 0 }), {
       status: 200,
@@ -44,7 +41,6 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error checking user existence:', error);
     return new Response(JSON.stringify({ exists: false }), {
       status: 500,
       headers: {
@@ -58,13 +54,7 @@ export async function POST(req: Request) {
   try {
     const { username, filePath, provider, userId } = await req.json();
 
-    const connection = await mysql.createConnection({
-      host: process.env.DATABASE_HOST,
-      port: parseInt(process.env.DATABASE_PORT || '3306'),
-      user: process.env.DATABASE_USER,
-      password: process.env.DATABASE_PASSWORD,
-      database: process.env.DATABASE_NAME,
-    });
+    const connection = await dbConnectionPoolAsync.getConnection();
 
     const formUid = (provider: string) => {
       switch (provider) {
@@ -92,6 +82,15 @@ export async function POST(req: Request) {
     const usersId = generateUniqueInt();
 
     let myAccountId;
+
+    if (count >= 1) {
+      return new Response(JSON.stringify({ uid: formUid(provider) }), {
+        status: 201,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+    }
 
     if (count === 0) {
       const [result] = await connection.execute<ResultSetHeader>(
@@ -141,6 +140,8 @@ export async function POST(req: Request) {
       [myAccountId, providerId, formUid(provider), lastLogin, extraData]
     );
 
+    await connection.release();
+
     return new Response(JSON.stringify({ uid: formUid(provider) }), {
       status: 201,
       headers: {
@@ -148,7 +149,6 @@ export async function POST(req: Request) {
       },
     });
   } catch (error) {
-    console.error('Error saving user:', error);
     return new Response(JSON.stringify({ error: 'Failed to save user' }), {
       status: 500,
       headers: {
