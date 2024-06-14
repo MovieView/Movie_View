@@ -10,8 +10,6 @@ const SocialLogin = () => {
   const router = useRouter();
   const [showAlert, setShowAlert] = useState(false);
 
-  console.log(session);
-
   useEffect(() => {
     const checkUserAndSave = async () => {
       if (session && session.user) {
@@ -53,7 +51,6 @@ const SocialLogin = () => {
         throw new Error('Failed to check user existence');
       }
     } catch (error) {
-      console.error('Error checking user existence:', error);
       return false;
     }
   };
@@ -77,7 +74,7 @@ const SocialLogin = () => {
         throw new Error('Failed to save user');
       }
     } catch (error) {
-      console.error('Error saving user:', error);
+      console.log(error);
     }
   };
 
@@ -91,34 +88,34 @@ const SocialLogin = () => {
   };
 
   return (
-    <div className='flex justify-center items-center h-screen'>
-      <div className='flex flex-col justify-center items-center w-80 h-96 gap-8 rounded-xl border-[#B9D7EA] border-solid border-4'>
+    <div className="flex justify-center items-center h-screen">
+      <div className="flex flex-col justify-center items-center w-80 h-96 gap-8 rounded-xl border-[#B9D7EA] border-solid border-4">
         <button
-          className='rounded-2xl border-none bg-slate-300 p-4 w-9/12'
+          className="rounded-2xl border-none bg-slate-300 p-4 w-9/12"
           onClick={() => handleLogin('github')}
         >
           Sign in with Github
         </button>
         <button
-          className='rounded-2xl border-none bg-slate-300 p-4 w-9/12'
+          className="rounded-2xl border-none bg-slate-300 p-4 w-9/12"
           onClick={() => handleLogin('kakao')}
         >
           Sign in with Kakao
         </button>
         <button
-          className='rounded-2xl border-none bg-slate-300 p-4 w-9/12'
-          onClick={() => handleLogin('naver')}
+          className="rounded-2xl border-none bg-slate-300 p-4 w-9/12"
+          onClick={() => handleLogin('google')}
         >
-          Sign in with Naver
+          Sign in with Google
         </button>
       </div>
       {/* 로그인 후 알림창 */}
       {showAlert && (
-        <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'>
-          <div className='bg-white p-4 rounded-lg w-80'>
-            <p className='text-lg'>{`${session?.user.name}님 반갑습니다!`}</p>
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-4 rounded-lg w-80">
+            <p className="text-lg">{`${session?.user.name}님 반갑습니다!`}</p>
             <button
-              className='mt-2 bg-slate-300 text-white px-4 py-2 rounded-lg'
+              className="mt-2 bg-slate-300 text-white px-4 py-2 rounded-lg"
               onClick={redirectToHome}
             >
               확인
