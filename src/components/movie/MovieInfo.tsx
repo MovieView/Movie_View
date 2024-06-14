@@ -3,6 +3,7 @@ import { Credits, Genre, Movie } from '@/models/movie.model';
 import MovieCredits from './MovieCredits';
 import ErrorOMG from '@/app/detail/[movieId]/error';
 import ReviewsList from '../Review/ReviewsList';
+import Image from 'next/image';
 
 interface Props {
   movieId: string;
@@ -11,7 +12,7 @@ interface Props {
 export async function getMovie(movieId: string): Promise<Movie | null> {
   try {
     const response = await fetch(
-      `${API_URL}/${movieId}?api_key=${process.env.API_KEY}&language=ko-KR`
+      `${API_URL}/${movieId}?api_key=${process.env.TMDB_API_KEY}&language=ko-KR`
     );
     const data = await response.json();
     if (response.ok) {
@@ -31,7 +32,7 @@ export async function getMovieCredits(
 ): Promise<Credits | null> {
   try {
     const response = await fetch(
-      `${API_URL}/${movieId}/credits?api_key=${process.env.API_KEY}&language=ko-KR`
+      `${API_URL}/${movieId}/credits?api_key=${process.env.TMDB_API_KEY}&language=ko-KR`
     );
     const data = await response.json();
     if (response.ok) {
@@ -62,10 +63,12 @@ export default async function MovieInfo({ movieId }: Props) {
     <div>
       <div className='mx-auto mt-6 max-w-5xl sm:px-6 lg:max-w-5xl lg:grid lg:grid-cols-3 lg:gap-x-8 lg:px-8'>
         <div className='col-span-1'>
-          <img
+          <Image
             className='w-full max-w-sm h-auto rounded-lg shadow-lg sm:mb-4'
             src={`https://image.tmdb.org/t/p/original/${movie.poster_path}`}
             alt={movie.title}
+            width={500}
+            height={500}
           />
         </div>
 
