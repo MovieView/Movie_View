@@ -27,14 +27,14 @@ export default function ReviewDropDownMenu({
 
   return (
     <>
-      <div ref={dropMenuRef} className='flex gap-2 flex-end absolute right-3 '>
+      <div ref={dropMenuRef} className='flex gap-2 flex-end absolute right-3'>
         <button onClick={() => setIsDropMenuOpen(!isDropMenuOpen)}>
           <RiMore2Line className='fill-gray-500 hover:fill-[#769FCD] transition ease-linear duration-300' />
         </button>
       </div>
 
       {isDropMenuOpen && (
-        <div className='flex border absolute right-8 top-7 w-16 flex-col gap-2 text-sm bg-[#F7FBFC] shadow-sm rounded-md'>
+        <div className='flex border absolute right-8 top-7 w-16 flex-col gap-2 text-sm shadow-sm rounded-md bg-white'>
           <button className='hover:bg-[#D6E6F2] py-1' onClick={handleEdit}>
             수정
           </button>

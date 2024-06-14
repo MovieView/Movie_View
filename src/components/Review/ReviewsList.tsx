@@ -7,6 +7,8 @@ import ReviewLoadingSpinner from './ReviewLoadingSpinner';
 import ReviewButton from './ReviewButton';
 import ReviewFakeForm from './ReviewFakeForm';
 import ReviewFormContainer from './ReviewFormContainer';
+import ReviewError from './ReviewError';
+import { useSession } from 'next-auth/react';
 
 export interface IReviewFormData {
   title: string;
@@ -63,11 +65,11 @@ export default function ReviewsList({ movieId }: IProps) {
   }, [fetchNextPage, hasNextPage]);
 
   if (error) {
-    return <span>Error: {error.message}</span>;
+    return <ReviewError />;
   }
 
   return (
-    <div className='mx-auto p-2 my-10'>
+    <div className='p-2 my-10'>
       <div className='w-full max-w-3xl mx-auto'>
         {!isFormOpen && <ReviewFakeForm setIsFormOpen={setIsFormOpen} />}
 
@@ -85,6 +87,8 @@ export default function ReviewsList({ movieId }: IProps) {
         <ReviewLoadingSpinner />
       ) : (
         <>
+          {isEmpty && <ReviewEmpty />}
+
           {!isEmpty && (
             <>
               <div
@@ -117,8 +121,6 @@ export default function ReviewsList({ movieId }: IProps) {
               </ul>
             </>
           )}
-
-          {isEmpty && <ReviewEmpty />}
 
           <div ref={pageEnd}>{isFetching && <ReviewLoadingSpinner />}</div>
         </>
