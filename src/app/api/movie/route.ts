@@ -31,7 +31,7 @@ export const GET = async (request: NextRequest) => {
   const redisData : string | null = await getRedisData(client, redisSearchUserKey);
   if (redisData) {
     return new Response(JSON.stringify({
-      error: "You are being rate limited. Please try again later."
+      error: 'You are being rate limited. Please try again later.'
     }), {
       status: 400,
       headers: {
