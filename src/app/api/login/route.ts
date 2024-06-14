@@ -4,9 +4,10 @@ import { NextRequest } from 'next/server';
 export async function GET(req: NextRequest) {
   try {
     const url = new URL(req.url);
-    const username = new URLSearchParams(url.searchParams).get('username');
+    const userId = new URLSearchParams(url.searchParams).get('userId');
+    const provider = new URLSearchParams(url.searchParams).get('provider');
 
-    if (!username) {
+    if (!userId || !provider) {
       throw new Error('Username is missing in query parameters');
     }
 
@@ -18,10 +19,22 @@ export async function GET(req: NextRequest) {
       database: process.env.DATABASE_NAME,
     });
 
+    const formUid = (provider: string) => {
+      switch (provider) {
+        case 'github':
+          return 'github_' + userId;
+        case 'kakao':
+          return 'kakao_' + userId;
+        case 'google':
+          return 'google_' + userId;
+      }
+    };
+
     const [results] = await connection.execute<RowDataPacket[]>(
-      'SELECT COUNT(*) AS count FROM users WHERE nickname = ?',
-      [username]
+      `SELECT COUNT(*) AS count FROM users u LEFT JOIN social_accounts s ON u.id = s.users_id WHERE s.uid = ?`,
+      [formUid(provider)]
     );
+
     const count = results[0].count;
 
     return new Response(JSON.stringify({ exists: count > 0 }), {
@@ -53,9 +66,20 @@ export async function POST(req: Request) {
       database: process.env.DATABASE_NAME,
     });
 
+    const formUid = (provider: string) => {
+      switch (provider) {
+        case 'github':
+          return 'github_' + userId;
+        case 'kakao':
+          return 'kakao_' + userId;
+        case 'google':
+          return 'google_' + userId;
+      }
+    };
+
     const [results] = await connection.execute<RowDataPacket[]>(
-      'SELECT COUNT(*) AS count FROM users WHERE nickname = ?',
-      [username]
+      `SELECT COUNT(*) AS count FROM users u LEFT JOIN social_accounts s ON u.id = s.users_id WHERE s.uid = ?`,
+      [formUid(provider)]
     );
     const count = results[0].count;
 
@@ -67,21 +91,16 @@ export async function POST(req: Request) {
 
     const usersId = generateUniqueInt();
 
+    let myAccountId;
+
     if (count === 0) {
       const [result] = await connection.execute<ResultSetHeader>(
         'INSERT INTO users (id, nickname) VALUES (?, ?)',
         [usersId, username]
       );
+
+      myAccountId = result.insertId;
     }
-
-    const [myAccount] = await connection.execute<RowDataPacket[]>(
-      'SELECT * FROM users WHERE nickname = ?',
-      [username]
-    );
-
-    let myAccountId;
-
-    if (myAccount.length) myAccountId = myAccount[0].id;
 
     const extraData = JSON.stringify({ username, filePath });
 
@@ -111,17 +130,6 @@ export async function POST(req: Request) {
         ':' +
         pad(date.getSeconds())
       );
-    };
-
-    const formUid = (provider: string) => {
-      switch (provider) {
-        case 'github':
-          return 'github_' + userId;
-        case 'kakao':
-          return 'kakao_' + userId;
-        case 'google':
-          return 'google_' + userId;
-      }
     };
 
     const providerId = formProviderId(provider);
