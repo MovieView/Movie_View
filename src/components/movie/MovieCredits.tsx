@@ -52,7 +52,7 @@ const MovieCredits = ({ cast }: Credits) => {
         <button
           className={`absolute left-2 ${
             isLeftButtonVisible ? 'block' : 'hidden'
-          } top-1/3 transform -translate-y-1/2 bg-white rounded-full shadow-md p-2 z-10 w-[40px] h-[40px] hover:bg-gray-200 transition-colors duration-300`}
+          } top-1/3 transform -translate-y-1/2 bg-white rounded-full shadow-md p-2 z-[5] w-[40px] h-[40px] hover:bg-gray-200 transition-colors duration-300`}
           onClick={scrollLeft}
         >
           &lt;
@@ -70,7 +70,7 @@ const MovieCredits = ({ cast }: Credits) => {
         <button
           className={`absolute right-2 ${
             isRightButtonVisible ? 'block' : 'hidden'
-          } top-1/3 transform -translate-y-1/2 bg-white rounded-full shadow-md p-2 z-10 w-[40px] h-[40px] hover:bg-gray-200 transition-colors duration-300`}
+          } top-1/3 transform -translate-y-1/2 bg-white rounded-full shadow-md p-2 z-[5] w-[40px] h-[40px] hover:bg-gray-200 transition-colors duration-300`}
           onClick={scrollRight}
         >
           &gt;
