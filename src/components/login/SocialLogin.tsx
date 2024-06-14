@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 
 const SocialLogin = () => {
   const isFirstRender = useRef(true);
+  const isLoginComplete = useRef(false);
   const { data: session } = useSession();
   const router = useRouter();
   const [showAlert, setShowAlert] = useState(false);
@@ -18,42 +19,24 @@ const SocialLogin = () => {
         const provider = session.provider;
         const userId = session.uid;
 
-        const userExists = await checkUserExists(username);
+        await saveUser(username, filePath, provider, userId);
 
-        if (!userExists) {
-          await saveUser(username, filePath, provider, userId);
-        }
         setShowAlert(true);
       }
     };
+
+    if (session?.uid && isLoginComplete.current === false) {
+      isLoginComplete.current = true;
+      checkUserAndSave();
+      return;
+    }
 
     if (isFirstRender.current) {
       isFirstRender.current = false;
 
       return;
     }
-
-    checkUserAndSave();
   }, [session]);
-
-  const checkUserExists = async (username: string) => {
-    try {
-      const response = await fetch(`/api/login?username=${username}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      if (response.ok) {
-        const data = await response.json();
-        return data.exists;
-      } else {
-        throw new Error('Failed to check user existence');
-      }
-    } catch (error) {
-      return false;
-    }
-  };
 
   const saveUser = async (
     username: string,
