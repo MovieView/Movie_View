@@ -1,4 +1,4 @@
-import { dbConnection } from '@/lib/db';
+import { dbConnectionPoolAsync } from '@/lib/db';
 import { IReviewData } from '../route';
 import { FieldPacket, RowDataPacket } from 'mysql2';
 import { getServerSession } from 'next-auth';
@@ -98,9 +98,12 @@ async function getReviewById(reviewId: number, userId: string) {
   const sql = `SELECT * FROM reviews WHERE id=UNHEX(?) AND social_accounts_uid=? `;
   const values: Array<string | number> = [reviewId, userId];
   try {
-    const [result]: [RowDataPacket[], FieldPacket[]] = await dbConnection
-      .promise()
-      .execute(sql, values);
+    const connection = await dbConnectionPoolAsync.getConnection();
+    const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
+      sql,
+      values
+    );
+    connection.release();
     return result[0];
   } catch (err) {
     console.error(err);
@@ -113,7 +116,9 @@ async function deleteReview(reviewId: number, userId: string) {
   const values: Array<string | number> = [reviewId, userId];
 
   try {
-    const [result] = await dbConnection.promise().query(sql, values);
+    const connection = await dbConnectionPoolAsync.getConnection();
+    const [result] = await connection.execute(sql, values);
+    connection.release();
     return result;
   } catch (err) {
     console.error(err);
@@ -136,7 +141,9 @@ async function updateReview(
   ];
 
   try {
-    const [result] = await dbConnection.promise().query(sql, values);
+    const connection = await dbConnectionPoolAsync.getConnection();
+    const [result] = await connection.execute(sql, values);
+    connection.release();
     return result;
   } catch (err) {
     console.error(err);

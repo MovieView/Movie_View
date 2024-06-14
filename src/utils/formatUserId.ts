@@ -1,9 +1,9 @@
 export const formatUserId = (provider: string, userId: string) => {
   switch (provider) {
     case 'github':
-      return `github${userId}`;
+      return `github_${userId}`;
     case 'kakao':
-      return `kakao${userId}`;
+      return `kakao_${userId}`;
     case 'google':
       return `google_${userId}`;
     default:
