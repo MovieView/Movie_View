@@ -10,8 +10,6 @@ const SocialLogin = () => {
   const router = useRouter();
   const [showAlert, setShowAlert] = useState(false);
 
-  console.log(session);
-
   useEffect(() => {
     const checkUserAndSave = async () => {
       if (session && session.user) {
