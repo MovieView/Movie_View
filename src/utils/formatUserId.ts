@@ -1,11 +1,11 @@
 export const formatUserId = (provider: string, userId: string) => {
   switch (provider) {
     case 'github':
-      return `g_${userId}`;
+      return `github_${userId}`;
     case 'kakao':
-      return `k_${userId}`;
-    case 'naver':
-      return `n_${userId}`;
+      return `kakao_${userId}`;
+    case 'google':
+      return `google_${userId}`;
     default:
       console.log('해당하는 provider 값이 없음.');
   }

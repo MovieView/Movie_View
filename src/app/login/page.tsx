@@ -1,8 +1,14 @@
+import Spinner from "@/components/Common/Spinner";
 import SocialLogin from "@/components/login/SocialLogin";
-import React from "react";
+import React, { Suspense } from "react";
 
 const LoginPage = () => {
-  return <SocialLogin />;
+  return (
+    <Suspense fallback={<Spinner size='lg' item={true} />}>
+      <SocialLogin />
+    </Suspense>
+  )
+  ;
 };
 
 export default LoginPage;

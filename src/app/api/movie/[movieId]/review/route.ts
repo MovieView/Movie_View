@@ -1,5 +1,5 @@
 import { authOPtions } from '@/lib/authOptions';
-import { dbConnection } from '@/lib/db';
+import { dbConnectionPoolAsync } from '@/lib/db';
 import { formatUserId } from '@/utils/formatUserId';
 import { FieldPacket, RowDataPacket } from 'mysql2';
 import { getServerSession } from 'next-auth';
@@ -68,8 +68,6 @@ async function getReviews(
     values.unshift(userId);
   }
 
-  //                 LEFT JOIN users AS u ON u.id = r.id
-  //                LEFT JOIN social_accounts AS s ON s.users_id = u.id
   const orderBy =
     sort === 'like' ? 'likes DESC, createdAt DESC' : 'createdAt DESC';
   const sql = `SELECT HEX(r.id) AS id, r.movies_id AS movieId, r.social_accounts_uid AS userId, r.rating, r.title,
@@ -84,8 +82,10 @@ async function getReviews(
                 ORDER BY ${orderBy}
                 LIMIT ?, ?`;
 
-                try {
-    const [result] = await dbConnection.promise().query(sql, values);
+  try {
+    const connection = await dbConnectionPoolAsync.getConnection();
+    const [result] = await connection.execute(sql, values);
+    connection.release();
     return result;
   } catch (err) {
     console.error(err);
@@ -97,10 +97,12 @@ async function reviewsCount(movieId: number) {
   const sql = `SELECT COUNT(*) AS totalCount FROM reviews WHERE movies_id=?`;
   const values = [movieId];
   try {
-    const [result]: [RowDataPacket[], FieldPacket[]] = await dbConnection
-      .promise()
-      .query(sql, values);
-
+    const connection = await dbConnectionPoolAsync.getConnection();
+    const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
+      sql,
+      values
+    );
+    connection.release();
     return result[0];
   } catch (err) {
     console.error(err);

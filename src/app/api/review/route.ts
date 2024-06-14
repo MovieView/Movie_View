@@ -1,5 +1,5 @@
 import { authOPtions } from '@/lib/authOptions';
-import { dbConnection } from '@/lib/db';
+import { dbConnectionPoolAsync } from '@/lib/db';
 import { formatUserId } from '@/utils/formatUserId';
 import { ResultSetHeader } from 'mysql2';
 import { getServerSession } from 'next-auth';
@@ -64,8 +64,9 @@ async function addReview(userId: string, data: IReviewData) {
   ];
 
   try {
-    const [result] = await dbConnection.promise().query(sql, values);
-
+    const connection = await dbConnectionPoolAsync.getConnection();
+    const [result] = await connection.execute(sql, values);
+    connection.release();
     return (result as ResultSetHeader).affectedRows;
   } catch (err) {
     console.error(err);
@@ -77,7 +78,9 @@ async function addMovieId(movieId: number) {
   const sql = `INSERT IGNORE INTO movies (id) VALUES (?)`;
   const values = [movieId];
   try {
-    const [result] = await dbConnection.promise().query(sql, values);
+    const connection = await dbConnectionPoolAsync.getConnection();
+    const [result] = await await connection.execute(sql, values);
+    connection.release();
     return (result as ResultSetHeader).affectedRows;
   } catch (err) {
     console.error(err);
