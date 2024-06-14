@@ -1,5 +1,5 @@
-import { FetchNextPageOptions, InfiniteData, InfiniteQueryObserverResult } from "@tanstack/react-query";
-import React from "react";
+import { FetchNextPageOptions, InfiniteData, InfiniteQueryObserverResult } from '@tanstack/react-query';
+import React from 'react';
 
 
 interface LoadMoreButtonProps {

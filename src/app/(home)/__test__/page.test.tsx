@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-jest.mock("redis");
+jest.mock('redis');
 
 import '@testing-library/jest-dom'
 import { beforeEach, expect, jest, test } from '@jest/globals'
@@ -85,13 +85,13 @@ beforeEach(() => {
         results: [
           {
             id: 3,
-            title: "Harry Potter",
-            poster_path: "/harry-potter.jpg"
+            title: 'Harry Potter',
+            poster_path: '/harry-potter.jpg'
           },
           {
             id: 4,
-            title: "Harry Potter and the Chamber of Secrets",
-            poster_path: "/harry-potter-and-the-chamber-of-secrets.jpg"
+            title: 'Harry Potter and the Chamber of Secrets',
+            poster_path: '/harry-potter-and-the-chamber-of-secrets.jpg'
           }
         ]
       }),
@@ -104,7 +104,6 @@ describe('Home Page', () => {
     const queryClient = new QueryClient();
     render(<QueryClientProvider client={queryClient}><Home /></QueryClientProvider>);
     const searchBarText = screen.getByText('Search', { exact: false }).textContent;
-    expect(searchBarText).toBe("Search");
-    
+    expect(searchBarText).toBe('Search');
   })
 });
