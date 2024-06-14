@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import React from "react";
-import clsx from "clsx";
-import Link from "next/link";
-import UserProfile from "../login/UserProfile";
+import React from 'react';
+import clsx from 'clsx';
+import Link from 'next/link';
+import UserProfile from '../login/UserProfile';
 
 interface NavBarProps {
   isFixed: boolean;
@@ -11,16 +11,10 @@ interface NavBarProps {
 
 const NavBar: React.FC<NavBarProps> = ({ isFixed }) => {
   const navBarStyle = clsx(
-    "justify-between",
-    "items-center",
-    "py-5",
-    "px-10",
-    "bg-[#769FCD]",
-    "w-full",
-    "flex",
-    isFixed ? "fixed" : "relative",
-    isFixed ? "z-10" : "z-0"
-  );
+    'justify-between', 'items-center', 'py-5', 'px-10', 'bg-[#769FCD]', 'w-full', 'flex',
+    isFixed ? 'fixed' : 'relative',
+    isFixed ? 'z-10': 'z-0'
+  ); 
 
   return (
     <div className={navBarStyle}>

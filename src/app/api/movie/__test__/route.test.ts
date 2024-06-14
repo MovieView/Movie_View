@@ -2,14 +2,14 @@
  * @jest-environment node
  */
 
-jest.mock("redis");
+jest.mock('redis');
 
-import { beforeEach, expect, jest, test } from "@jest/globals";
-import { describe } from "node:test";
-import { GET } from "../route";
-import { NextRequest } from "next/server";
+import { beforeEach, expect, jest, test } from '@jest/globals';
+import { describe } from 'node:test';
+import { GET } from '../route';
+import { NextRequest } from 'next/server';
 import fetchMock from 'jest-fetch-mock';
-import { createClient } from "redis";
+import { createClient } from 'redis';
 
 
 beforeEach(() => {
@@ -84,13 +84,13 @@ beforeEach(() => {
         results: [
           {
             id: 3,
-            title: "Harry Potter",
-            poster_path: "/harry-potter.jpg"
+            title: 'Harry Potter',
+            poster_path: '/harry-potter.jpg'
           },
           {
             id: 4,
-            title: "Harry Potter and the Chamber of Secrets",
-            poster_path: "/harry-potter-and-the-chamber-of-secrets.jpg"
+            title: 'Harry Potter and the Chamber of Secrets',
+            poster_path: '/harry-potter-and-the-chamber-of-secrets.jpg'
           }
         ]
       }),
@@ -143,13 +143,13 @@ describe('Movie API', () => {
       [
         {
           id: 3,
-          title: "Harry Potter",
-          posterUrl: "https://image.tmdb.org/t/p/w500/harry-potter.jpg"
+          title: 'Harry Potter',
+          posterUrl: 'https://image.tmdb.org/t/p/w500/harry-potter.jpg'
         },
         {
           id: 4,
-          title: "Harry Potter and the Chamber of Secrets",
-          posterUrl: "https://image.tmdb.org/t/p/w500/harry-potter-and-the-chamber-of-secrets.jpg"
+          title: 'Harry Potter and the Chamber of Secrets',
+          posterUrl: 'https://image.tmdb.org/t/p/w500/harry-potter-and-the-chamber-of-secrets.jpg'
         }
       ],
     );
@@ -169,13 +169,13 @@ describe('Movie API', () => {
       [
         {
           id: 3,
-          title: "Harry Potter",
-          posterUrl: "https://image.tmdb.org/t/p/w500/harry-potter.jpg"
+          title: 'Harry Potter',
+          posterUrl: 'https://image.tmdb.org/t/p/w500/harry-potter.jpg'
         },
         {
           id: 4,
-          title: "Harry Potter and the Chamber of Secrets",
-          posterUrl: "https://image.tmdb.org/t/p/w500/harry-potter-and-the-chamber-of-secrets.jpg"
+          title: 'Harry Potter and the Chamber of Secrets',
+          posterUrl: 'https://image.tmdb.org/t/p/w500/harry-potter-and-the-chamber-of-secrets.jpg'
         }
       ],
     );
@@ -205,13 +205,13 @@ describe('Movie API', () => {
       [
         {
           id: 3,
-          title: "Harry Potter",
-          posterUrl: "https://image.tmdb.org/t/p/w500/harry-potter.jpg"
+          title: 'Harry Potter',
+          posterUrl: 'https://image.tmdb.org/t/p/w500/harry-potter.jpg'
         },
         {
           id: 4,
-          title: "Harry Potter and the Chamber of Secrets",
-          posterUrl: "https://image.tmdb.org/t/p/w500/harry-potter-and-the-chamber-of-secrets.jpg"
+          title: 'Harry Potter and the Chamber of Secrets',
+          posterUrl: 'https://image.tmdb.org/t/p/w500/harry-potter-and-the-chamber-of-secrets.jpg'
         }
       ],
     );
@@ -231,19 +231,19 @@ describe('Movie API', () => {
       [
         {
           id: 3,
-          title: "Harry Potter",
-          posterUrl: "https://image.tmdb.org/t/p/w500/harry-potter.jpg"
+          title: 'Harry Potter',
+          posterUrl: 'https://image.tmdb.org/t/p/w500/harry-potter.jpg'
         },
         {
           id: 4,
-          title: "Harry Potter and the Chamber of Secrets",
-          posterUrl: "https://image.tmdb.org/t/p/w500/harry-potter-and-the-chamber-of-secrets.jpg"
+          title: 'Harry Potter and the Chamber of Secrets',
+          posterUrl: 'https://image.tmdb.org/t/p/w500/harry-potter-and-the-chamber-of-secrets.jpg'
         }
       ],
     );
   });
 
-  test("Should return the right page number", async () => {
+  test('Should return the right page number', async () => {
     const request = new NextRequest('http://localhost:3000/api/movie?page=2', {
       method: 'GET',
       headers: {
@@ -258,13 +258,13 @@ describe('Movie API', () => {
       [
         {
           id: 3,
-          title: "Harry Potter",
-          posterUrl: "https://image.tmdb.org/t/p/w500/harry-potter.jpg"
+          title: 'Harry Potter',
+          posterUrl: 'https://image.tmdb.org/t/p/w500/harry-potter.jpg'
         },
         {
           id: 4,
-          title: "Harry Potter and the Chamber of Secrets",
-          posterUrl: "https://image.tmdb.org/t/p/w500/harry-potter-and-the-chamber-of-secrets.jpg"
+          title: 'Harry Potter and the Chamber of Secrets',
+          posterUrl: 'https://image.tmdb.org/t/p/w500/harry-potter-and-the-chamber-of-secrets.jpg'
         }
       ],
     );
