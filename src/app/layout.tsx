@@ -7,10 +7,10 @@ import React from 'react';
 import NavBar from '@/components/NavBar/NavBar';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
+import SessionWrapper from '@/components/login/SessionWrapper';
 
 const inter = Inter({ subsets: ['latin'] });
 const queryClient = new QueryClient();
-
 
 export default function RootLayout({
   children,
@@ -27,14 +27,17 @@ export default function RootLayout({
   );
 
   return (
-    <html lang='en'>
+    // social login session provider
+    <SessionWrapper>
       <QueryClientProvider client={queryClient}>
-        <body className={navBarStyle}>
-          <NavBar isFixed={true}/>
-          <NavBar isFixed={false}/>
-          {children}
-        </body>
+        <html lang="en">
+          <body className={navBarStyle}>
+            <NavBar isFixed={true} />
+            <NavBar isFixed={false} />
+            {children}
+          </body>
+        </html>
       </QueryClientProvider>
-    </html>
+    </SessionWrapper>
   );
 }
