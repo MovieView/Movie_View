@@ -8,6 +8,7 @@ import { IReviewFormData } from './ReviewsList';
 import LikeButton from '../Like/LikeButton';
 import { useSession } from 'next-auth/react';
 import { formatUserId } from '@/utils/formatUserId';
+import Image from 'next/image';
 
 interface IProps {
   review: IReview;
@@ -85,17 +86,17 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
     handleResize();
   }, [review]);
 
+  console.log(review);
   return (
     <>
       <div className='flex p-4 border max-w-3xl rounded-xl mx-auto shadow-sm relative'>
         <div className='overflow-hidden shrink-0 mr-2 w-10 h-10 rounded-full'>
           {review.filePath ? (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               className='w-full h-full object-cover'
               src={review.filePath}
               alt={review.nickname}
-              width={500}
-              height={500}
             />
           ) : (
             <div className='bg-[#B9D7EA] w-full h-full '></div>
