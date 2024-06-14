@@ -118,7 +118,7 @@ async function getLike(
     connection = await dbConnectionPoolAsync.getConnection();
 
     const [result] = await connection
-      .query<LikeQueryResult[]>(sql, [social_accounts_uid, reviewId]);
+      .execute<LikeQueryResult[]>(sql, [social_accounts_uid, reviewId]);
 
     return result[0];
   } catch (err) {
@@ -140,7 +140,7 @@ async function postLike(like: ILike) {
     connection = await dbConnectionPoolAsync.getConnection();
 
     const [result] = await connection
-      .query(sql, [like.id, like.reviews_id, like.social_accounts_uid]);
+      .execute(sql, [like.id, like.reviews_id, like.social_accounts_uid]);
 
     return result;
   } catch (err) {
@@ -161,7 +161,7 @@ async function deleteLike(reviewId: string, social_accounts_uid: string) {
     connection = await dbConnectionPoolAsync.getConnection();
 
     const [result] = await connection
-      .query(sql, [reviewId, social_accounts_uid]);
+      .execute(sql, [reviewId, social_accounts_uid]);
 
     return result;
   } catch (err) {
