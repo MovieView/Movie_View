@@ -66,9 +66,9 @@ TMDB_ACCESS_TOKEN=**<TMDB ACCESS TOKEN>**
 <table>
   <tbody>
     <tr>
-      <td align="center"><a href="https://github.com/orgs/MovieView/people/jeong922"><img src="https://item.kakaocdn.net/do/b5d3d6a7b67fbf5afdaffb79fffbf8b18f324a0b9c48f77dbce3a43bd11ce785" width="100px;" alt=""/><br /><sub><b>이화정 </b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/jeong922"><img src="https://item.kakaocdn.net/do/b5d3d6a7b67fbf5afdaffb79fffbf8b18f324a0b9c48f77dbce3a43bd11ce785" width="100px;" alt=""/><br /><sub><b>이화정 </b></sub></a><br /></td>
       <td align="center"><a href="https://github.com/jh0222"><img src="https://item.kakaocdn.net/do/47112f1ae6f87f4323cb73f65a8c5424f604e7b0e6900f9ac53a43965300eb9a" width="100px;" alt=""/><br /><sub><b>서지현 </b></sub></a><br /></td>
-      <td align="center"><a href="https://github.com/orgs/MovieView/people/choongnyeong6215"><img src="https://avatars.githubusercontent.com/u/138146406?v=4" width="100px;" alt=""/><br /><sub><b>이충녕 </b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/choongnyeong6215"><img src="https://avatars.githubusercontent.com/u/138146406?v=4" width="100px;" alt=""/><br /><sub><b>이충녕 </b></sub></a><br /></td>
       <td align="center"><a href="https://github.com/7jw92nVd1kLaq1"><img src="https://avatars.githubusercontent.com/u/75822302?v=4" width="100px;" alt=""/><br /><sub><b>위수종 </b></sub></a><br /></td>
      <tr/>
   </tbody>
