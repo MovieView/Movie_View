@@ -103,5 +103,5 @@ TMDB_ACCESS_TOKEN=**<TMDB ACCESS TOKEN>**
 <br />
 
 ## 참고 주소
-🔗 https://prgrms.notion.site/team7-c547a575d92f40fa99a854ddaeed4542
+🔗 [https://prgrms.notion.site/team7-c547a575d92f40fa99a854ddaeed4542](https://prgrms.notion.site/Movie-view-5f8ab3dce4e5454aa50281b5939364ff)
 
