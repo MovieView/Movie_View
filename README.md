@@ -1,44 +1,5 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-
-# Movie_View
-
-# 프로젝트 시작 가이드
-## 설치 (Installation)
+# 🎥 MovieView
+## 📝 프로젝트 시작 가이드
 ### 패키지 설치
 ```bash
 npm install
@@ -75,14 +36,19 @@ TMDB_ACCESS_TOKEN=**<TMDB ACCESS TOKEN>**
 * DB 관련 정보는 보안을 위해 설정하지 않았습니다. 직접 설정해주세요.
   * For security reasons, we did not set up the DB information. Please set it up yourself. 
   * Contact us for the information on the schema and tables.
+<br />
 
-# 프로젝트 소개
+## ✨ 프로젝트 소개
 - 영화 정보 조회와 리뷰 작성을 할 수 있는 웹 프로젝트.
 - This is a website that provides movie information, as well as the ability to write reviews and ratings.
+<br />
 
-# 프로젝트 주소
+### 🔗 프로젝트 주소
+- https://movieview.online
 
-# 기술 스택
+<br />
+
+### 기술 스택
 <div style='display: flex;'>
   <img src="https://img.shields.io/badge/Tailwind CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white">
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white">
@@ -92,7 +58,9 @@ TMDB_ACCESS_TOKEN=**<TMDB ACCESS TOKEN>**
   <img src="https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white">
 </div>
 
-# 개발 기간 & 팀원 소개
+<br />
+
+### 개발 기간 & 팀원 소개
 - 개발 기간 : 3주
 - 팀원
 <table>
@@ -107,11 +75,8 @@ TMDB_ACCESS_TOKEN=**<TMDB ACCESS TOKEN>**
 </table>
 <br />
 
-# 화면 구성
-
-# 주요 기능
+## ✅ 주요 기능
 - 로그인/로그아웃
-    - 닉네임 추가 - 모달
 - 영화 목록 보기
     - 무한 스크롤
 - 영화 검색
@@ -121,6 +86,22 @@ TMDB_ACCESS_TOKEN=**<TMDB ACCESS TOKEN>**
 - 리뷰 목록 보기/등록/수정/삭제
     - 리뷰 목록 무한 스크롤
 - 리뷰 좋아요 기능
-  
-## 참고 블로그 주소
+<br />
+
+## 🖥️ 화면 구성
+### 첫 화면
+<img src="https://github.com/MovieView/Movie_View/assets/70255311/95e9d83c-5f6f-48eb-aa8f-a467384e5b90" width="800px;">
+
+### 로그인 화면
+<img src="https://github.com/MovieView/Movie_View/assets/70255311/67088ae8-1e8d-4383-b338-6cf827690a2a" width="800px;">
+
+### 디테일 화면
+<img src="https://github.com/MovieView/Movie_View/assets/70255311/13d2f329-2918-4dba-9a3a-4d5f2199c812" width="800px;">
+
+### 디테일 화면 - 리뷰
+<img src="https://github.com/MovieView/Movie_View/assets/70255311/cc1fa62b-3ea7-45f9-a25e-98c9ac2d2c8b" width="500px;">
+<br />
+
+## 참고 주소
+🔗 https://prgrms.notion.site/team7-c547a575d92f40fa99a854ddaeed4542
 
