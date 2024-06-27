@@ -79,7 +79,7 @@ async function addMovieId(movieId: number) {
   const values = [movieId];
   try {
     const connection = await dbConnectionPoolAsync.getConnection();
-    const [result] = await await connection.execute(sql, values);
+    const [result] = await connection.execute(sql, values);
     connection.release();
     return (result as ResultSetHeader).affectedRows;
   } catch (err) {
