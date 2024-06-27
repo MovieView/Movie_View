@@ -19,7 +19,7 @@ const LoadingError : React.FC<LoadingErrorProps> = ({ refetch }) => {
       />
       <p className='text-3xl text-[#f11f2c]'>로딩중 에러 발생</p>
       <button 
-        className='bg-[#769FCD] p-2 rounded-lg text-white shadow-md mt-4 font-medium' 
+        className='bg-first p-2 rounded-lg text-white shadow-md mt-4 font-medium' 
         onClick={async () => {
           await refetch();
         }}

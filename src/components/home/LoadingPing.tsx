@@ -15,8 +15,8 @@ const LoadingPing : React.FC<LoadingPingProps> = ({loadMore}) => {
   return (
     <div className={parentBoxStyle}>
       <span className='relative flex h-12 w-12'>
-        <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-[#B9D7EA]'></span>
-        <span className='relative inline-flex rounded-full h-12 w-12 bg-[#769FCD]'></span>
+        <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-second'></span>
+        <span className='relative inline-flex rounded-full h-12 w-12 bg-first'></span>
       </span>
     </div>
   );

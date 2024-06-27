@@ -31,7 +31,7 @@ const SearchBar : React.FC<SearchBarProps> = ({
         onChange={handleQueryChange}
       /> 
       <button 
-        className='bg-[#769FCD] p-2 rounded-lg text-white shadow-md' 
+        className='bg-first p-2 rounded-lg text-white shadow-md' 
         onClick={handleSubmit}
       >
         Search
