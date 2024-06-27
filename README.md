@@ -101,7 +101,3 @@ TMDB_ACCESS_TOKEN=**<TMDB ACCESS TOKEN>**
 ### 디테일 화면 - 리뷰
 <img src="https://github.com/MovieView/Movie_View/assets/70255311/cc1fa62b-3ea7-45f9-a25e-98c9ac2d2c8b" width="500px;">
 <br />
-
-## 참고 주소
-🔗 [https://prgrms.notion.site/team7-c547a575d92f40fa99a854ddaeed4542](https://prgrms.notion.site/Movie-view-5f8ab3dce4e5454aa50281b5939364ff)
-
