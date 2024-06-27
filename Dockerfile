@@ -6,3 +6,4 @@ COPY . /application/
 RUN ./sys.sh
 
 WORKDIR /home/user/application
+USER user
