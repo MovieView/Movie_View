@@ -1,5 +1,5 @@
 import { authOPtions } from '@/lib/authOptions';
-import { dbConnection, dbConnectionPoolAsync } from '@/lib/db';
+import { dbConnectionPoolAsync } from '@/lib/db';
 import { formatUserId } from '@/utils/formatUserId';
 import { RowDataPacket } from 'mysql2';
 import { getServerSession } from 'next-auth';
@@ -19,8 +19,8 @@ interface ILike {
 export const GET = async (
   req: Request,
   { params }: { params: { reviewId: string } }
-  ) => {
-    try {
+) => {
+  try {
     const session = await getServerSession(authOPtions);
     if (!session?.provider && !session?.uid) {
       return;
