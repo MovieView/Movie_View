@@ -2,13 +2,12 @@ import { IReview } from '@/hooks/useReview';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { IoIosArrowDown } from 'react-icons/io';
+import LikeButton from '../like/LikeButton';
+import { useSession } from 'next-auth/react';
+import { formatUserId } from '@/utils/formatUserId';
 import ReviewDropDownMenu from './ReviewDropDownMenu';
 import ReviewForm from './ReviewForm';
 import { IReviewFormData } from './ReviewsList';
-import LikeButton from '../Like/LikeButton';
-import { useSession } from 'next-auth/react';
-import { formatUserId } from '@/utils/formatUserId';
-import Image from 'next/image';
 
 interface IProps {
   review: IReview;

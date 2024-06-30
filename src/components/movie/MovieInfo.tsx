@@ -2,7 +2,7 @@ import { API_URL } from '@/constants';
 import { Credits, Genre, Movie } from '@/models/movie.model';
 import MovieCredits from './MovieCredits';
 import ErrorOMG from '@/app/detail/[movieId]/error';
-import ReviewsList from '../Review/ReviewsList';
+import ReviewsList from '../review/ReviewsList';
 import Image from 'next/image';
 
 interface Props {
