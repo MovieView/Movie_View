@@ -14,7 +14,7 @@ const LoadMoreButton : React.FC<LoadMoreButtonProps> = ({
   return (
     <div className='mt-14 mb-24'>
       <button 
-        className='w-[90%] md:w-[70%] mx-auto bg-[#769FCD] text-white p-3 rounded-lg shadow-md mx-auto block'
+        className='w-[90%] md:w-[70%] mx-auto bg-first text-white p-3 rounded-lg shadow-md mx-auto block'
         onClick={async () => {
           await fetchNextPage();
         }}

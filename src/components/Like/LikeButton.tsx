@@ -20,7 +20,7 @@ const LikeButton = ({
       ) : (
         <button
           onClick={() => likeToggle(likes ? Number(likes.liked) : liked)}
-          className='bg-transparent text-md inline-flex items-center gap-1 border px-2 rounded-lg hover:bg-[#D6E6F2] transition ease-linear duration-300 w-fit'
+          className='bg-transparent text-md inline-flex items-center gap-1 border px-2 rounded-lg hover:bg-third transition ease-linear duration-300 w-fit'
           disabled={isLoading}
         >
           <div>

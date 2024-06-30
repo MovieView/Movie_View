@@ -62,14 +62,14 @@ export default function ReviewForm({
         <div className='flex gap-2'>
           <button
             type='submit'
-            className='bg-[#769FCD] h-10 text-white p-2 rounded-md flex-1 hover:opacity-70 transition ease-linear duration-300'
+            className='bg-first h-10 text-white p-2 rounded-md flex-1 hover:opacity-70 transition ease-linear duration-300'
           >
             {text}
           </button>
           <button
             type='button'
             onClick={handleCloseForm}
-            className='hover:bg-[#D6E6F2] transition ease-linear duration-300 border h-10 p-2 rounded-md flex-1 hover:opacity-70'
+            className='hover:bg-third transition ease-linear duration-300 border h-10 p-2 rounded-md flex-1 hover:opacity-70'
           >
             취소
           </button>
