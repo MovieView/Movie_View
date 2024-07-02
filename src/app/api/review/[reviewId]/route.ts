@@ -29,7 +29,15 @@ export async function GET(
       Number(page)
     );
 
-    return new Response(JSON.stringify(comments), {
+    const count = await commentsCount(params.reviewId);
+    const result = {
+      comments,
+      pagination: {
+        currentPage: +page,
+        totalCount: count ? count.totalCount : 0,
+      },
+    };
+    return new Response(JSON.stringify(result), {
       status: 200,
     });
   } catch (err) {
@@ -285,6 +293,23 @@ async function getUser(uid: string) {
 
     connection.release();
 
+    return result[0];
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+}
+
+async function commentsCount(reviewId: string) {
+  const sql = `SELECT COUNT(*) AS totalCount FROM reviews_comments WHERE HEX(reviews_id)=?`;
+  const values = [reviewId];
+  try {
+    const connection = await dbConnectionPoolAsync.getConnection();
+    const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
+      sql,
+      values
+    );
+    connection.release();
     return result[0];
   } catch (err) {
     console.error(err);
