@@ -16,7 +16,7 @@ const PAGE = 1;
 
 export async function GET(
   req: Request,
-  { params }: { params: { reviewId: number } }
+  { params }: { params: { reviewId: string } }
 ) {
   try {
     const { searchParams } = new URL(req.url);
@@ -43,7 +43,7 @@ export async function GET(
 // 대댓글 추가
 export async function POST(
   req: Request,
-  { params }: { params: { reviewId: number } }
+  { params }: { params: { reviewId: string } }
 ) {
   try {
     const session = await getServerSession(authOPtions);
@@ -92,7 +92,7 @@ export async function POST(
 
 export async function DELETE(
   _req: Request,
-  { params }: { params: { reviewId: number } }
+  { params }: { params: { reviewId: string } }
 ) {
   try {
     const session = await getServerSession(authOPtions);
@@ -136,7 +136,7 @@ export async function DELETE(
 
 export async function PUT(
   req: Request,
-  { params }: { params: { reviewId: number } }
+  { params }: { params: { reviewId: string } }
 ) {
   try {
     const session = await getServerSession(authOPtions);
@@ -179,7 +179,7 @@ export async function PUT(
   }
 }
 
-async function getReviewById(reviewId: number, userId: string) {
+async function getReviewById(reviewId: string, userId: string) {
   const sql = `SELECT * FROM reviews WHERE id=UNHEX(?) AND social_accounts_uid=? `;
   const values: Array<string | number> = [reviewId, userId];
   try {
@@ -196,7 +196,7 @@ async function getReviewById(reviewId: number, userId: string) {
   }
 }
 
-async function deleteReview(reviewId: number, userId: string) {
+async function deleteReview(reviewId: string, userId: string) {
   const sql = `DELETE FROM reviews WHERE id=UNHEX(?) AND social_accounts_uid=? `;
   const values: Array<string | number> = [reviewId, userId];
 
@@ -212,7 +212,7 @@ async function deleteReview(reviewId: number, userId: string) {
 }
 
 async function updateReview(
-  reviewId: number,
+  reviewId: string,
   userId: string,
   data: IReviewData
 ) {
@@ -236,10 +236,10 @@ async function updateReview(
   }
 }
 
-async function getComments(reviewId: number, maxResults: number, page: number) {
+async function getComments(reviewId: string, maxResults: number, page: number) {
   const offset = maxResults * (page - 1);
-  const values: Array<number> = [reviewId, offset, maxResults];
-  const sql = `SELECT HEX(rc.id) AS id, u.nickname, rc.created_at AS createdAt, rc.updated_at AS updatedAt
+  const values: Array<number | string> = [reviewId, offset, maxResults];
+  const sql = `SELECT HEX(rc.id) AS id, rc.content, rc.created_at AS createdAt, rc.updated_at AS updatedAt
                 FROM reviews_comments AS rc
                 LEFT JOIN users AS u ON u.id = rc.users_id
                 WHERE HEX(rc.reviews_id) = ?
@@ -256,7 +256,7 @@ async function getComments(reviewId: number, maxResults: number, page: number) {
   }
 }
 
-async function addComment(reviewId: number, userId: string, content: string) {
+async function addComment(reviewId: string, userId: string, content: string) {
   const id = uuidv4().replace(/-/g, '');
   const sql = `INSERT INTO reviews_comments (id, users_id, reviews_id, content) VALUES(UNHEX(?), ?, UNHEX(?), ?)`;
   const values = [id, userId, reviewId, content];
