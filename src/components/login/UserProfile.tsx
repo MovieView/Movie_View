@@ -3,11 +3,10 @@
 import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { useState } from 'react';
-
 const UserProfile = () => {
   const { data: session } = useSession();
   const [showAlert, setShowAlert] = useState(false);
-
+  
   const handleLogOut = async () => {
     await signOut({ callbackUrl: '/' });
 
@@ -22,10 +21,12 @@ const UserProfile = () => {
     <div className="flex justify-between items-center text-xl gap-4">
       {session ? (
         <>
-          <img
-            src={`${session.user?.image}`}
-            className="rounded-full h-16 w-16"
-          />
+           <Link href="/myPage">
+            <img
+              src={session.user?.image}
+              className="rounded-full h-16 w-16" 
+            />
+          </Link>
           {/* 로그아웃 알림창 */}
           {showAlert && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">

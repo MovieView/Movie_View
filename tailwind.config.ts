@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      height: {  
+        '120': '30rem',    
+      },
       colors: {
         first: '#769FCD',
         second: '#B9D7EA',
