@@ -1,4 +1,4 @@
-"use client";
+'use client';
 import React, { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { FaHeart } from 'react-icons/fa6';
@@ -42,7 +42,7 @@ const Edit = () => {
         <div className='bg-gray-100 w-2/5 h-auto text-black-600 rounded-lg mb-20 pb-10 border border-first'>
             <form onSubmit={handleSubmit} className='flex flex-col justify-center items-center space-y-4'>
             <div className='p-10 text-[20px] font-bold'>프로필 수정<FaHeart className='relative bottom-6 left-80 text-first'  onClick={heartList}/></div>
-                <div className="relative flex justify-center items-center w-32 h-32 rounded-full border-2 border border-gray-400 cursor-pointer">
+                <div className='relative flex justify-center items-center w-32 h-32 rounded-full border-2 border border-gray-400 cursor-pointer'>
                     <input 
                         type='file' 
                         accept='.png, .jpg, .jpeg' 
