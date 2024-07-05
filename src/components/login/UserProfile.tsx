@@ -21,7 +21,7 @@ const UserProfile = () => {
     <div className="flex justify-between items-center text-xl gap-4">
       {session ? (
         <>
-           <Link href="/myPage">
+           <Link href="/my-page">
             <img
               src={session.user?.image}
               className="rounded-full h-16 w-16" 
