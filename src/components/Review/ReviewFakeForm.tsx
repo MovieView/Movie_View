@@ -13,7 +13,7 @@ export default function ReviewFakeForm({ setIsFormOpen }: IProps) {
         placeholder='리뷰를 작성해 주세요.'
         readOnly
       />
-      <button className='bg-[#769FCD] h-10 text-white p-2 rounded-tr-md rounded-br-md'>
+      <button className='bg-first h-10 text-white p-2 rounded-tr-md rounded-br-md'>
         등록
       </button>
     </div>

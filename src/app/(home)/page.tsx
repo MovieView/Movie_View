@@ -34,7 +34,7 @@ export default function Home(): React.ReactElement {
   } = useMovieSearch();
 
   const searchBarStyle = clsx(
-    'w-[90%] md:w-[70%] mx-auto rounded-xl bg-[#B9D7EA] px-5 py-2 mt-24 text-black flex items-center shadow-md',
+    'w-[90%] md:w-[70%] mx-auto rounded-xl bg-second px-5 py-2 mt-24 text-black flex items-center shadow-md',
     isSuccess && 'mb-24'
   );
 

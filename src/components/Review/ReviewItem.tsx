@@ -99,7 +99,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
               alt={review.nickname}
             />
           ) : (
-            <div className='bg-[#B9D7EA] w-full h-full '></div>
+            <div className='bg-second w-full h-full '></div>
           )}
         </div>
 

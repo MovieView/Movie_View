@@ -11,7 +11,7 @@ interface NavBarProps {
 
 const NavBar: React.FC<NavBarProps> = ({ isFixed }) => {
   const navBarStyle = clsx(
-    'justify-between', 'items-center', 'py-5', 'px-10', 'bg-[#769FCD]', 'w-full', 'flex',
+    'justify-between', 'items-center', 'py-5', 'px-10', 'bg-first', 'w-full', 'flex',
     isFixed ? 'fixed' : 'relative',
     isFixed ? 'z-10': 'z-0'
   ); 

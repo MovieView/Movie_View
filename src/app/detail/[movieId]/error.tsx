@@ -13,13 +13,13 @@ export default function ErrorOMG() {
         </p>
         <div className='flex flex-col mt-10 sm:flex-row'>
           <button
-            className='p-2 mr-0 text-white sm:mr-4 bg-[#769FCD] hover:bg-[#769FCD]/80 rounded-md'
+            className='p-2 mr-0 text-white sm:mr-4 bg-first hover:bg-first/80 rounded-md'
             onClick={() => router.back()}
           >
             이전 페이지로 돌아가기
           </button>
           <button
-            className='p-2 mt-2 text-white bg-[#769FCD] hover:bg-[#769FCD]/80 sm:mt-0 rounded-md'
+            className='p-2 mt-2 text-white bg-first hover:bg-first/80 sm:mt-0 rounded-md'
             onClick={() => router.push('/')}
           >
             홈으로 가기
