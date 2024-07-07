@@ -27,7 +27,7 @@ const MovieLikeButton = ({
   return (
     <>
       { isError ? (
-        <span>Error loading likes</span>
+        <span className='text-sm'>Error loading likes</span>
       ) : (
         <button
           onClick={() => likeToggle(like ? Number(like?.liked) : 1)}

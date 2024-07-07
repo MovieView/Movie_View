@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import Spinner from '@/components/Common/Spinner';
+import Spinner from '@/components/common/Spinner';
 import MoviesLikeList from '@/components/myPage/MoviesLikeList';
 
 export async function generateMetadata() {

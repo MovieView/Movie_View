@@ -3,7 +3,7 @@ import { useMoviesLike } from "@/hooks/useMoviesLikeList";
 import React from "react";
 import MovieItem from "./MovieItem";
 import { MdNavigateBefore, MdNavigateNext } from "react-icons/md";
-import Spinner from "../Common/Spinner";
+import Spinner from "../common/Spinner";
 
 export default function MoviesLikeList() {
   const { 

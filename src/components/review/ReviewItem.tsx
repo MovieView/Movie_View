@@ -5,10 +5,9 @@ import { IoIosArrowDown } from 'react-icons/io';
 import ReviewDropDownMenu from './ReviewDropDownMenu';
 import ReviewForm from './ReviewForm';
 import { IReviewFormData } from './ReviewsList';
-import LikeButton from '../Like/LikeButton';
+import LikeButton from '../like/LikeButton';
 import { useSession } from 'next-auth/react';
 import { formatUserId } from '@/utils/formatUserId';
-import Image from 'next/image';
 
 interface IProps {
   review: IReview;

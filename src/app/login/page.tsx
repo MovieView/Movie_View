@@ -1,4 +1,4 @@
-import Spinner from "@/components/Common/Spinner";
+import Spinner from "@/components/common/Spinner";
 import SocialLogin from "@/components/login/SocialLogin";
 import React, { Suspense } from "react";
 

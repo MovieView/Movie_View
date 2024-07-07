@@ -2,7 +2,7 @@ import { dbConnectionPoolAsync } from '@/lib/db';
 import { IReviewData } from '../route';
 import { FieldPacket, RowDataPacket } from 'mysql2';
 import { getServerSession } from 'next-auth';
-import { authOPtions } from '@/lib/authOptions';
+import { authOptions } from '@/lib/authOptions';
 import { formatUserId } from '@/utils/formatUserId';
 
 export async function DELETE(
@@ -10,7 +10,7 @@ export async function DELETE(
   { params }: { params: { reviewId: number } }
 ) {
   try {
-    const session = await getServerSession(authOPtions);
+    const session = await getServerSession(authOptions);
 
     if (!session?.provider && !session?.uid) {
       return;
@@ -54,7 +54,7 @@ export async function PUT(
   { params }: { params: { reviewId: number } }
 ) {
   try {
-    const session = await getServerSession(authOPtions);
+    const session = await getServerSession(authOptions);
     if (!session?.provider && !session?.uid) {
       return;
     }

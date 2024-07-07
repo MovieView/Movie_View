@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import MovieLikeButton from '../Like/MovieLikeButton';
+import MovieLikeButton from '../like/MovieLikeButton';
 
 interface Props {
   movieId: number;

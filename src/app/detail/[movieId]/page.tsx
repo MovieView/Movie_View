@@ -1,6 +1,6 @@
 import MovieInfo, { getMovie } from '@/components/movie/MovieInfo';
 import { Suspense } from 'react';
-import Spinner from '@/components/Common/Spinner';
+import Spinner from '@/components/common/Spinner';
 
 interface IParams {
   params: { movieId: string };

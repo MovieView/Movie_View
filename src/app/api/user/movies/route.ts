@@ -1,4 +1,4 @@
-import { authOPtions } from "@/lib/authOptions";
+import { authOptions } from "@/lib/authOptions";
 import { dbConnectionPoolAsync } from "@/lib/db";
 import { formatUserId } from "@/utils/formatUserId";
 import { FieldPacket, RowDataPacket } from "mysql2";
@@ -8,7 +8,7 @@ export async function GET(
   req: Request,
 ) {
   try {
-    const session = await getServerSession(authOPtions);
+    const session = await getServerSession(authOptions);
     if (!session?.provider && !session?.uid) {
       return;
     }
