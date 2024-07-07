@@ -86,7 +86,6 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
     handleResize();
   }, [review]);
 
-  console.log(review);
   return (
     <>
       <div className='flex p-4 border max-w-3xl rounded-xl mx-auto shadow-sm relative'>

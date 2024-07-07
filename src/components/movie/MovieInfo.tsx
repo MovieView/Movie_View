@@ -4,6 +4,7 @@ import MovieCredits from './MovieCredits';
 import ErrorOMG from '@/app/detail/[movieId]/error';
 import ReviewsList from '../Review/ReviewsList';
 import Image from 'next/image';
+import MovieLikeButton from '../Like/MovieLikeButton';
 
 interface Props {
   movieId: string;
@@ -69,11 +70,15 @@ export default async function MovieInfo({ movieId }: Props) {
             alt={movie.title}
             width={500}
             height={500}
+            priority
           />
         </div>
 
         <div className='col-span-2 space-y-6'>
-          <div className='text-4xl font-bold mb-8'>{movie.title}</div>
+          <div className='flex space-x-5 text-4xl mb-8'>
+            <div className='font-bold'>{movie.title}</div>
+            <div><MovieLikeButton type={'one'} movieId={Number(movieId)} movieTitle={movie.title} posterPath={movie.poster_path} /></div>
+          </div>
 
           <div className='flex flex-wrap space-x-10 text-lg'>
             <div className='font-bold'>장르</div>

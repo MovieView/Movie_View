@@ -2,44 +2,50 @@ import { ILike } from "@/models/likes.model";
 import { useMutation,  useQuery,  useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 
-export const useLike = (reviewId: string) => {
+export const useMovieLike = (
+  movieId: number, 
+  movieTitle: string, 
+  posterPath: string, 
+  isEnabled: boolean
+) => {
   const queryClient = useQueryClient();
-  const [enabled, setEnabled] = useState(false);
+  const [enabled, setEnabled] = useState(isEnabled);
 
   const { 
-    data: likes, 
+    data: like, 
     isLoading, 
     isError 
   } = useQuery<ILike>({ 
-    queryKey: ['reviews_like', reviewId], 
+    queryKey: ['movies_like', movieId], 
     queryFn: async () => {
-      const response = await fetch(`/api/like/${reviewId}`);
+      const response = await fetch(`/api/like/movie/${movieId}`);
       if (!response.ok) {
           throw new Error('Failed to fetch likes');
       }
       return response.json();
     },
-    enabled, 
+    enabled: enabled,
   });
 
   const addLikeMutation = useMutation({
-    mutationFn: async (reviewId: string) => {
-      const response = await fetch(`/api/like/${reviewId}`, {
+    mutationFn: async (movieId: number) => {
+      const response = await fetch(`/api/like/movie/${movieId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
+        body: JSON.stringify({ movieTitle, posterPath }),
       });
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reviews_like', reviewId]});
+      queryClient.invalidateQueries({ queryKey: ['movies_like', movieId]});
     },
   });
 
   const deleteLikeMutation = useMutation({
-    mutationFn: async (reviewId: string) => {
-      const response = await fetch(`/api/like/${reviewId}`, {
+    mutationFn: async (movieId: number) => {
+      const response = await fetch(`/api/like/movie/${movieId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -48,22 +54,27 @@ export const useLike = (reviewId: string) => {
       return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reviews_like', reviewId]});
+      queryClient.invalidateQueries({ queryKey: ['movies_like', movieId]});
     },
   });
 
   const likeToggle = async (liked: number | undefined) => {
     try {
       if (liked) {
-        await deleteLikeMutation.mutateAsync(reviewId);
+        await deleteLikeMutation.mutateAsync(movieId);
       } else {
-        await addLikeMutation.mutateAsync(reviewId);
+        await addLikeMutation.mutateAsync(movieId);
       }
-      setEnabled(prevEnabled => !prevEnabled); 
+      setEnabled(prevEnabled => !prevEnabled); // 좋아요 추가/취소 후 쿼리 활성화
     } catch (error) {
       console.error('Error toggling like:', error);
     }
   };
 
-  return { likes, likeToggle, isLoading, isError };
+  return { 
+    like, 
+    likeToggle, 
+    isLoading, 
+    isError, 
+  };
 }
