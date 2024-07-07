@@ -4,7 +4,7 @@ import { Inter } from 'next/font/google';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import './globals.css';
 import React from 'react';
-import NavBar from '@/components/NavBar/NavBar';
+import NavBar from '@/components/common/NavBar';
 import { usePathname } from 'next/navigation';
 import clsx from 'clsx';
 import SessionWrapper from '@/components/login/SessionWrapper';
