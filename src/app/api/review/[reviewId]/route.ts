@@ -5,10 +5,7 @@ import { getServerSession } from 'next-auth';
 import { authOPtions } from '@/lib/authOptions';
 import { formatUserId } from '@/utils/formatUserId';
 import { v4 as uuidv4 } from 'uuid';
-
-export interface IComment {
-  content: string;
-}
+import { CommentContent } from '@/models/comment.model';
 
 // 대댓글 조회
 const MAX_RESULT = 8;
@@ -79,7 +76,7 @@ export async function POST(
     }
 
     // 대댓글 내용 받아오기
-    const data: IComment = await req.json();
+    const data: CommentContent = await req.json();
 
     // 대댓글 내용 DB 저장
     await addComment(params.reviewId, user.userId, data.content);
@@ -247,9 +244,13 @@ async function updateReview(
 async function getComments(reviewId: string, maxResults: number, page: number) {
   const offset = maxResults * (page - 1);
   const values: Array<number | string> = [reviewId, offset, maxResults];
-  const sql = `SELECT HEX(rc.id) AS id, rc.content, rc.created_at AS createdAt, rc.updated_at AS updatedAt
+  const sql = `SELECT HEX(rc.id) AS id, rc.content, s.uid AS userId,
+                REPLACE(JSON_EXTRACT(s.extra_data, '$.filePath'), '"', '') AS filePath,
+                REPLACE(JSON_EXTRACT(s.extra_data, '$.username'), '"', '') AS nickname, 
+                rc.created_at AS createdAt, rc.updated_at AS updatedAt
                 FROM reviews_comments AS rc
                 LEFT JOIN users AS u ON u.id = rc.users_id
+                LEFT JOIN social_accounts AS s ON rc.users_id = s.users_id
                 WHERE HEX(rc.reviews_id) = ?
                 ORDER BY createdAt
                 LIMIT ?, ?`;
