@@ -1,6 +1,7 @@
 'use client';
 
 import { signOut, useSession } from 'next-auth/react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -22,9 +23,12 @@ const UserProfile = () => {
     <div className="flex justify-between items-center text-xl gap-4">
       {session ? (
         <>
-          <img
+          <Image
             src={`${session.user?.image}`}
-            className="rounded-full h-16 w-16"
+            className="rounded-full h-9 w-9"
+            width={9}
+            height={9}
+            alt='user profile image'
           />
           {/* 로그아웃 알림창 */}
           {showAlert && (
@@ -40,12 +44,12 @@ const UserProfile = () => {
               </div>
             </div>
           )}
-          <button onClick={handleLogOut}>LogOut</button>
+          <button className="text-lg font-medium" onClick={handleLogOut}>Logout</button>
         </>
       ) : (
         <>
           <Link href={'/login'}>
-            <button>LogIn</button>
+            <button className='text-lg font-medium'>Login</button>
           </Link>
         </>
       )}

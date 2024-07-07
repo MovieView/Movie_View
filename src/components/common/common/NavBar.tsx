@@ -5,16 +5,12 @@ import clsx from 'clsx';
 import Link from 'next/link';
 import UserProfile from '../login/UserProfile';
 import NotificationButton from '../notification/NotificationButton';
-import { useSession } from 'next-auth/react';
-import NotificationDummyButton from '../notification/NotificationDummyButton';
 
 interface NavBarProps {
   isFixed: boolean;
 }
 
 const NavBar: React.FC<NavBarProps> = ({ isFixed }) => {
-  const {data: session} = useSession();
-
   const navBarStyle = clsx(
     'justify-between', 'items-center', 'py-5', 'px-10', 'bg-first', 'w-full', 'flex', 'shadow-lg',
     isFixed ? 'fixed' : 'relative',
@@ -27,8 +23,7 @@ const NavBar: React.FC<NavBarProps> = ({ isFixed }) => {
         <h1 className="text-xl font-semibold">MovieView</h1>
       </Link>
       <div className="flex justify-between items-center text-xl gap-4">
-        <NotificationDummyButton />
-        {session && <NotificationButton />}
+        <NotificationButton />
         <UserProfile />
       </div>
     </div>
