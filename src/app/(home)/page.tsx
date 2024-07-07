@@ -10,6 +10,7 @@ import LoadingError from '@/components/home/LoadingError';
 import LoadMoreButton from '@/components/home/LoadMoreButton';
 import { isInViewport } from '@/utils/domUtils';
 import useMovieSearch from '@/hooks/useMovieSearch';
+import RecentReview from '@/components/RecentReview/RecentReview';
 
 export default function Home(): React.ReactElement {
   const getNextPageButton = React.useRef<HTMLButtonElement>(null);
@@ -73,8 +74,8 @@ export default function Home(): React.ReactElement {
     <div className='w-full bg-white relative flex flex-col grow'>
       <div className='flex flex-col w-full grow'>
         {/* 검색 바 표시하기 */}
-        {(!isError && !isLoadingError && !isRefetchError) && (
-          <SearchBar 
+        {!isError && !isLoadingError && !isRefetchError && (
+          <SearchBar
             searchBarStyle={searchBarStyle}
             searchQuery={searchQuery}
             handleQueryChange={handleQueryChange}
@@ -82,15 +83,17 @@ export default function Home(): React.ReactElement {
           />
         )}
         {/* 로딩 중일 경우 */}
-        {(isLoading || isRefetching || isPending) && (
-          <LoadingPing />
-        )}
+        {(isLoading || isRefetching || isPending) && <LoadingPing />}
         {/* 에러 발생 시 */}
         {(isError || isRefetchError || isLoadingError) && (
           <LoadingError refetch={refetch} />
         )}
+
+        {/*지금 뜨는 코멘트*/}
+        <RecentReview />
+
         {/* 영화 포스터 표시하기 */}
-        {(isSuccess && !(isLoading || isRefetching) && data) && (
+        {isSuccess && !(isLoading || isRefetching) && data && (
           <div className='grid w-[90%] md:w-[70%] mx-auto mb-10 grid-cols-2 gap-6 lg:grid-cols-3 lg:gap-10 xl:grid-cols-4'>
             {data.pages.map((page) => {
               return page.results.map((movie: any) => {
@@ -106,18 +109,16 @@ export default function Home(): React.ReactElement {
           </div>
         )}
 
-        {/* 다음 페이지 버튼 */} 
+        {/* 다음 페이지 버튼 */}
         {/* 다음 페이지 버튼이 화면에 있을 경우 */}
-        {(isSuccess && hasNextPage && !isFetchingNextPage) && (
+        {isSuccess && hasNextPage && !isFetchingNextPage && (
           <LoadMoreButton
             fetchNextPage={fetchNextPage}
             getNextPageButton={getNextPageButton}
           />
         )}
         {/* 다음 페이지 버튼이 로딩 중일 경우 */}
-        {(isSuccess && isFetchingNextPage) && (
-          <LoadingPing loadMore={true} />
-        )}
+        {isSuccess && isFetchingNextPage && <LoadingPing loadMore={true} />}
       </div>
     </div>
   );
