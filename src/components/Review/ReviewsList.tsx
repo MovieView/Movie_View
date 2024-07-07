@@ -1,5 +1,5 @@
 'use client';
-import { IReview, useReview } from '@/hooks/useReview';
+import { Review, useReview } from '@/hooks/useReview';
 import ReviewItem from './ReviewItem';
 import React, { useEffect, useRef, useState } from 'react';
 import ReviewEmpty from './ReviewEmpty';
@@ -9,13 +9,13 @@ import ReviewFakeForm from './ReviewFakeForm';
 import ReviewFormContainer from './ReviewFormContainer';
 import ReviewError from './ReviewError';
 
-export interface IReviewFormData {
+export interface ReviewFormData {
   title: string;
   rating: number;
   content: string;
 }
 
-interface IProps {
+interface Props {
   movieId: number;
 }
 
@@ -24,7 +24,7 @@ const sortOptions = [
   { id: 'latest', value: '최신순' },
 ];
 
-export default function ReviewsList({ movieId }: IProps) {
+export default function ReviewsList({ movieId }: Props) {
   const [sort, setSort] = useState<string>('latest');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const {
@@ -106,7 +106,7 @@ export default function ReviewsList({ movieId }: IProps) {
               <ul className='flex flex-col gap-4'>
                 {reviews?.pages.flatMap((group: any, i: number) => (
                   <React.Fragment key={i}>
-                    {group.reviews.map((review: IReview) => (
+                    {group.reviews.map((review: Review) => (
                       <li key={review.id}>
                         <ReviewItem
                           review={review}

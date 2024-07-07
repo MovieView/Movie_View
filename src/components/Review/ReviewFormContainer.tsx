@@ -1,6 +1,6 @@
 import { FormEvent, useState } from 'react';
 import ReviewForm from './ReviewForm';
-import { IReviewFormData } from './ReviewsList';
+import { ReviewFormData } from './ReviewsList';
 
 interface IProps {
   movieId: number;
@@ -20,7 +20,7 @@ export default function ReviewFormContainer({
   setIsFormOpen,
   text,
 }: IProps) {
-  const [reviewData, setReviewData] = useState<IReviewFormData>({
+  const [reviewData, setReviewData] = useState<ReviewFormData>({
     title: '',
     rating: 0,
     content: '',
