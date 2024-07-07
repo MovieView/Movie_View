@@ -5,7 +5,7 @@ import {
 } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
 
-export interface IReview {
+export interface Review {
   id: string;
   movieId: number;
   userId: string;
@@ -18,19 +18,20 @@ export interface IReview {
   filePath: string | null;
   likes: number;
   liked: number;
+  commentsCount: number;
 }
 
-interface IPagination {
+interface Pagination {
   currentPage: number;
   totalCount: number;
 }
 
-export interface IReviewList {
-  reviews: IReview[];
-  pagination: IPagination;
+export interface ReviewList {
+  reviews: Review[];
+  pagination: Pagination;
 }
 
-interface IReviewInputParams {
+interface ReviewInputParams {
   title: string;
   rating: number;
   content: string;
@@ -60,7 +61,7 @@ const updateReview = async ({
   title,
   rating,
   content,
-}: IReviewInputParams & { reviewId: string }) => {
+}: ReviewInputParams & { reviewId: string }) => {
   const response = await fetch(`/api/review/${reviewId}`, {
     method: 'PUT',
     headers: {
@@ -81,7 +82,7 @@ const createReview = async ({
   title,
   rating,
   content,
-}: IReviewInputParams & { movieId: number }) => {
+}: ReviewInputParams & { movieId: number }) => {
   const response = await fetch(`/api/review`, {
     method: 'POST',
     headers: {
@@ -91,7 +92,7 @@ const createReview = async ({
   });
 
   if (!response.ok) {
-    throw new Error('Failed to delete the review');
+    throw new Error('Failed to add the review');
   }
 
   return response.json();
@@ -146,9 +147,7 @@ export function useReview(movieId: number, sort: string) {
 
         const newPages = oldData.pages.map((group: any) => ({
           ...group,
-          reviews: group.reviews.filter(
-            (item: IReview) => item.id !== reviewId
-          ),
+          reviews: group.reviews.filter((item: Review) => item.id !== reviewId),
         }));
 
         return {
