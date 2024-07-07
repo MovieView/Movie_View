@@ -1,4 +1,4 @@
-import { authOPtions } from '@/lib/authOptions';
+import { authOptions } from '@/lib/authOptions';
 import { dbConnectionPoolAsync } from '@/lib/db';
 import { formatUserId } from '@/utils/formatUserId';
 import { FieldPacket, RowDataPacket } from 'mysql2';
@@ -17,15 +17,19 @@ export async function GET(
     let maxResults = searchParams.get('maxResults') ?? MAX_RESULT;
     let page = searchParams.get('page') ?? PAGE;
     let sort = searchParams.get('sort') ?? SORT;
-    const session = await getServerSession(authOPtions);
+    const session = await getServerSession(authOptions);
     if (!session?.provider && !session?.uid) {
-      return;
+      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+        status: 401,
+      });
     }
 
     const userId = formatUserId(session.provider, session.uid);
 
     if (!userId) {
-      return;
+      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+        status: 401,
+      });
     }
 
     const reviews = await getReviews(

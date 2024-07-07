@@ -1,1 +1,1 @@
-export const API_URL: string = 'https://api.themoviedb.org/3/movie/';
+export const API_URL: string = 'https://api.themoviedb.org/3/movie';
