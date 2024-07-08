@@ -1,5 +1,5 @@
 'use client';
-import { Review, useReview } from '@/hooks/useReview';
+import { useReview } from '@/hooks/useReview';
 import ReviewItem from './ReviewItem';
 import React, { useEffect, useRef, useState } from 'react';
 import ReviewEmpty from './ReviewEmpty';
@@ -8,12 +8,7 @@ import ReviewButton from './ReviewButton';
 import ReviewFakeForm from './ReviewFakeForm';
 import ReviewFormContainer from './ReviewFormContainer';
 import ReviewError from './ReviewError';
-
-export interface ReviewFormData {
-  title: string;
-  rating: number;
-  content: string;
-}
+import { Review } from '@/models/review.model';
 
 interface Props {
   movieId: number;

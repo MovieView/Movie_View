@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { RiMore2Line } from 'react-icons/ri';
 
-interface IProps {
+interface Props {
   handleEdit: () => void;
   onDeleteReview?: (reviewId: string) => void;
   onDeleteComment?: (reviewId: string, commentId: string) => void;
@@ -15,7 +15,7 @@ export default function ReviewDropDownMenu({
   onDeleteComment,
   reviewId,
   commentId,
-}: IProps) {
+}: Props) {
   const [isDropMenuOpen, setIsDropMenuOpen] = useState(false);
   const dropMenuRef = useRef<HTMLDivElement | null>(null);
 

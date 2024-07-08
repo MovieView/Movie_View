@@ -1,4 +1,3 @@
-import { Review } from '@/hooks/useReview';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { IoIosArrowDown } from 'react-icons/io';
@@ -7,10 +6,10 @@ import { useSession } from 'next-auth/react';
 import { formatUserId } from '@/utils/formatUserId';
 import ReviewDropDownMenu from './ReviewDropDownMenu';
 import ReviewForm from './ReviewForm';
-import { ReviewFormData } from './ReviewsList';
 import CommentsList from '../comment/CommentsList';
 import ReviewButton from './ReviewButton';
 import { formatDate } from '@/utils/formatDate';
+import { Review, ReviewFormData } from '@/models/review.model';
 
 interface Props {
   review: Review;

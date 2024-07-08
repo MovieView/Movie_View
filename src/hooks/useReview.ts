@@ -1,41 +1,10 @@
+import { Review, ReviewFormData } from '@/models/review.model';
 import {
   useInfiniteQuery,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-
-export interface Review {
-  id: string;
-  movieId: number;
-  userId: string;
-  rating: number;
-  title: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  nickname: string;
-  filePath: string | null;
-  likes: number;
-  liked: number;
-  commentsCount: number;
-}
-
-interface Pagination {
-  currentPage: number;
-  totalCount: number;
-}
-
-export interface ReviewList {
-  reviews: Review[];
-  pagination: Pagination;
-}
-
-interface ReviewInputParams {
-  title: string;
-  rating: number;
-  content: string;
-}
 
 const MAX_RESULT = 10;
 const getReviews = async (movieId: number, page = 1, sort: string) => {
@@ -61,7 +30,7 @@ const updateReview = async ({
   title,
   rating,
   content,
-}: ReviewInputParams & { reviewId: string }) => {
+}: ReviewFormData & { reviewId: string }) => {
   const response = await fetch(`/api/review/${reviewId}`, {
     method: 'PUT',
     headers: {
@@ -82,7 +51,7 @@ const createReview = async ({
   title,
   rating,
   content,
-}: ReviewInputParams & { movieId: number }) => {
+}: ReviewFormData & { movieId: number }) => {
   const response = await fetch(`/api/review`, {
     method: 'POST',
     headers: {
