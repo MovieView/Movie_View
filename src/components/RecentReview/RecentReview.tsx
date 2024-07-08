@@ -5,107 +5,6 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import RecentReviewItem, { IRecentReview } from './RecentReviewItem';
 
-// const reviews: IRecentReview[] = [
-//   {
-//     id: '1',
-//     movieId: 1,
-//     userId: 'userId',
-//     rating: 1,
-//     title: 'title',
-//     content: `googoodgoodgoodgoodgoodgoodgoodgood
-//     goodgoodgoodgoodgoodgoodgoodgoodgoodgoodgoodgoodgood
-//     goodgoodgoodgoodgoodgoodgoodgoodgood`,
-//     createdAt: `2024.07.07.12:00`,
-//     updatedAt: `2024.07.07.12:00`,
-//     nickname: 'elsa',
-//     filePath: null,
-//     likes: 3,
-//     liked: 1,
-//     movieTitle: '슈퍼배드',
-//     posterPath: '/plNOSbqkSuGEK2i15A5btAXtB7t.jpg',
-//   },
-//   {
-//     id: '2',
-//     movieId: 2,
-//     userId: 'userId2',
-//     rating: 2,
-//     title: 'title22',
-//     content: `good222`,
-//     createdAt: `2024.07.01.12:00`,
-//     updatedAt: `2024.07.01.12:00`,
-//     nickname: 'elsa222',
-//     filePath: null,
-//     likes: 3,
-//     liked: 1,
-//     movieTitle: '슈퍼배드',
-//     posterPath: '/plNOSbqkSuGEK2i15A5btAXtB7t.jpg',
-//   },
-//   {
-//     id: '3',
-//     movieId: 3,
-//     userId: 'userId3',
-//     rating: 3,
-//     title: 'title33',
-//     content: `good333`,
-//     createdAt: `2024.07.01.12:00`,
-//     updatedAt: `2024.07.01.12:00`,
-//     nickname: 'elsa333',
-//     filePath: null,
-//     likes: 3,
-//     liked: 1,
-//     movieTitle: '슈퍼배드',
-//     posterPath: '/plNOSbqkSuGEK2i15A5btAXtB7t.jpg',
-//   },
-//   {
-//     id: '4',
-//     movieId: 4,
-//     userId: 'userId4',
-//     rating: 4,
-//     title: 'title44',
-//     content: `good44`,
-//     createdAt: `2024.07.01.12:00`,
-//     updatedAt: `2024.07.01.12:00`,
-//     nickname: 'elsa44',
-//     filePath: null,
-//     likes: 3,
-//     liked: 1,
-//     movieTitle: '슈퍼배드',
-//     posterPath: '/plNOSbqkSuGEK2i15A5btAXtB7t.jpg',
-//   },
-//   {
-//     id: '5',
-//     movieId: 5,
-//     userId: 'userId5',
-//     rating: 5,
-//     title: 'title55',
-//     content: `good55`,
-//     createdAt: `2024.07.01.12:00`,
-//     updatedAt: `2024.07.01.12:00`,
-//     nickname: 'elsa55',
-//     filePath: null,
-//     likes: 3,
-//     liked: 1,
-//     movieTitle: '슈퍼배드',
-//     posterPath: '/plNOSbqkSuGEK2i15A5btAXtB7t.jpg',
-//   },
-//   {
-//     id: '6',
-//     movieId: 6,
-//     userId: 'userId6',
-//     rating: 6,
-//     title: 'title66',
-//     content: `good66`,
-//     createdAt: `2024.07.01.12:00`,
-//     updatedAt: `2024.07.01.12:00`,
-//     nickname: 'elsa6',
-//     filePath: null,
-//     likes: 3,
-//     liked: 1,
-//     movieTitle: '슈퍼배드',
-//     posterPath: '/plNOSbqkSuGEK2i15A5btAXtB7t.jpg',
-//   },
-// ];
-
 interface Props {
   reviews: IReview[];
 }
@@ -145,7 +44,6 @@ const RecentReview = ({ reviews }: Props) => {
   };
 
   const transformValue = useMemo(() => {
-    console.log(itemsPerView);
     if (typeof window !== 'undefined') {
       return itemsPerView !== 1
         ? currentIndex * -(100 + (12 / ((window.innerWidth * 70) / 100)) * 100)

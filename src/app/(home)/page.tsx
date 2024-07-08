@@ -11,6 +11,8 @@ import LoadMoreButton from '@/components/home/LoadMoreButton';
 import { isInViewport } from '@/utils/domUtils';
 import useMovieSearch from '@/hooks/useMovieSearch';
 import RecentReview from '@/components/RecentReview/RecentReview';
+import { useReview } from '@/hooks/useReview';
+import { useRecentReviews } from '@/hooks/useRecentReviews';
 
 export default function Home(): React.ReactElement {
   const getNextPageButton = React.useRef<HTMLButtonElement>(null);
@@ -32,6 +34,9 @@ export default function Home(): React.ReactElement {
     isSuccess,
     refetch,
   } = useMovieSearch();
+
+  const { recentReviews, isRecentReviewsError, isRecentReviewsLoading } =
+    useRecentReviews();
 
   const searchBarStyle = clsx(
     'w-[90%] md:w-[70%] mx-auto rounded-xl bg-second px-5 py-2 mt-24 text-black flex items-center shadow-md',
@@ -90,7 +95,9 @@ export default function Home(): React.ReactElement {
         )}
 
         {/*지금 뜨는 코멘트*/}
-        <RecentReview />
+        {!(isRecentReviewsError || isRecentReviewsLoading) && recentReviews && (
+          <RecentReview reviews={recentReviews} />
+        )}
 
         {/* 영화 포스터 표시하기 */}
         {isSuccess && !(isLoading || isRefetching) && data && (
