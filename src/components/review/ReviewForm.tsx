@@ -1,12 +1,12 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
 import ReviewRating from './ReviewRating';
-import { IReviewFormData } from './ReviewsList';
+import { ReviewFormData } from '@/models/review.model';
 
-interface IProps {
-  review: IReviewFormData;
+interface Props {
+  review: ReviewFormData;
   text: string;
   handleCloseForm: () => void;
-  setReview: React.Dispatch<React.SetStateAction<IReviewFormData>>;
+  setReview: React.Dispatch<React.SetStateAction<ReviewFormData>>;
   onSubmit: (e: FormEvent) => void;
 }
 
@@ -16,7 +16,7 @@ export default function ReviewForm({
   handleCloseForm,
   setReview,
   onSubmit,
-}: IProps) {
+}: Props) {
   const handleChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
