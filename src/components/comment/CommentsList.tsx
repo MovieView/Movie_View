@@ -1,10 +1,10 @@
 import { useComment } from '@/hooks/useComment';
 import React, { useEffect, useRef } from 'react';
-import ReviewLoadingSpinner from '../review/ReviewLoadingSpinner';
 import ReviewError from '../review/ReviewError';
 import CommentItem from './CommentItem';
 import CommentFormContainer from './CommentFormContainer';
 import { Comment } from '@/models/comment.model';
+import Spinner from '../common/Spinner';
 
 export interface CommentFormData {
   content: string;
@@ -67,7 +67,7 @@ export default function CommentsList({
       )}
 
       {isLoading ? (
-        <ReviewLoadingSpinner />
+        <Spinner size='xs' />
       ) : (
         <>
           {isOpen && (
@@ -95,7 +95,7 @@ export default function CommentsList({
       )}
 
       {hasNextPage && (
-        <div ref={pageEnd}>{isFetching && <ReviewLoadingSpinner />}</div>
+        <div ref={pageEnd}>{isFetching && <Spinner size='xs' />}</div>
       )}
     </>
   );

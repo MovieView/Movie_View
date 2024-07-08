@@ -3,12 +3,12 @@ import { useReview } from '@/hooks/useReview';
 import ReviewItem from './ReviewItem';
 import React, { useEffect, useRef, useState } from 'react';
 import ReviewEmpty from './ReviewEmpty';
-import ReviewLoadingSpinner from './ReviewLoadingSpinner';
 import ReviewButton from './ReviewButton';
 import ReviewFakeForm from './ReviewFakeForm';
 import ReviewFormContainer from './ReviewFormContainer';
 import ReviewError from './ReviewError';
 import { Review } from '@/models/review.model';
+import Spinner from '../common/Spinner';
 
 interface Props {
   movieId: number;
@@ -71,7 +71,7 @@ export default function ReviewsList({ movieId }: Props) {
       </div>
 
       {isLoading ? (
-        <ReviewLoadingSpinner />
+        <Spinner size='xs' />
       ) : (
         <>
           {isEmpty && <ReviewEmpty />}
@@ -109,7 +109,7 @@ export default function ReviewsList({ movieId }: Props) {
             </>
           )}
 
-          <div ref={pageEnd}>{isFetching && <ReviewLoadingSpinner />}</div>
+          <div ref={pageEnd}>{isFetching && <Spinner size='xs' />}</div>
         </>
       )}
     </div>
