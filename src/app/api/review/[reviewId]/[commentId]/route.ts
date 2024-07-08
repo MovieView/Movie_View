@@ -1,9 +1,9 @@
-import { authOPtions } from '@/lib/authOptions';
 import { dbConnectionPoolAsync } from '@/lib/db';
 import { formatUserId } from '@/utils/formatUserId';
 import { getServerSession } from 'next-auth';
-import { IComment } from '../route';
 import { FieldPacket, RowDataPacket } from 'mysql2';
+import { CommentContent } from '@/models/comment.model';
+import { authOptions } from '@/lib/authOptions';
 
 // 대댓글 삭제
 export async function DELETE(
@@ -11,7 +11,7 @@ export async function DELETE(
   { params }: { params: { commentId: number } }
 ) {
   try {
-    const session = await getServerSession(authOPtions);
+    const session = await getServerSession(authOptions);
 
     const { provider, uid } = session ?? {};
 
@@ -57,7 +57,7 @@ export async function PUT(
   { params }: { params: { commentId: number } }
 ) {
   try {
-    const session = await getServerSession(authOPtions);
+    const session = await getServerSession(authOptions);
 
     const { provider, uid } = session ?? {};
 
@@ -82,7 +82,7 @@ export async function PUT(
     }
 
     // 대댓글 수정 내용 받아오기
-    const data: IComment = await req.json();
+    const data: CommentContent = await req.json();
 
     // DB에서 데이터 수정
     await updateCommentById(params.commentId, user.userId, data.content);

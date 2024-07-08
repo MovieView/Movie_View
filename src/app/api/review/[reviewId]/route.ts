@@ -1,5 +1,5 @@
 import { dbConnectionPoolAsync } from '@/lib/db';
-import { IReviewData } from '../route';
+import { ReviewData } from '../route';
 import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
@@ -34,6 +34,7 @@ export async function GET(
         totalCount: count ? count.totalCount : 0,
       },
     };
+
     return new Response(JSON.stringify(result), {
       status: 200,
     });
@@ -51,7 +52,7 @@ export async function POST(
   { params }: { params: { reviewId: string } }
 ) {
   try {
-    const session = await getServerSession(authOPtions);
+    const session = await getServerSession(authOptions);
 
     const { provider, uid } = session ?? {};
 
@@ -166,7 +167,7 @@ export async function PUT(
       );
     }
 
-    const data: IReviewData = await req.json();
+    const data: ReviewData = await req.json();
 
     await updateReview(params.reviewId, userId, data);
 
@@ -219,7 +220,7 @@ async function deleteReview(reviewId: string, userId: string) {
 async function updateReview(
   reviewId: string,
   userId: string,
-  data: IReviewData
+  data: ReviewData
 ) {
   const sql = `UPDATE reviews SET title=?, rating=?, content=? WHERE id=UNHEX(?) AND social_accounts_uid=? `;
   const values: Array<string | number> = [
