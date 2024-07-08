@@ -109,7 +109,9 @@ export default function ReviewsList({ movieId }: Props) {
             </>
           )}
 
-          <div ref={pageEnd}>{isFetching && <Spinner size='xs' />}</div>
+          {hasNextPage && (
+            <div ref={pageEnd}>{isFetching && <Spinner size='xs' />}</div>
+          )}
         </>
       )}
     </div>
