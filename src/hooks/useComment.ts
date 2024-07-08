@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Comment } from '@/models/comment.model';
 import {
   useInfiniteQuery,
@@ -89,6 +89,7 @@ const deleteComment = async ({
 export function useComment(reviewId: string) {
   const queryClient = useQueryClient();
   const [enabled, setEnabled] = useState(false);
+  const [commentCount, setCommentCount] = useState<null | number>(null);
   const {
     data: comments,
     fetchNextPage,
@@ -116,22 +117,9 @@ export function useComment(reviewId: string) {
 
   const deleteReviewMutation = useMutation({
     mutationFn: deleteComment,
-    onSuccess: (commentId) => {
-      queryClient.setQueryData(['comments', reviewId], (oldData: any) => {
-        if (!oldData) {
-          return oldData;
-        }
-        const newPages = oldData.pages.map((group: any) => ({
-          ...group,
-          comments: group.comments.filter(
-            (comment: Comment) => comment.id !== commentId
-          ),
-        }));
-
-        return {
-          ...oldData,
-          pages: newPages,
-        };
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['comments', reviewId],
       });
     },
   });
@@ -168,6 +156,21 @@ export function useComment(reviewId: string) {
     addCommentMutation.mutate({ reviewId, content });
   };
 
+  const increaseCommentCount = () => {
+    commentCount && setCommentCount(commentCount + 1);
+  };
+
+  const decreaseCommentCount = () => {
+    commentCount && setCommentCount(commentCount - 1);
+  };
+
+  useEffect(() => {
+    if (comments && comments.pages) {
+      const total = comments.pages.flatMap((v) => v.pagination.totalCount);
+      setCommentCount(total[0]);
+    }
+  }, [comments]);
+
   return {
     comments,
     fetchNextPage,
@@ -179,5 +182,8 @@ export function useComment(reviewId: string) {
     deleteMyComment,
     addMyComment,
     setEnabled,
+    increaseCommentCount,
+    decreaseCommentCount,
+    commentCount,
   };
 }
