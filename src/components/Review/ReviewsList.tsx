@@ -18,6 +18,8 @@ export interface IReviewFormData {
 
 interface IProps {
   movieId: number;
+  movieTitle: string;
+  posterPath: string;
 }
 
 const sortOptions = [
@@ -25,7 +27,11 @@ const sortOptions = [
   { id: 'latest', value: '최신순' },
 ];
 
-export default function ReviewsList({ movieId }: IProps) {
+export default function ReviewsList({
+  movieId,
+  movieTitle,
+  posterPath,
+}: IProps) {
   const [sort, setSort] = useState<string>('latest');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const {
@@ -39,7 +45,7 @@ export default function ReviewsList({ movieId }: IProps) {
     updateMyReview,
     deleteMyReview,
     addMyReview,
-  } = useReview(movieId, sort);
+  } = useReview(movieId, sort, movieTitle, posterPath);
 
   const pageEnd = useRef<HTMLDivElement | null>(null);
 
