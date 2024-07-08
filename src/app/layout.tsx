@@ -23,14 +23,14 @@ export default function RootLayout({
   const navBarStyle = clsx(
     inter.className,
     '',
-    currentLocation === '/' ? 'flex flex-col min-h-screen' : 'block',
+    currentLocation === '/' ? 'flex flex-col min-h-screen' : 'block'
   );
 
   return (
     // social login session provider
     <SessionWrapper>
       <QueryClientProvider client={queryClient}>
-        <html lang="en">
+        <html lang='en'>
           <body className={navBarStyle}>
             <NavBar isFixed={true} />
             <NavBar isFixed={false} />
