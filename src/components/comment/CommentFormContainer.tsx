@@ -7,6 +7,8 @@ interface IProps {
   onSubmit: (reviewId: string, content: string) => void;
   setIsFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
   text: string;
+  updateCommentCount: (value: number) => void;
+  commentCount: number;
 }
 
 export default function CommentFormContainer({
@@ -14,6 +16,8 @@ export default function CommentFormContainer({
   onSubmit,
   setIsFormOpen,
   text,
+  updateCommentCount,
+  commentCount,
 }: IProps) {
   const [commentData, setCommentData] = useState<CommentContent>({
     content: '',
@@ -43,6 +47,8 @@ export default function CommentFormContainer({
     setCommentData({
       content: '',
     });
+
+    updateCommentCount(commentCount + 1);
 
     setIsFormOpen(false);
   };

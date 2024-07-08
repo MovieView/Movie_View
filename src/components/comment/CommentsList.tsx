@@ -6,7 +6,7 @@ import CommentItem from './CommentItem';
 import CommentFormContainer from './CommentFormContainer';
 import { Comment } from '@/models/comment.model';
 
-export interface ICommentFormData {
+export interface CommentFormData {
   content: string;
 }
 
@@ -15,6 +15,8 @@ interface Props {
   isOpen: boolean;
   isCommentFormOpen: boolean;
   setIsCommentFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  updateCommentCount: (value: number) => void;
+  commentCount: number;
 }
 
 export default function CommentsList({
@@ -22,6 +24,8 @@ export default function CommentsList({
   isOpen,
   isCommentFormOpen,
   setIsCommentFormOpen,
+  updateCommentCount,
+  commentCount,
 }: Props) {
   const pageEnd = useRef<HTMLDivElement | null>(null);
   const {
@@ -36,6 +40,11 @@ export default function CommentsList({
     deleteMyComment,
     updateMyComment,
   } = useComment(reviewId);
+
+  const handleDeleteComment = (reviewId: string, commentId: string) => {
+    deleteMyComment(reviewId, commentId);
+    updateCommentCount(commentCount - 1);
+  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -65,6 +74,8 @@ export default function CommentsList({
           reviewId={reviewId}
           onSubmit={addMyComment}
           setIsFormOpen={setIsCommentFormOpen}
+          updateCommentCount={updateCommentCount}
+          commentCount={commentCount}
           text='답글 등록'
         />
       )}
@@ -83,7 +94,7 @@ export default function CommentsList({
                         <li key={comment.id}>
                           <CommentItem
                             reviewId={reviewId}
-                            onDeleteComment={deleteMyComment}
+                            onDeleteComment={handleDeleteComment}
                             onUpdate={updateMyComment}
                             onAdd={addMyComment}
                             comment={comment}

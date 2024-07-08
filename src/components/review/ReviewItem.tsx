@@ -32,6 +32,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
   const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
   const [reviewData, setReviewData] = useState<ReviewFormData>(review);
   const [isOpen, setIsOpen] = useState(false);
+  const [commentCount, setCommentCount] = useState(review.commentsCount);
 
   const handleUpdate = (e: FormEvent) => {
     e.preventDefault();
@@ -60,6 +61,10 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
 
   const handleCloseForm = () => {
     setIsFormOpen(!isFormOpen);
+  };
+
+  const updateCommentCount = (value: number) => {
+    setCommentCount(value);
   };
 
   const handleResize = () => {
@@ -189,7 +194,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
             />
           </div>
 
-          {review.commentsCount > 0 && (
+          {commentCount > 0 && (
             <div>
               <button
                 className='hover:bg-third py-1 px-2 rounded-lg text-sm inline-flex items-center gap-1'
@@ -200,7 +205,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
                     isOpen ? 'rotate-180' : 'rotate-0'
                   }`}
                 />
-                <span>{`답글 ${review.commentsCount}개`}</span>
+                <span>{`답글 ${commentCount}개`}</span>
               </button>
             </div>
           )}
@@ -209,6 +214,8 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
             reviewId={review.id}
             isCommentFormOpen={isCommentFormOpen}
             setIsCommentFormOpen={setIsCommentFormOpen}
+            updateCommentCount={updateCommentCount}
+            commentCount={commentCount}
           />
         </div>
       </div>

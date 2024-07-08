@@ -1,10 +1,10 @@
+import { useState } from 'react';
 import { Comment } from '@/models/comment.model';
 import {
   useInfiniteQuery,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
 
 export interface CommentInputParams {
   reviewId: string;
