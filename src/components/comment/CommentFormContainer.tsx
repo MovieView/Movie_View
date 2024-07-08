@@ -1,27 +1,24 @@
 import React, { FormEvent, useState } from 'react';
 import CommentForm from './CommentForm';
 import { CommentContent } from '@/models/comment.model';
+import { useComment } from '@/hooks/useComment';
 
-interface IProps {
+interface Props {
   reviewId: string;
-  onSubmit: (reviewId: string, content: string) => void;
   setIsFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
   text: string;
-  updateCommentCount: (value: number) => void;
-  commentCount: number;
 }
 
 export default function CommentFormContainer({
   reviewId,
-  onSubmit,
   setIsFormOpen,
   text,
-  updateCommentCount,
-  commentCount,
-}: IProps) {
+}: Props) {
   const [commentData, setCommentData] = useState<CommentContent>({
     content: '',
   });
+
+  const { addMyComment, increaseCommentCount } = useComment(reviewId);
 
   const handleCloseForm = () => {
     setIsFormOpen(false);
@@ -42,13 +39,13 @@ export default function CommentFormContainer({
       return;
     }
 
-    onSubmit(newComment.reviewId, newComment.content);
+    addMyComment(newComment.reviewId, newComment.content);
 
     setCommentData({
       content: '',
     });
 
-    updateCommentCount(commentCount + 1);
+    increaseCommentCount();
 
     setIsFormOpen(false);
   };

@@ -1,5 +1,5 @@
 import { useComment } from '@/hooks/useComment';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import ReviewLoadingSpinner from '../review/ReviewLoadingSpinner';
 import ReviewError from '../review/ReviewError';
 import CommentItem from './CommentItem';
@@ -15,8 +15,6 @@ interface Props {
   isOpen: boolean;
   isCommentFormOpen: boolean;
   setIsCommentFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  updateCommentCount: (value: number) => void;
-  commentCount: number;
 }
 
 export default function CommentsList({
@@ -24,8 +22,6 @@ export default function CommentsList({
   isOpen,
   isCommentFormOpen,
   setIsCommentFormOpen,
-  updateCommentCount,
-  commentCount,
 }: Props) {
   const pageEnd = useRef<HTMLDivElement | null>(null);
   const {
@@ -36,15 +32,8 @@ export default function CommentsList({
     hasNextPage,
     isFetching,
     setEnabled,
-    addMyComment,
-    deleteMyComment,
     updateMyComment,
   } = useComment(reviewId);
-
-  const handleDeleteComment = (reviewId: string, commentId: string) => {
-    deleteMyComment(reviewId, commentId);
-    updateCommentCount(commentCount - 1);
-  };
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -72,10 +61,7 @@ export default function CommentsList({
       {isCommentFormOpen && (
         <CommentFormContainer
           reviewId={reviewId}
-          onSubmit={addMyComment}
           setIsFormOpen={setIsCommentFormOpen}
-          updateCommentCount={updateCommentCount}
-          commentCount={commentCount}
           text='답글 등록'
         />
       )}
@@ -94,9 +80,7 @@ export default function CommentsList({
                         <li key={comment.id}>
                           <CommentItem
                             reviewId={reviewId}
-                            onDeleteComment={handleDeleteComment}
                             onUpdate={updateMyComment}
-                            onAdd={addMyComment}
                             comment={comment}
                           />
                         </li>
