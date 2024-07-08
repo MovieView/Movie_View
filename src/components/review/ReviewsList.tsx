@@ -30,19 +30,12 @@ export default function ReviewsList({ movieId }: Props) {
     hasNextPage,
     isFetching,
     isEmpty,
-    updateMyReview,
-    deleteMyReview,
-    addMyReview,
   } = useReview(movieId, sort);
 
   const pageEnd = useRef<HTMLDivElement | null>(null);
 
   const handleSort = (value: string) => {
     setSort(value);
-  };
-
-  const handleDeleteReview = (reviewId: string) => {
-    deleteMyReview(reviewId);
   };
 
   useEffect(() => {
@@ -70,7 +63,7 @@ export default function ReviewsList({ movieId }: Props) {
         {isFormOpen && (
           <ReviewFormContainer
             movieId={movieId}
-            onSubmit={addMyReview}
+            sort={sort}
             setIsFormOpen={setIsFormOpen}
             text='리뷰 등록'
           />
@@ -105,8 +98,8 @@ export default function ReviewsList({ movieId }: Props) {
                       <li key={review.id}>
                         <ReviewItem
                           review={review}
-                          onUpdate={updateMyReview}
-                          onDelete={handleDeleteReview}
+                          sort={sort}
+                          movieId={movieId}
                         />
                       </li>
                     ))}

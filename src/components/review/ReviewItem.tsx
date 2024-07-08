@@ -11,19 +11,15 @@ import ReviewButton from './ReviewButton';
 import { formatDate } from '@/utils/formatDate';
 import { Review, ReviewFormData } from '@/models/review.model';
 import { useComment } from '@/hooks/useComment';
+import { useReview } from '@/hooks/useReview';
 
 interface Props {
   review: Review;
-  onUpdate: (
-    reviewId: string,
-    title: string,
-    rating: number,
-    content: string
-  ) => void;
-  onDelete: (reviewId: string) => void;
+  sort: string;
+  movieId: number;
 }
 
-export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
+export default function ReviewItem({ movieId, review, sort }: Props) {
   const { data: session } = useSession();
   const userId = session && formatUserId(session?.provider, session?.uid);
   const contentRef = useRef<HTMLPreElement>(null);
@@ -34,6 +30,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
   const [reviewData, setReviewData] = useState<ReviewFormData>(review);
   const [isOpen, setIsOpen] = useState(false);
   const { commentCount } = useComment(review.id);
+  const { updateMyReview, deleteMyReview } = useReview(movieId, sort);
 
   const handleUpdate = (e: FormEvent) => {
     e.preventDefault();
@@ -50,7 +47,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
       return;
     }
 
-    onUpdate(
+    updateMyReview(
       review.id,
       newReview.title,
       Number(newReview.rating),
@@ -133,7 +130,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
                   <ReviewDropDownMenu
                     handleEdit={handleCloseForm}
                     reviewId={review.id}
-                    onDeleteReview={onDelete}
+                    onDeleteReview={deleteMyReview}
                   />
                 )}
               </div>
