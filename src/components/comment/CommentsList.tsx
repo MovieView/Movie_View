@@ -4,6 +4,7 @@ import ReviewLoadingSpinner from '../review/ReviewLoadingSpinner';
 import ReviewError from '../review/ReviewError';
 import CommentItem from './CommentItem';
 import CommentFormContainer from './CommentFormContainer';
+import { Comment } from '@/models/comment.model';
 
 export interface ICommentFormData {
   content: string;
@@ -78,7 +79,7 @@ export default function CommentsList({
                 <ul className='flex flex-col gap-4'>
                   {comments?.pages.flatMap((group: any, i: number) => (
                     <React.Fragment key={i}>
-                      {group.comments.map((comment: any) => (
+                      {group.comments.map((comment: Comment) => (
                         <li key={comment.id}>
                           <CommentItem
                             reviewId={reviewId}

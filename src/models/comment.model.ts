@@ -8,6 +8,16 @@ export interface Comment {
   updatedAt: string;
 }
 
+export interface CommentList {
+  comments: Comment[];
+  pagination: Pagination;
+}
+
+export interface Pagination {
+  currentPage: number;
+  totalCount: number;
+}
+
 export interface CommentContent {
   content: string;
 }
