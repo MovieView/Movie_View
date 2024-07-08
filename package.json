@@ -26,6 +26,7 @@
     "react-icons": "^5.2.1",
     "react-svg": "^16.1.34",
     "redis": "^4.6.14",
+    "sharp": "^0.33.4",
     "uuid": "^9.0.1"
   },
   "devDependencies": {
