@@ -11,15 +11,16 @@ const updateProfile = async (userId: string, profilePicture?: File, userName?: s
     formData.append('profilePicture', profilePicture);
   }
   if (userName) {
-    formData.append('userName', userName);
+    formData.append('username', userName);
   }
 
   const response = await fetch('/api/my-page', {
     method: 'PUT',
-    body: formData,
+    body: formData
   });
 
   if (!response.ok) {
+    console.log(response.json());
     throw new Error('Failed to update profile');
   }
 
@@ -50,7 +51,7 @@ const Edit = () => {
     event.preventDefault();
     if (session && (selectedImage || userName)) {
       try {
-        const data = await updateProfile(session.user.id, selectedImage, userName);
+        const data = await updateProfile(session.uid, selectedImage, userName);
         console.log(data.message);
       } catch (error) {
         console.error(error);
@@ -84,10 +85,15 @@ const Edit = () => {
             onChange={handleImageChange}
             className='absolute inset-0 opacity-0 cursor-pointer'
           />
-          {preview ? (
+          {/* {preview ? (
             <img src={preview} alt='Preview' layout="fill" objectFit="cover" className='rounded-full' />
           ) : (
             <img src={session.user?.image || '/default-profile.png'} alt='Profile' layout="fill" objectFit="cover" className='rounded-full' />
+          )} */}
+          {preview ? (
+            <img src={preview} alt='Preview' className='rounded-full' />
+          ) : (
+            <img src={session.user?.image || '/default-profile.png'} alt='Profile' className='rounded-full' />
           )}
         </div>
         <input
