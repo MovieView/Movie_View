@@ -1,8 +1,8 @@
-import { authOptions } from "@/lib/authOptions";
-import { dbConnectionPoolAsync } from "@/lib/db";
-import { formatUserId } from "@/utils/formatUserId";
-import { FieldPacket, RowDataPacket } from "mysql2";
-import { getServerSession } from "next-auth";
+import { authOptions } from '@/lib/authOptions';
+import { dbConnectionPoolAsync } from '@/lib/db';
+import { formatUserId } from '@/utils/formatUserId';
+import { FieldPacket, RowDataPacket } from 'mysql2';
+import { getServerSession } from 'next-auth';
 
 export async function GET(
   req: Request,

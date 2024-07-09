@@ -1,6 +1,6 @@
-import { ILike } from "@/models/likes.model";
-import { useMutation,  useQuery,  useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { ILike } from '@/models/likes.model';
+import { useMutation,  useQuery,  useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
 
 export const useMovieLike = (
   movieId: number, 

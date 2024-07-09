@@ -1,6 +1,6 @@
-import { MoviesLikeResponse } from "@/models/likes.model";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { MoviesLikeResponse } from '@/models/likes.model';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
 
 const getMoviesLike = async () => {
   const response = await fetch(
@@ -21,11 +21,23 @@ const getMoviesLike = async () => {
 };
 
 export const useMoviesLike = () => {
+  const [isMobile, setIsMobile] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [allMovies, setAllMovies] = useState<MoviesLikeResponse>({ 
     movies: [],
     totalCount: 0
   });
+  
+  const moviesPerPage = isMobile ? 6 : 5;
+  
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize(); // 초기 렌더링 시 호출하여 초기 상태 설정
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const { data, isLoading, isError } = useQuery<MoviesLikeResponse, Error>({
     queryKey: ['myMoviesLikes'],
@@ -39,7 +51,7 @@ export const useMoviesLike = () => {
   }, [data]);
 
   const handleNextPage = () => {
-    if (currentPage < Math.ceil(allMovies?.totalCount / 5)) {
+    if (currentPage < Math.ceil(allMovies?.totalCount / moviesPerPage)) {
       setCurrentPage(currentPage + 1);
     }
   };
@@ -50,23 +62,24 @@ export const useMoviesLike = () => {
     }
   };
 
-  const moviesPerPage = 5;
   const totalCount = allMovies.totalCount;
   const totalPages = Math.ceil(totalCount / moviesPerPage);
   const pageNumbers = Array.from({ length: totalPages }, (_, index) => index + 1);
 
   const indexOfLastMovie = currentPage * moviesPerPage;
-  const indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
-  const currentMovies = allMovies.movies.slice(indexOfFirstMovie, indexOfLastMovie);
+  let indexOfFirstMovie = 0;
+  isMobile ? indexOfFirstMovie = 0: indexOfFirstMovie = indexOfLastMovie - moviesPerPage;
+  const currentMovies =  allMovies.movies.slice(indexOfFirstMovie, indexOfLastMovie);
 
   const handleClickPage = (clickPage: number) => {
     if (clickPage >= 1 && clickPage <= totalPages) {
       setCurrentPage(clickPage);
     }
   };
+  
 
   return {
-    allMovies,
+    isMobile,
     isLoading,
     isError,
     currentPage,

@@ -13,19 +13,20 @@ export default function MovieItem({ movieId, movieTitle, posterPath }: Props) {
     <div>
       <Link href={`/detail/${movieId}`} className='cursor-pointer'>
         <Image
-          className='w-full max-w-sm h-auto rounded-lg shadow-lg sm:mb-4'
+          className='w-full max-w-sm h-auto rounded-lg shadow-lg mb-3'
           src={`https://image.tmdb.org/t/p/original/${posterPath}`}
           alt={`${movieTitle} Poster`}
           width={500}
           height={500}
+          loading="lazy"
         />
       </Link>
       <div className='flex justify-between items-center'>
-      <div className='flex-grow text-xs hover:text-gray-500 cursor-pointer'>
-        <Link href={`/detail/${movieId}`}>
-          {movieTitle}
-        </Link>
-      </div>
+        <div className='flex-grow text-xs hover:text-gray-500 cursor-pointer'>
+          <Link href={`/detail/${movieId}`}>
+            {movieTitle}
+          </Link>
+        </div>
         <MovieLikeButton type={'list'} movieId={Number(movieId)} movieTitle={movieTitle} posterPath={posterPath} />
       </div>
     </div>

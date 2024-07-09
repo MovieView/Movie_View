@@ -1,5 +1,3 @@
-'use client';
-
 import { Cast, Credits } from '@/models/movie.model';
 import MovieCast from './MovieCast';
 import { useEffect, useRef, useState } from 'react';
@@ -46,7 +44,7 @@ const MovieCredits = ({ cast }: Credits) => {
   }, []);
 
   return (
-    <div className='mx-auto mt-6 max-w-5xl sm:px-6 lg:max-w-5xl lg:grid lg:gap-x-8 lg:px-8 space-y-3'>
+    <div className='mx-auto mt-6 max-w-5xl p-3 lg:p-0 lg:max-w-5xl lg:grid lg:gap-x-8 lg:px-8 space-y-3'>
       <div className='font-bold text-lg'>출연진</div>
       <div className='relative overflow-x-hidden'>
         <button

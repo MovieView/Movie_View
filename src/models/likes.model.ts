@@ -3,11 +3,13 @@ export interface ILike {
   likes: number;
 }
 
+export interface IMovie {
+  movies_id: number; 
+  movie_title: string;
+  poster_path: string;
+}
+
 export interface MoviesLikeResponse {
-  movies: { 
-    movies_id: number; 
-    movie_title: string;
-    poster_path: string;
-  }[];
+  movies: IMovie[];
   totalCount: number;
 }
