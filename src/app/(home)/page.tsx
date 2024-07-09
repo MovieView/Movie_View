@@ -11,6 +11,7 @@ import LoadMoreButton from '@/components/home/LoadMoreButton';
 import { isInViewport } from '@/utils/domUtils';
 import useMovieSearch from '@/hooks/useMovieSearch';
 import { useSession } from 'next-auth/react';
+import { useForm } from 'react-hook-form';
 
 export default function Home() {
   const getNextPageButton = React.useRef(null);
@@ -79,17 +80,28 @@ export default function Home() {
   );
   const modalShownRef = useRef(false);
 
+  interface INicknameForm {
+    nickname: string;
+  }
+
+  const {
+    handleSubmit: handleSubmitForm,
+    register,
+    formState: { errors },
+    setValue,
+  } = useForm<INicknameForm>();
+
   const handleNickname = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target.value);
     setNickname(e.target.value);
   };
 
-  const handleUpdateNickname = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
+  const handleUpdateNickname = async (data: INicknameForm) => {
     try {
       const userId = session?.uid;
       const provider = session?.provider;
+      const nickname = data.nickname;
+
+      console.log(nickname);
 
       const response = await fetch('/api/nickname', {
         method: 'POST',
@@ -127,6 +139,7 @@ export default function Home() {
       !modalShownRef.current
     ) {
       modalShownRef.current = true;
+      setValue('nickname', session?.user.name);
       openModal();
     }
   }, [session]);
@@ -178,7 +191,7 @@ export default function Home() {
         {/* 닉네임 설정 모달 */}
         {showModal && (
           <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'>
-            <form onSubmit={handleUpdateNickname}>
+            <form onSubmit={handleSubmitForm(handleUpdateNickname)}>
               <div className='bg-white rounded-lg shadow-lg p-6 w-80'>
                 <p className='text-lg font-bold mb-4'>
                   사용할 닉네임을 설정해주세요
@@ -186,9 +199,17 @@ export default function Home() {
                 <input
                   type='text'
                   className='border border-gray-300 rounded-lg px-3 py-2 w-full mb-4 focus:outline-none focus:ring focus:border-second'
-                  value={nickname}
-                  onChange={handleNickname}
+                  {...register('nickname', {
+                    required: '닉네임은 필수입니다.',
+                    minLength: {
+                      value: 2,
+                      message: '닉네임은 최소 2자 이상이어야 합니다.',
+                    },
+                  })}
                 />
+                {errors.nickname && (
+                  <p className='text-red-600 mb-4'>{errors.nickname.message}</p>
+                )}
                 <div className='flex justify-end'>
                   <button
                     type='button'
