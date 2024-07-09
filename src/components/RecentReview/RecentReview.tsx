@@ -1,6 +1,6 @@
 import { IoIosArrowForward } from 'react-icons/io';
 import { IoIosArrowBack } from 'react-icons/io';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import RecentReviewItem, { IRecentReview } from './RecentReviewItem';
 
@@ -8,35 +8,38 @@ interface Props {
   reviews: IRecentReview[];
 }
 
+export type ReviewItemType = 'small' | 'big';
+
 const RecentReview = ({ reviews }: Props) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [leftBtnVisible, setLeftBtnVisible] = useState(false);
-  const [rightBtnVisible, setrightBtnVisible] = useState(true);
+  const [rightBtnVisible, setRightBtnVisible] = useState(true);
   const [itemsPerView, setItemsPerView] = useState(3);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth <= 768) {
-        setItemsPerView(1);
-      } else if (window.innerWidth <= 1280) {
-        setItemsPerView(2);
-      } else {
-        setItemsPerView(3);
-      }
-    };
+  const handleResize = useCallback(() => {
+    if (window.innerWidth <= 768) {
+      setItemsPerView(1);
+    } else if (window.innerWidth <= 1280) {
+      setItemsPerView(2);
+    } else {
+      setItemsPerView(3);
+    }
+  }, []);
 
+  useEffect(() => {
     handleResize();
     window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
     };
-  }, []);
+  }, [handleResize]);
 
   const handlePrev = () => {
     if (currentIndex === 0) return;
     setCurrentIndex((prev) => prev - 1);
   };
+
   const handleNext = () => {
     if (currentIndex === Math.ceil(reviews.length / itemsPerView) - 1) return;
     setCurrentIndex((prev) => prev + 1);
@@ -51,18 +54,10 @@ const RecentReview = ({ reviews }: Props) => {
   }, [currentIndex, itemsPerView]);
 
   useEffect(() => {
-    if (currentIndex === 0) {
-      setLeftBtnVisible(false);
-      setrightBtnVisible(true);
-    } else if (currentIndex === Math.ceil(reviews.length / itemsPerView - 1)) {
-      setLeftBtnVisible(true);
-      setrightBtnVisible(false);
-    } else {
-      setLeftBtnVisible(true);
-      setrightBtnVisible(true);
-    }
-
-    if (reviews.length <= itemsPerView) setrightBtnVisible(false);
+    setLeftBtnVisible(currentIndex > 0);
+    setRightBtnVisible(
+      currentIndex < Math.ceil(reviews.length / itemsPerView) - 1
+    );
   }, [currentIndex, itemsPerView, reviews.length]);
 
   return (
@@ -93,7 +88,7 @@ const RecentReview = ({ reviews }: Props) => {
                 className='flex-shrink-0 xl:w-[calc((100%-24px)/3)] md:w-[calc((100%-12px)/2)] w-full'
               >
                 <Link href={'/recentReview?filter=like'}>
-                  <RecentReviewItem review={review} />
+                  <RecentReviewItem review={review} type={'small'} />
                 </Link>
               </div>
             ))}

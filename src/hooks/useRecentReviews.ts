@@ -23,20 +23,29 @@ const getRecentReviews = async (pageParam: number, filter: string) => {
 export const useRecentReviews = () => {
   const {
     isError: isRecentReviewsError,
-    isLoading: isRecentReviewsLoading,
+    isPending: isRecentReviewsPending,
+    isFetching: isRecentReviewsFetching,
     data: recentReviews,
+    refetch: recentReviewsRefetch,
   } = useQuery({
     queryKey: ['reviews', 'recent'],
     queryFn: () => getRecentReviews(1, 'like'),
+    staleTime: 5000,
   });
 
-  return { recentReviews, isRecentReviewsLoading, isRecentReviewsError };
+  return {
+    recentReviews,
+    isRecentReviewsPending,
+    isRecentReviewsError,
+    isRecentReviewsFetching,
+    recentReviewsRefetch,
+  };
 };
 
 export const useInfiniteRecentReviews = (filter: string) => {
   const {
     data,
-    isLoading,
+    isPending,
     isError,
     fetchNextPage,
     hasNextPage,
@@ -44,7 +53,7 @@ export const useInfiniteRecentReviews = (filter: string) => {
     refetch,
   } = useInfiniteQuery({
     queryKey: ['recent', 'reviews'],
-    queryFn: ({ pageParam = 1 }) => getRecentReviews(pageParam, filter),
+    queryFn: ({ pageParam }) => getRecentReviews(pageParam, filter),
     initialPageParam: 1,
     getNextPageParam: (lastPage) => {
       const isLast =
@@ -56,7 +65,7 @@ export const useInfiniteRecentReviews = (filter: string) => {
 
   return {
     data,
-    isLoading,
+    isPending,
     isError,
     fetchNextPage,
     hasNextPage,

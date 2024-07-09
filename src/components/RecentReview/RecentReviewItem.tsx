@@ -1,6 +1,9 @@
 import Image from 'next/image';
 import { FaStar } from 'react-icons/fa';
 import LikeButton from '../Like/LikeButton';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ReviewItemType } from './RecentReview';
+import { debounce } from '../Review/ReviewItem';
 
 export interface IRecentReview {
   id: string;
@@ -21,11 +24,56 @@ export interface IRecentReview {
 
 interface Props {
   review: IRecentReview;
+  type: ReviewItemType;
 }
 
-const RecentReviewItem = ({ review }: Props) => {
+const RecentReviewItem = ({ review, type }: Props) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [showBtn, setShowBtn] = useState(false);
+  const textRef = useRef<HTMLDivElement | null>(null);
+  const maxLine = type === 'small' ? 3 : 6;
+
+  const toggleMore = () => {
+    setIsExpanded((prev) => !prev);
+  };
+
+  const computeLine = useCallback(() => {
+    if (textRef.current) {
+      const element = textRef.current;
+      const lineHeight = parseInt(window.getComputedStyle(element).lineHeight);
+      const maxHeight = lineHeight * maxLine;
+      if (element.scrollHeight > maxHeight) {
+        setShowBtn(true);
+      } else {
+        setShowBtn(false);
+      }
+    }
+  }, [maxLine]);
+
+  useEffect(() => {
+    window.addEventListener('resize', debounce(computeLine, 200));
+
+    return () => {
+      window.removeEventListener('resize', debounce(computeLine, 200));
+    };
+  }, [computeLine]);
+
+  useEffect(() => {
+    computeLine();
+  }, [review]);
+
+  const lineClassName = () => {
+    if (type === 'small') {
+      return 'break-words line-clamp-3';
+    } else if (type === 'big' && !isExpanded) {
+      return `line-clamp-6`;
+    } else {
+      return ``;
+    }
+  };
+
   return (
-    <div className='border rounded-xl px-4 py-2 flex flex-col gap-3 h-52'>
+    <div className='border rounded-xl px-4 py-2 flex flex-col gap-3'>
       <div className='flex justify-between'>
         <div className='flex items-center'>
           <div className='overflow-hidden shrink-0 mr-2 w-5 h-5 rounded-full'>
@@ -49,7 +97,7 @@ const RecentReviewItem = ({ review }: Props) => {
         </div>
       </div>
 
-      <div className='flex gap-2 flex-grow overflow-hidden'>
+      <div className='flex gap-2'>
         <div className='w-20 h-24 flex-shrink-0'>
           {
             // eslint-disable-next-line @next/next/no-img-element
@@ -65,9 +113,16 @@ const RecentReviewItem = ({ review }: Props) => {
           }
         </div>
 
-        <div className='w-4/5 overflow-hidden'>
+        <div className='w-4/5'>
           <p className='font-bold'>{review.title}</p>
-          <p className='break-words line-clamp-3'>{review.content}</p>
+          <p className={lineClassName()} ref={textRef}>
+            {review.content}
+          </p>
+          {type !== 'small' && showBtn && (
+            <button onClick={toggleMore} className='text-gray-500'>
+              {isExpanded ? '접기' : '더보기'}
+            </button>
+          )}
         </div>
       </div>
 

@@ -198,7 +198,7 @@ function format(dateStr: string): string {
   return formattedDate;
 }
 
-function debounce(callback: () => void, delay: number) {
+export function debounce(callback: () => void, delay: number) {
   let timeout: ReturnType<typeof setTimeout>;
 
   return () => {

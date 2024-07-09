@@ -35,8 +35,13 @@ export default function Home(): React.ReactElement {
     refetch,
   } = useMovieSearch();
 
-  const { recentReviews, isRecentReviewsError, isRecentReviewsLoading } =
-    useRecentReviews();
+  const {
+    recentReviews,
+    isRecentReviewsError,
+    isRecentReviewsPending,
+    isRecentReviewsFetching,
+    recentReviewsRefetch,
+  } = useRecentReviews();
 
   const searchBarStyle = clsx(
     'w-[90%] md:w-[70%] mx-auto rounded-xl bg-second px-5 py-2 mt-24 text-black flex items-center shadow-md',
@@ -89,9 +94,13 @@ export default function Home(): React.ReactElement {
         )}
 
         {/*지금 뜨는 코멘트*/}
-        {!(isRecentReviewsError || isRecentReviewsLoading) && recentReviews && (
-          <RecentReview reviews={recentReviews.reviews.slice(0, 6)} />
+        {isRecentReviewsError && (
+          <LoadingError refetch={recentReviewsRefetch} />
         )}
+        {!(isRecentReviewsPending || isRecentReviewsFetching) &&
+          recentReviews && (
+            <RecentReview reviews={recentReviews.reviews.slice(0, 6)} />
+          )}
 
         {/* 로딩 중일 경우 */}
         {(isLoading || isRefetching || isPending) && <LoadingPing />}

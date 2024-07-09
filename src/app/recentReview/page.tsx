@@ -3,10 +3,11 @@ import RecentReviewItem, {
   IRecentReview,
 } from '@/components/RecentReview/RecentReviewItem';
 import ReviewButton from '@/components/Review/ReviewButton';
+import ReviewError from '@/components/Review/ReviewError';
 import ReviewLoadingSpinner from '@/components/Review/ReviewLoadingSpinner';
 import { sortOptions } from '@/components/Review/ReviewsList';
 import { useInfiniteRecentReviews } from '@/hooks/useRecentReviews';
-import { useSearchParams, usePathname } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 export default function RecentReview() {
@@ -15,7 +16,7 @@ export default function RecentReview() {
   const moreRef = useRef<HTMLDivElement | null>(null);
   const {
     data,
-    isLoading,
+    isPending,
     isError,
     isFetching,
     hasNextPage,
@@ -28,9 +29,9 @@ export default function RecentReview() {
   }, [filter]);
 
   useEffect(() => {
-    const param = searchParam.get('filter');
-    if (param !== null) {
-      setFilter(param);
+    const paramFilter = searchParam.get('filter');
+    if (paramFilter !== null) {
+      setFilter(paramFilter);
     }
   }, [searchParam]);
 
@@ -57,13 +58,15 @@ export default function RecentReview() {
     );
   };
 
-  if (isLoading || !data?.pages || isFetching) {
+  if (isPending || isFetching) {
     return (
       <div className='w-full h-screen flex items-center justify-center'>
         <ReviewLoadingSpinner />
       </div>
     );
   }
+
+  if (!data || isError) return <ReviewError />;
 
   return (
     <div className='flex flex-col mx-auto md:w-[50%] w-[80%] mt-4 gap-4'>
@@ -83,7 +86,7 @@ export default function RecentReview() {
       <div className='flex flex-col gap-4'>
         {data.pages.map((page) =>
           page.reviews.map((review: IRecentReview) => (
-            <RecentReviewItem key={review.id} review={review} />
+            <RecentReviewItem key={review.id} review={review} type='big' />
           ))
         )}
       </div>
