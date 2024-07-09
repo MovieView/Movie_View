@@ -22,7 +22,7 @@ interface IProps {
   posterPath: string;
 }
 
-const sortOptions = [
+export const sortOptions = [
   { id: 'like', value: '인기순' },
   { id: 'latest', value: '최신순' },
 ];

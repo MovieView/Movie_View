@@ -50,14 +50,18 @@ const RecentReviewItem = ({ review }: Props) => {
       </div>
 
       <div className='flex gap-2 flex-grow overflow-hidden'>
-        <div className='w-18 h-24 flex-shrink-0'>
+        <div className='w-20 h-24 flex-shrink-0'>
           {
             // eslint-disable-next-line @next/next/no-img-element
-            <img
-              className='w-full h-full object-cover'
-              src={`https://image.tmdb.org/t/p/original/${review.posterPath}`}
-              alt={`"${review.movieTitle}"`}
-            />
+            review.posterPath ? (
+              <img
+                className='w-full h-full object-cover'
+                src={`https://image.tmdb.org/t/p/original/${review.posterPath}`}
+                alt={`"${review.movieTitle}"`}
+              />
+            ) : (
+              <div className='w-full h-full bg-second' />
+            )
           }
         </div>
 

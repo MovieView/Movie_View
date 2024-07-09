@@ -1,4 +1,3 @@
-import { IReview, useReview } from '@/hooks/useReview';
 import { IoIosArrowForward } from 'react-icons/io';
 import { IoIosArrowBack } from 'react-icons/io';
 import { useEffect, useMemo, useState } from 'react';
@@ -6,7 +5,7 @@ import Link from 'next/link';
 import RecentReviewItem, { IRecentReview } from './RecentReviewItem';
 
 interface Props {
-  reviews: IReview[];
+  reviews: IRecentReview[];
 }
 
 const RecentReview = ({ reviews }: Props) => {
@@ -62,13 +61,18 @@ const RecentReview = ({ reviews }: Props) => {
       setLeftBtnVisible(true);
       setrightBtnVisible(true);
     }
-  }, [currentIndex, itemsPerView]);
+
+    if (reviews.length <= itemsPerView) setrightBtnVisible(false);
+  }, [currentIndex, itemsPerView, reviews.length]);
 
   return (
     <div className='mx-auto w-full mb-12 '>
       <div className='flex justify-between mb-4 items-center mx-auto md:w-[70%] w-[90%]'>
         <h2 className='font-bold text-2xl'>지금 뜨는 코멘트</h2>
-        <Link href={''} className='text-gray-500 flex items-center'>
+        <Link
+          href={'/recentReview?filter=like'}
+          className='text-gray-500 flex items-center'
+        >
           더보기
           <IoIosArrowForward />
         </Link>
@@ -88,7 +92,9 @@ const RecentReview = ({ reviews }: Props) => {
                 key={review.id}
                 className='flex-shrink-0 xl:w-[calc((100%-24px)/3)] md:w-[calc((100%-12px)/2)] w-full'
               >
-                <RecentReviewItem review={review} />
+                <Link href={'/recentReview?filter=like'}>
+                  <RecentReviewItem review={review} />
+                </Link>
               </div>
             ))}
           </div>

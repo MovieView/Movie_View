@@ -11,8 +11,8 @@ import LoadMoreButton from '@/components/home/LoadMoreButton';
 import { isInViewport } from '@/utils/domUtils';
 import useMovieSearch from '@/hooks/useMovieSearch';
 import RecentReview from '@/components/RecentReview/RecentReview';
-import { useReview } from '@/hooks/useReview';
 import { useRecentReviews } from '@/hooks/useRecentReviews';
+import ReviewLoadingSpinner from '@/components/Review/ReviewLoadingSpinner';
 
 export default function Home(): React.ReactElement {
   const getNextPageButton = React.useRef<HTMLButtonElement>(null);
@@ -87,16 +87,17 @@ export default function Home(): React.ReactElement {
             handleSubmit={handleSubmit}
           />
         )}
+
+        {/*지금 뜨는 코멘트*/}
+        {!(isRecentReviewsError || isRecentReviewsLoading) && recentReviews && (
+          <RecentReview reviews={recentReviews.reviews.slice(0, 6)} />
+        )}
+
         {/* 로딩 중일 경우 */}
         {(isLoading || isRefetching || isPending) && <LoadingPing />}
         {/* 에러 발생 시 */}
         {(isError || isRefetchError || isLoadingError) && (
           <LoadingError refetch={refetch} />
-        )}
-
-        {/*지금 뜨는 코멘트*/}
-        {!(isRecentReviewsError || isRecentReviewsLoading) && recentReviews && (
-          <RecentReview reviews={recentReviews} />
         )}
 
         {/* 영화 포스터 표시하기 */}
