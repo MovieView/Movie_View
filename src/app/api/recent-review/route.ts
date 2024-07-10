@@ -63,7 +63,7 @@ async function getRecentReviews(
   const sql = `SELECT HEX(r.id) AS id, r.movies_id AS movieId, r.social_accounts_uid AS userId, r.rating, r.title, 
     r.content, r.created_at AS createdAt, r.updated_at AS updatedAt,
     REPLACE(JSON_EXTRACT(s.extra_data, '$.username'), '"', '') AS nickname, 
-    REPLACE(JSON_EXTRACT(s.extra_data, '$.filePath'), '"', '') AS filePath,
+    REPLACE(JSON_EXTRACT(s.extra_data, '$.filepath'), '"', '') AS filePath,
     (SELECT COUNT(*) FROM reviews_likes AS rl WHERE HEX(rl.reviews_id) = HEX(r.id)) AS likes,
     ${liked}
     m.title AS movieTitle, m.poster_path AS posterPath
