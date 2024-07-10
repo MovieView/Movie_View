@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from "next/server";
-import { dbConnectionPoolAsync } from "@/lib/db";
+import { NextRequest, NextResponse } from 'next/server';
+import { dbConnectionPoolAsync } from '@/lib/db';
 
 export const POST = async (req: NextRequest, res: NextResponse) => {
   try {
@@ -9,22 +9,22 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
 
     const formUid = (provider: string) => {
       switch (provider) {
-        case "github":
-          return "github_" + userId;
-        case "kakao":
-          return "kakao_" + userId;
-        case "google":
-          return "google_" + userId;
+        case 'github':
+          return 'github_' + userId;
+        case 'kakao':
+          return 'kakao_' + userId;
+        case 'google':
+          return 'google_' + userId;
       }
     };
 
     // 닉네임이 없는 경우
     if (!nickname) {
       return new Response(
-        JSON.stringify({ error: "닉네임은 필수로 설정해야 합니다." }),
+        JSON.stringify({ error: '닉네임은 필수로 설정해야 합니다.' }),
         {
           status: 400,
-          headers: { "Content-Type": "application/json" },
+          headers: { 'Content-Type': 'application/json' },
         }
       );
     }
@@ -43,15 +43,15 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
 
     await connection.release();
 
-    return new Response(JSON.stringify({ message: "닉네임 업데이트 완료" }), {
+    return new Response(JSON.stringify({ message: '닉네임 업데이트 완료' }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    console.error("Database error:", err);
-    return new Response(JSON.stringify({ error: "닉네임 업데이트 실패" }), {
+    console.error('Database error:', err);
+    return new Response(JSON.stringify({ error: '닉네임 업데이트 실패' }), {
       status: 500,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     });
   }
 };

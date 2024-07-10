@@ -1,9 +1,9 @@
-import { NextAuthOptions } from "next-auth";
-import GithubProvider from "next-auth/providers/github";
-import KakaoProvider from "next-auth/providers/kakao";
-import GoogleProvider from "next-auth/providers/google";
-import { dbConnectionPoolAsync } from "./db";
-import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { NextAuthOptions } from 'next-auth';
+import GithubProvider from 'next-auth/providers/github';
+import KakaoProvider from 'next-auth/providers/kakao';
+import GoogleProvider from 'next-auth/providers/google';
+import { dbConnectionPoolAsync } from './db';
+import { ResultSetHeader, RowDataPacket } from 'mysql2';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -43,12 +43,12 @@ export const authOptions: NextAuthOptions = {
 
         const formUid = (provider: string) => {
           switch (provider) {
-            case "github":
-              return "github_" + userId;
-            case "kakao":
-              return "kakao_" + userId;
-            case "google":
-              return "google_" + userId;
+            case 'github':
+              return 'github_' + userId;
+            case 'kakao':
+              return 'kakao_' + userId;
+            case 'google':
+              return 'google_' + userId;
           }
         };
 
@@ -74,7 +74,7 @@ export const authOptions: NextAuthOptions = {
 
         if (count === 0) {
           const [result] = await connection.execute<ResultSetHeader>(
-            "INSERT INTO users (id, nickname) VALUES (?, ?)",
+            'INSERT INTO users (id, nickname) VALUES (?, ?)',
             [usersId, username]
           );
           myAccountId = result.insertId;
@@ -84,28 +84,28 @@ export const authOptions: NextAuthOptions = {
 
         const formProviderId = (provider: string) => {
           switch (provider) {
-            case "github":
+            case 'github':
               return 0;
-            case "kakao":
+            case 'kakao':
               return 1;
-            case "google":
+            case 'google':
               return 2;
           }
         };
 
         const formatDateToMySQL = (date: Date) => {
-          const pad = (num: number) => (num < 10 ? "0" : "") + num;
+          const pad = (num: number) => (num < 10 ? '0' : '') + num;
           return (
             date.getFullYear() +
-            "-" +
+            '-' +
             pad(date.getMonth() + 1) +
-            "-" +
+            '-' +
             pad(date.getDate()) +
-            " " +
+            ' ' +
             pad(date.getHours()) +
-            ":" +
+            ':' +
             pad(date.getMinutes()) +
-            ":" +
+            ':' +
             pad(date.getSeconds())
           );
         };
@@ -114,14 +114,14 @@ export const authOptions: NextAuthOptions = {
         const lastLogin = formatDateToMySQL(new Date());
 
         await connection.execute(
-          "INSERT INTO social_accounts (users_id, providers_id, uid, last_login, extra_data) VALUES (?, ?, ?, ?, ?)",
+          'INSERT INTO social_accounts (users_id, providers_id, uid, last_login, extra_data) VALUES (?, ?, ?, ?, ?)',
           [myAccountId, providerId, formUid(provider), lastLogin, extraData]
         );
 
         await connection.release();
         return true;
       } catch (err) {
-        console.error("Failed to save user:", err);
+        console.error('Failed to save user:', err);
         return false;
       }
     },

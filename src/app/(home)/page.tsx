@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import React, { useEffect, useRef, useState } from "react";
-import clsx from "clsx";
+import React, { useEffect, useRef, useState } from 'react';
+import clsx from 'clsx';
 
-import SearchMoviePoster from "@/components/home/SearchMoviePoster";
-import SearchBar from "@/components/home/SearchBar";
-import LoadingPing from "@/components/home/LoadingPing";
-import LoadingError from "@/components/home/LoadingError";
-import LoadMoreButton from "@/components/home/LoadMoreButton";
-import { isInViewport } from "@/utils/domUtils";
-import useMovieSearch from "@/hooks/useMovieSearch";
-import { useSession } from "next-auth/react";
-import { useForm } from "react-hook-form";
+import SearchMoviePoster from '@/components/home/SearchMoviePoster';
+import SearchBar from '@/components/home/SearchBar';
+import LoadingPing from '@/components/home/LoadingPing';
+import LoadingError from '@/components/home/LoadingError';
+import LoadMoreButton from '@/components/home/LoadMoreButton';
+import { isInViewport } from '@/utils/domUtils';
+import useMovieSearch from '@/hooks/useMovieSearch';
+import { useSession } from 'next-auth/react';
+import { useForm } from 'react-hook-form';
 
 export default function Home() {
   const getNextPageButton = React.useRef(null);
@@ -36,8 +36,8 @@ export default function Home() {
   } = useMovieSearch();
 
   const searchBarStyle = clsx(
-    "w-[90%] md:w-[70%] mx-auto rounded-xl bg-second px-5 py-2 mt-24 text-black flex items-center shadow-md",
-    isSuccess && "mb-24"
+    'w-[90%] md:w-[70%] mx-auto rounded-xl bg-second px-5 py-2 mt-24 text-black flex items-center shadow-md',
+    isSuccess && 'mb-24'
   );
 
   const handleQueryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +62,7 @@ export default function Home() {
         !isFetchingNextPage
       ) {
         fetchNextPage().then(() => {
-          console.log("Fetched next page");
+          console.log('Fetched next page');
         });
       }
     }, 1000);
@@ -101,16 +101,16 @@ export default function Home() {
       const provider = session?.provider;
       const nickname = data.nickname;
 
-      const response = await fetch("/api/nickname", {
-        method: "POST",
+      const response = await fetch('/api/nickname', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ nickname, userId, provider }),
       });
 
       if (response.ok) {
-        localStorage.setItem(`nicknameUpdated_${provider}`, "true");
+        localStorage.setItem(`nicknameUpdated_${provider}`, 'true');
         setShowModal(false);
       }
     } catch (err) {
@@ -137,14 +137,14 @@ export default function Home() {
       !modalShownRef.current
     ) {
       modalShownRef.current = true;
-      setValue("nickname", session?.user.name);
+      setValue('nickname', session?.user.name);
       openModal();
     }
   }, [session]);
 
   return (
-    <div className="w-full bg-white relative flex flex-col grow">
-      <div className="flex flex-col w-full grow">
+    <div className='w-full bg-white relative flex flex-col grow'>
+      <div className='flex flex-col w-full grow'>
         {/* 검색 바 표시하기 */}
         {!isError && !isLoadingError && !isRefetchError && (
           <SearchBar
@@ -162,7 +162,7 @@ export default function Home() {
         )}
         {/* 영화 포스터 표시하기 */}
         {isSuccess && !(isLoading || isRefetching) && data && (
-          <div className="grid w-[90%] md:w-[70%] mx-auto mb-10 grid-cols-2 gap-6 lg:grid-cols-3 lg:gap-10 xl:grid-cols-4">
+          <div className='grid w-[90%] md:w-[70%] mx-auto mb-10 grid-cols-2 gap-6 lg:grid-cols-3 lg:gap-10 xl:grid-cols-4'>
             {data.pages.map((page) => {
               return page.results.map((movie: any) => {
                 return (
@@ -188,37 +188,37 @@ export default function Home() {
 
         {/* 닉네임 설정 모달 */}
         {showModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'>
             <form onSubmit={handleSubmitForm(handleUpdateNickname)}>
-              <div className="bg-white rounded-lg shadow-lg p-6 w-80">
-                <p className="text-lg font-bold mb-4">
+              <div className='bg-white rounded-lg shadow-lg p-6 w-80'>
+                <p className='text-lg font-bold mb-4'>
                   사용할 닉네임을 설정해주세요
                 </p>
                 <input
-                  type="text"
-                  className="border border-gray-300 rounded-lg px-3 py-2 w-full mb-4 focus:outline-none focus:ring focus:border-second"
-                  {...register("nickname", {
-                    required: "닉네임은 필수입니다.",
+                  type='text'
+                  className='border border-gray-300 rounded-lg px-3 py-2 w-full mb-4 focus:outline-none focus:ring focus:border-second'
+                  {...register('nickname', {
+                    required: '닉네임은 필수입니다.',
                     minLength: {
                       value: 2,
-                      message: "닉네임은 최소 2자 이상이어야 합니다.",
+                      message: '닉네임은 최소 2자 이상이어야 합니다.',
                     },
                   })}
                 />
                 {errors.nickname && (
-                  <p className="text-red-600 mb-4">{errors.nickname.message}</p>
+                  <p className='text-red-600 mb-4'>{errors.nickname.message}</p>
                 )}
-                <div className="flex justify-end">
+                <div className='flex justify-end'>
                   <button
-                    type="button"
-                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg mr-2 transition duration-300 ease-in-out hover:bg-gray-400 hover:text-white"
+                    type='button'
+                    className='bg-gray-300 text-gray-700 px-4 py-2 rounded-lg mr-2 transition duration-300 ease-in-out hover:bg-gray-400 hover:text-white'
                     onClick={closeModal}
                   >
                     취소
                   </button>
                   <button
-                    type="submit"
-                    className="bg-second text-white px-4 py-2 rounded-lg transition duration-300 ease-in-out hover:bg-first"
+                    type='submit'
+                    className='bg-second text-white px-4 py-2 rounded-lg transition duration-300 ease-in-out hover:bg-first'
                   >
                     저장
                   </button>

@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { signOut, useSession } from "next-auth/react";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { signOut, useSession } from 'next-auth/react';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 const UserProfile = () => {
   const { data: session } = useSession();
@@ -28,9 +28,9 @@ const UserProfile = () => {
   const getProfileImg = async (userId: string, provider: string) => {
     try {
       const response = await fetch(`/api/profile-image`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           userId,
@@ -39,11 +39,11 @@ const UserProfile = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to save user");
+        throw new Error('Failed to save user');
       }
 
       const result = await response.json();
-      const filePath = result.filepath[0]["filepath"];
+      const filePath = result.filepath[0]['filepath'];
       const storageKey = `${provider}_profileImg`;
       localStorage.setItem(storageKey, filePath);
       setProfileImg(filePath);
@@ -53,23 +53,23 @@ const UserProfile = () => {
   };
 
   const handleLogOut = async () => {
-    await signOut({ callbackUrl: "/" });
+    await signOut({ callbackUrl: '/' });
   };
 
   return (
-    <div className="flex justify-between items-center text-xl gap-4">
+    <div className='flex justify-between items-center text-xl gap-4'>
       {session ? (
         <>
           <img
             src={`${profileImg}`}
             alt={`${session.user.name}`}
-            className={profileImg ? "rounded-full h-16 w-16" : "bg-transparent"}
+            className={profileImg ? 'rounded-full h-16 w-16' : 'bg-transparent'}
           />
           <button onClick={handleLogOut}>LogOut</button>
         </>
       ) : (
         <>
-          <Link href="/login">
+          <Link href='/login'>
             <button>LogIn</button>
           </Link>
         </>
