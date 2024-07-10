@@ -2,7 +2,7 @@
 import { useMovieLike } from '@/hooks/useMovieLike';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 
-interface IProps {
+interface Props {
   type: 'one' | 'list';
   movieId: number;
   movieTitle: string;
@@ -14,7 +14,7 @@ const MovieLikeButton = ({
   movieId,
   movieTitle,
   posterPath
-}: IProps) => {
+}: Props) => {
   let isEnabled = false;
   let firstLike = 1;
   if(type === 'one') {

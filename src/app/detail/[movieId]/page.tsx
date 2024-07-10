@@ -1,7 +1,7 @@
 import MovieInfo from '@/components/movie/MovieInfo';
 import { Suspense } from 'react';
 import Spinner from '@/components/common/Spinner';
-import { fetchMovie } from '@/utils/movieApi';
+import { fetchMovie } from '@/app/api/movie/[movieId]/route';
 
 interface IParams {
   params: { movieId: string };

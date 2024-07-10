@@ -1,6 +1,6 @@
 'use client'
 import { useMoviesLike } from '@/hooks/useMoviesLikeList';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import MovieItem from './MovieItem';
 import { MdNavigateBefore, MdNavigateNext } from 'react-icons/md';
 import Spinner from '../common/Spinner';

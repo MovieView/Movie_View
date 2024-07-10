@@ -1,4 +1,4 @@
-import { ILike } from '@/models/likes.model';
+import { Like } from '@/models/likes.model';
 import { useMutation,  useQuery,  useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
@@ -15,10 +15,10 @@ export const useMovieLike = (
     data: like, 
     isLoading, 
     isError 
-  } = useQuery<ILike>({ 
+  } = useQuery<Like>({ 
     queryKey: ['movies_like', movieId], 
     queryFn: async () => {
-      const response = await fetch(`/api/like/movie/${movieId}`);
+      const response = await fetch(`/api/movie/like/${movieId}`);
       if (!response.ok) {
           throw new Error('Failed to fetch likes');
       }
@@ -29,7 +29,7 @@ export const useMovieLike = (
 
   const addLikeMutation = useMutation({
     mutationFn: async (movieId: number) => {
-      const response = await fetch(`/api/like/movie/${movieId}`, {
+      const response = await fetch(`/api/movie/like/${movieId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ export const useMovieLike = (
 
   const deleteLikeMutation = useMutation({
     mutationFn: async (movieId: number) => {
-      const response = await fetch(`/api/like/movie/${movieId}`, {
+      const response = await fetch(`/api/movie/like/${movieId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

@@ -1,4 +1,4 @@
-import { ILike } from '@/models/likes.model';
+import { Like } from '@/models/likes.model';
 import { useMutation,  useQuery,  useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 
@@ -10,7 +10,7 @@ export const useLike = (reviewId: string) => {
     data: likes, 
     isLoading, 
     isError 
-  } = useQuery<ILike>({ 
+  } = useQuery<Like>({ 
     queryKey: ['reviews_like', reviewId], 
     queryFn: async () => {
       const response = await fetch(`/api/like/${reviewId}`);
