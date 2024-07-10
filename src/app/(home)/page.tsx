@@ -12,7 +12,7 @@ import { isInViewport } from '@/utils/domUtils';
 import useMovieSearch from '@/hooks/useMovieSearch';
 import RecentReview from '@/components/recentReview/RecentReview';
 import { useRecentReviews } from '@/hooks/useRecentReviews';
-import ReviewLoadingSpinner from '@/components/Review/ReviewLoadingSpinner';
+import ReviewLoadingSpinner from '@/components/review/ReviewLoadingSpinner';
 
 export default function Home(): React.ReactElement {
   const getNextPageButton = React.useRef<HTMLButtonElement>(null);

@@ -4,12 +4,12 @@ import { IoIosArrowDown } from 'react-icons/io';
 import LikeButton from '../Like/LikeButton';
 import { useSession } from 'next-auth/react';
 import { formatUserId } from '@/utils/formatUserId';
-import ReviewDropDownMenu from './ReviewDropDownMenu';
-import ReviewForm from './ReviewForm';
 import CommentsList from '../comment/CommentsList';
-import ReviewButton from './ReviewButton';
 import { formatDate } from '@/utils/formatDate';
 import { Review, ReviewFormData } from '@/models/review.model';
+import ReviewForm from '../review/ReviewForm';
+import ReviewDropDownMenu from '../review/ReviewDropDownMenu';
+import ReviewButton from '../review/ReviewButton';
 
 interface Props {
   review: Review;

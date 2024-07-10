@@ -4,7 +4,7 @@ const LIMIT = 10;
 
 const getRecentReviews = async (pageParam: number, filter: string) => {
   const response = await fetch(
-    `/api/recentReview?page=${pageParam}&filter=${filter}`,
+    `/api/recentreview?page=${pageParam}&filter=${filter}`,
     {
       method: 'GET',
       headers: {

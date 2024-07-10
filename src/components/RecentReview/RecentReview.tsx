@@ -2,7 +2,9 @@ import { IoIosArrowForward } from 'react-icons/io';
 import { IoIosArrowBack } from 'react-icons/io';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import RecentReviewItem, { IRecentReview } from './RecentReviewItem';
+import RecentReviewItem, {
+  IRecentReview,
+} from '../recentReview/RecentReviewItem';
 
 interface Props {
   reviews: IRecentReview[];

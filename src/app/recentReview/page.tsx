@@ -1,11 +1,12 @@
 'use client';
+
 import RecentReviewItem, {
   IRecentReview,
 } from '@/components/recentReview/RecentReviewItem';
-import ReviewButton from '@/components/Review/ReviewButton';
-import ReviewError from '@/components/Review/ReviewError';
-import ReviewLoadingSpinner from '@/components/Review/ReviewLoadingSpinner';
-import { sortOptions } from '@/components/Review/ReviewsList';
+import ReviewButton from '@/components/review/ReviewButton';
+import ReviewError from '@/components/review/ReviewError';
+import ReviewLoadingSpinner from '@/components/review/ReviewLoadingSpinner';
+import { sortOptions } from '@/components/review/ReviewsList';
 import { useInfiniteRecentReviews } from '@/hooks/useRecentReviews';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';

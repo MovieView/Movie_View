@@ -7,6 +7,7 @@ import { getServerSession } from 'next-auth';
 const LIMIT = 10;
 
 export async function GET(req: Request) {
+  console.log('GETTT');
   try {
     const { searchParams } = new URL(req.url);
     let filter = searchParams.get('filter') ?? 'like';

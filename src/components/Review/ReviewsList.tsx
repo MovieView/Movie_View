@@ -2,12 +2,12 @@
 import { useReview } from '@/hooks/useReview';
 import ReviewItem from './ReviewItem';
 import React, { useEffect, useRef, useState } from 'react';
-import ReviewEmpty from './ReviewEmpty';
-import ReviewLoadingSpinner from './ReviewLoadingSpinner';
-import ReviewButton from './ReviewButton';
-import ReviewFakeForm from './ReviewFakeForm';
-import ReviewFormContainer from './ReviewFormContainer';
-import ReviewError from './ReviewError';
+import ReviewEmpty from '../review/ReviewEmpty';
+import ReviewLoadingSpinner from '../review/ReviewLoadingSpinner';
+import ReviewButton from '../review/ReviewButton';
+import ReviewFakeForm from '../review/ReviewFakeForm';
+import ReviewFormContainer from '../review/ReviewFormContainer';
+import ReviewError from '../review/ReviewError';
 import { useSession } from 'next-auth/react';
 import { Review } from '@/models/review.model';
 
