@@ -1,9 +1,8 @@
 import { FormEvent, useState } from 'react';
+import ReviewForm from '../review/ReviewForm';
+import { ReviewFormData } from '@/models/review.model';
 
-import ReviewForm from './ReviewForm';
-import { IReviewFormData } from './ReviewsList';
-
-interface IProps {
+interface Props {
   movieId: number;
   onSubmit: (
     movieId: number,
@@ -20,8 +19,8 @@ export default function ReviewFormContainer({
   onSubmit,
   setIsFormOpen,
   text,
-}: IProps) {
-  const [reviewData, setReviewData] = useState<IReviewFormData>({
+}: Props) {
+  const [reviewData, setReviewData] = useState<ReviewFormData>({
     title: '',
     rating: 0,
     content: '',

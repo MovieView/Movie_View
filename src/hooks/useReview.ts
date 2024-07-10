@@ -1,40 +1,10 @@
+import { Review, ReviewFormData } from '@/models/review.model';
 import {
   useInfiniteQuery,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
 import { useEffect, useState } from 'react';
-
-export interface IReview {
-  id: string;
-  movieId: number;
-  userId: string;
-  rating: number;
-  title: string;
-  content: string;
-  createdAt: string;
-  updatedAt: string;
-  nickname: string;
-  filePath: string | null;
-  likes: number;
-  liked: number;
-}
-
-interface IPagination {
-  currentPage: number;
-  totalCount: number;
-}
-
-export interface IReviewList {
-  reviews: IReview[];
-  pagination: IPagination;
-}
-
-interface IReviewInputParams {
-  title: string;
-  rating: number;
-  content: string;
-}
 
 const MAX_RESULT = 10;
 const getReviews = async (movieId: number, page = 1, sort: string) => {
@@ -60,7 +30,7 @@ const updateReview = async ({
   title,
   rating,
   content,
-}: IReviewInputParams & { reviewId: string }) => {
+}: ReviewFormData & { reviewId: string }) => {
   const response = await fetch(`/api/review/${reviewId}`, {
     method: 'PUT',
     headers: {
@@ -81,17 +51,30 @@ const createReview = async ({
   title,
   rating,
   content,
-}: IReviewInputParams & { movieId: number }) => {
+  movieTitle,
+  posterPath,
+}: ReviewFormData & {
+  movieId: number;
+  movieTitle: string;
+  posterPath: string;
+}) => {
   const response = await fetch(`/api/review`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ movieId, title, rating, content }),
+    body: JSON.stringify({
+      movieId,
+      title,
+      rating,
+      content,
+      movieTitle,
+      posterPath,
+    }),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to delete the review');
+    throw new Error('Failed to add the review');
   }
 
   return response.json();
@@ -110,7 +93,12 @@ const deleteReview = async (reviewId: string) => {
   return reviewId;
 };
 
-export function useReview(movieId: number, sort: string) {
+export function useReview(
+  movieId: number,
+  sort: string,
+  movieTitle: string,
+  posterPath: string
+) {
   const queryClient = useQueryClient();
   const [isEmpty, setIsEmpty] = useState(false);
   const {
@@ -146,9 +134,7 @@ export function useReview(movieId: number, sort: string) {
 
         const newPages = oldData.pages.map((group: any) => ({
           ...group,
-          reviews: group.reviews.filter(
-            (item: IReview) => item.id !== reviewId
-          ),
+          reviews: group.reviews.filter((item: Review) => item.id !== reviewId),
         }));
 
         return {
@@ -187,7 +173,14 @@ export function useReview(movieId: number, sort: string) {
     rating: number,
     content: string
   ) => {
-    addReviewMutation.mutate({ movieId, title, rating, content });
+    addReviewMutation.mutate({
+      movieId,
+      title,
+      rating,
+      content,
+      movieTitle,
+      posterPath,
+    });
   };
 
   const deleteMyReview = (reviewId: string) => {

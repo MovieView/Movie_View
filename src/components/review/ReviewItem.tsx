@@ -1,17 +1,18 @@
-import { IReview } from '@/hooks/useReview';
 import { FormEvent, useEffect, useRef, useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { IoIosArrowDown } from 'react-icons/io';
-import ReviewDropDownMenu from './ReviewDropDownMenu';
-import ReviewForm from './ReviewForm';
-import { IReviewFormData } from './ReviewsList';
-import LikeButton from '../Like/LikeButton';
+import LikeButton from '../like/LikeButton';
 import { useSession } from 'next-auth/react';
 import { formatUserId } from '@/utils/formatUserId';
-import Image from 'next/image';
+import CommentsList from '../comment/CommentsList';
+import { formatDate } from '@/utils/formatDate';
+import { Review, ReviewFormData } from '@/models/review.model';
+import ReviewForm from '../review/ReviewForm';
+import ReviewDropDownMenu from '../review/ReviewDropDownMenu';
+import ReviewButton from '../review/ReviewButton';
 
-interface IProps {
-  review: IReview;
+interface Props {
+  review: Review;
   onUpdate: (
     reviewId: string,
     title: string,
@@ -21,14 +22,16 @@ interface IProps {
   onDelete: (reviewId: string) => void;
 }
 
-export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
+export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
   const { data: session } = useSession();
   const userId = session && formatUserId(session?.provider, session?.uid);
   const contentRef = useRef<HTMLPreElement>(null);
   const [expanded, setExpanded] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [reviewData, setReviewData] = useState<IReviewFormData>(review);
+  const [reviewData, setReviewData] = useState<ReviewFormData>(review);
+  const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleUpdate = (e: FormEvent) => {
     e.preventDefault();
@@ -86,7 +89,6 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
     handleResize();
   }, [review]);
 
-  console.log(review);
   return (
     <>
       <div className='flex p-4 border max-w-3xl rounded-xl mx-auto shadow-sm relative'>
@@ -129,7 +131,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
                   <ReviewDropDownMenu
                     handleEdit={handleCloseForm}
                     reviewId={review.id}
-                    onDelete={onDelete}
+                    onDeleteReview={onDelete}
                   />
                 )}
               </div>
@@ -166,17 +168,48 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
               {review.nickname ? review.nickname : '알 수 없음'}
             </span>
             <span className='text-gray-400 text-sm'>
-              {format(review.createdAt)}
+              {formatDate(review.createdAt)}
             </span>
             {review.createdAt !== review.updatedAt && (
               <span className='text-gray-400 text-sm'>(수정됨)</span>
             )}
           </div>
 
-          <LikeButton
+          <div className='flex gap-3'>
+            <LikeButton
+              reviewId={review.id}
+              liked={review.liked}
+              likesCount={review.likes}
+            />
+            <ReviewButton
+              text='답글'
+              onClick={() => {
+                setIsCommentFormOpen(!isCommentFormOpen);
+              }}
+            />
+          </div>
+
+          {review.commentsCount > 0 && (
+            <div>
+              <button
+                className='hover:bg-third py-1 px-2 rounded-lg text-sm inline-flex items-center gap-1'
+                onClick={() => (isOpen ? setIsOpen(false) : setIsOpen(true))}
+              >
+                <IoIosArrowDown
+                  className={`transform transition ease-linear duration-300 ${
+                    isOpen ? 'rotate-180' : 'rotate-0'
+                  }`}
+                />
+                <span>{`답글 ${review.commentsCount}개`}</span>
+              </button>
+            </div>
+          )}
+
+          <CommentsList
+            isOpen={isOpen}
             reviewId={review.id}
-            liked={review.liked}
-            likesCount={review.likes}
+            isCommentFormOpen={isCommentFormOpen}
+            setIsCommentFormOpen={setIsCommentFormOpen}
           />
         </div>
       </div>
@@ -184,22 +217,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: IProps) {
   );
 }
 
-function format(dateStr: string): string {
-  const date = new Date(dateStr);
-  const formatter = new Intl.DateTimeFormat('ko-KR', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    timeZone: 'Asia/Seoul',
-  });
-  const formattedDate = date && formatter.format(date);
-  return formattedDate;
-}
-
-function debounce(callback: () => void, delay: number) {
+export function debounce(callback: () => void, delay: number) {
   let timeout: ReturnType<typeof setTimeout>;
 
   return () => {
