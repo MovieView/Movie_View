@@ -1,22 +1,20 @@
-import { authOptions } from '@/lib/authOptions';
+import { authOPtions } from '@/lib/authOptions';
 import { dbConnectionPoolAsync } from '@/lib/db';
 import { formatUserId } from '@/utils/formatUserId';
 import { ResultSetHeader } from 'mysql2';
 import { getServerSession } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 
-export interface ReviewData {
+export interface IReviewData {
   movieId: number;
   title: string;
   rating: number;
   content: string;
-  movieTitle: string;
-  posterPath: string;
 }
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await getServerSession(authOPtions);
     if (!session?.provider && !session?.uid) {
       return;
     }
@@ -27,13 +25,9 @@ export async function POST(req: Request) {
       return new Response('Authentication Error', { status: 401 });
     }
 
-    const data: ReviewData = await req.json();
+    const data: IReviewData = await req.json();
 
-    const movie = await addMovieId(
-      data.movieId,
-      data.movieTitle,
-      data.posterPath
-    );
+    const movie = await addMovieId(data.movieId);
 
     const review = await addReview(userId, data);
 
@@ -57,7 +51,7 @@ export async function POST(req: Request) {
   }
 }
 
-async function addReview(userId: string, data: ReviewData) {
+async function addReview(userId: string, data: IReviewData) {
   const id = uuidv4().replace(/-/g, '');
   const sql = `INSERT INTO reviews (id, movies_id, social_accounts_uid, rating, title, content) VALUES(UNHEX(?), ?, ?, ?, ?, ?)`;
   const values = [
@@ -80,16 +74,12 @@ async function addReview(userId: string, data: ReviewData) {
   }
 }
 
-async function addMovieId(
-  movieId: number,
-  movieTitle: string,
-  posterPath: string
-) {
-  const sql = `INSERT IGNORE INTO movies (id, title, poster_path) VALUES (?,?,?)`;
-  const values = [movieId, movieTitle, posterPath];
+async function addMovieId(movieId: number) {
+  const sql = `INSERT IGNORE INTO movies (id) VALUES (?)`;
+  const values = [movieId];
   try {
     const connection = await dbConnectionPoolAsync.getConnection();
-    const [result] = await connection.execute(sql, values);
+    const [result] = await await connection.execute(sql, values);
     connection.release();
     return (result as ResultSetHeader).affectedRows;
   } catch (err) {

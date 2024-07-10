@@ -1,4 +1,4 @@
-interface Props {
+interface IProps {
   text: string;
   icon?: React.ReactNode;
   fontSize?: 'xs' | 'sm' | 'md' | 'lg';
@@ -12,7 +12,7 @@ export default function ReviewButton({
   fontSize = 'md',
   state = false,
   onClick,
-}: Props) {
+}: IProps) {
   return (
     <button
       className={`${

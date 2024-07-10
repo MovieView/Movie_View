@@ -1,12 +1,12 @@
 import { useState } from 'react';
 import { FaStar, FaStarHalf } from 'react-icons/fa';
 
-interface Props {
+interface IProps {
   rating: number;
   onRatingChange: (newRating: number) => void;
 }
 
-export default function ReviewRating({ rating, onRatingChange }: Props) {
+export default function ReviewRating({ rating, onRatingChange }: IProps) {
   const [score, setScore] = useState(rating / 2);
   const [position, setPosition] = useState(rating / 2);
 

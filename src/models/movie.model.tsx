@@ -23,8 +23,3 @@ export interface Cast {
 export interface Credits {
   cast: Cast[];
 }
-
-export interface MovieDetail {
-  movie: Movie;
-  credits: Credits;
-}

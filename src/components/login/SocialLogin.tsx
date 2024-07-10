@@ -1,67 +1,116 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import Home from '@/app/(home)/page';
 import { signIn, useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
 
 const SocialLogin = () => {
+  const isFirstRender = useRef(true);
+  const isLoginComplete = useRef(false);
   const { data: session } = useSession();
   const router = useRouter();
-  const [showLoginModal, setShowLoginModal] = useState(true);
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
-    if (session?.user) {
-      setShowLoginModal(false);
-      router.push('/');
-    }
-  }, [session, router]);
+    const checkUserAndSave = async () => {
+      if (session && session.user) {
+        const username = session.user.name;
+        const filePath = session.user.image;
+        const provider = session.provider;
+        const userId = session.uid;
 
-  const handleLogin = async (provider: string) => {
+        await saveUser(username, filePath, provider, userId);
+        setShowAlert(true);
+      }
+    };
+
+    if (session?.uid && isLoginComplete.current === false) {
+      isLoginComplete.current = true;
+      checkUserAndSave();
+      return;
+    }
+
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+
+      return;
+    }
+  }, [session]);
+
+  const saveUser = async (
+    username: string,
+    filePath: string,
+    provider: string,
+    userId: string
+  ) => {
     try {
-      await signIn(provider, { callbackUrl: '/' });
-    } catch (err) {
-      console.log(err);
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username,
+          filePath,
+          provider,
+          userId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save user');
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
 
-  const closeModal = () => {
-    setShowLoginModal(false);
+  const handleLogin = async (provider: string) => {
+    await signIn(provider);
+  };
+
+  const redirectToHome = () => {
     router.push('/');
+    setShowAlert(false);
   };
 
   return (
-    <>
-      <Home />
-
-      {showLoginModal && (
-        <div
-          className='fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-80'
-          onClick={closeModal}
+    <div className="flex justify-center items-center h-screen">
+      <div className="flex flex-col justify-center items-center w-80 h-96 gap-8 rounded-xl border-[#B9D7EA] border-solid border-4">
+        <button
+          className="rounded-2xl border-none bg-slate-300 p-4 w-9/12"
+          onClick={() => handleLogin('github')}
         >
-          <div className='flex flex-col justify-center items-center w-80 h-96 gap-8 bg-slate-200 rounded-xl'>
+          Sign in with Github
+        </button>
+        <button
+          className="rounded-2xl border-none bg-slate-300 p-4 w-9/12"
+          onClick={() => handleLogin('kakao')}
+        >
+          Sign in with Kakao
+        </button>
+        <button
+          className="rounded-2xl border-none bg-slate-300 p-4 w-9/12"
+          onClick={() => handleLogin('google')}
+        >
+          Sign in with Google
+        </button>
+      </div>
+      {/* 로그인 후 알림창 */}
+      {showAlert && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="bg-white p-4 rounded-lg w-80">
+            <p className="text-lg">{`${session?.user.name}님 반갑습니다!`}</p>
             <button
-              className='rounded-2xl border-none bg-gray-800 text-white p-4 w-9/12 hover:bg-gray-900 focus:bg-gray-900'
-              onClick={() => handleLogin('github')}
+              className="mt-2 bg-slate-300 text-white px-4 py-2 rounded-lg"
+              onClick={redirectToHome}
             >
-              Sign in with Github
-            </button>
-            <button
-              className='rounded-2xl border-none bg-yellow-400 text-black p-4 w-9/12 hover:bg-yellow-500 focus:bg-yellow-500'
-              onClick={() => handleLogin('kakao')}
-            >
-              Sign in with Kakao
-            </button>
-            <button
-              className='rounded-2xl border-none bg-blue-600 text-white p-4 w-9/12 hover:bg-blue-700 focus:bg-blue-700'
-              onClick={() => handleLogin('google')}
-            >
-              Sign in with Google
+              확인
             </button>
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
