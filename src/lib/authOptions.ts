@@ -38,8 +38,8 @@ export const authOptions: NextAuthOptions = {
         const connection = await dbConnectionPoolAsync.getConnection();
         const userId = user.id;
         const provider = account?.provider as string;
-        const userName = user.name;
-        const filePath = user.image;
+        const username = user.name;
+        const filepath = user.image;
 
         const formUid = (provider: string) => {
           switch (provider) {
@@ -75,12 +75,12 @@ export const authOptions: NextAuthOptions = {
         if (count === 0) {
           const [result] = await connection.execute<ResultSetHeader>(
             'INSERT INTO users (id, nickname) VALUES (?, ?)',
-            [usersId, userName]
+            [usersId, username]
           );
           myAccountId = result.insertId;
         }
 
-        const extraData = JSON.stringify({ userName, filePath });
+        const extraData = JSON.stringify({ username, filepath });
 
         const formProviderId = (provider: string) => {
           switch (provider) {
