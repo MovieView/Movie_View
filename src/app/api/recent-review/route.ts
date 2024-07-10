@@ -11,13 +11,13 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     let filter = searchParams.get('filter') ?? 'like';
     let page = searchParams.get('page') ?? 1;
+    let userId;
 
     const session = await getServerSession(authOptions);
     if (!session?.provider && !session?.uid) {
-      return;
+    } else {
+      userId = formatUserId(session.provider, session.uid);
     }
-
-    let userId = formatUserId(session.provider, session.uid);
 
     const reviews = await getRecentReviews(filter, userId, Number(page));
 
@@ -73,7 +73,6 @@ async function getRecentReviews(
     WHERE r.created_at BETWEEN DATE_ADD(NOW(), INTERVAL -1 WEEK) AND NOW() 
     ORDER BY ${orderBy}
     LIMIT ?, ?`;
-
   const connection = await dbConnectionPoolAsync.getConnection();
   try {
     const [result] = await connection.execute(sql, values);
