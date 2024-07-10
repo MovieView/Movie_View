@@ -1,7 +1,7 @@
 'use client';
 import RecentReviewItem, {
   IRecentReview,
-} from '@/components/RecentReview/RecentReviewItem';
+} from '@/components/recentReview/RecentReviewItem';
 import ReviewButton from '@/components/Review/ReviewButton';
 import ReviewError from '@/components/Review/ReviewError';
 import ReviewLoadingSpinner from '@/components/Review/ReviewLoadingSpinner';

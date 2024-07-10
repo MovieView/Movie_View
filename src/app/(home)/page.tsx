@@ -10,7 +10,7 @@ import LoadingError from '@/components/home/LoadingError';
 import LoadMoreButton from '@/components/home/LoadMoreButton';
 import { isInViewport } from '@/utils/domUtils';
 import useMovieSearch from '@/hooks/useMovieSearch';
-import RecentReview from '@/components/RecentReview/RecentReview';
+import RecentReview from '@/components/recentReview/RecentReview';
 import { useRecentReviews } from '@/hooks/useRecentReviews';
 import ReviewLoadingSpinner from '@/components/Review/ReviewLoadingSpinner';
 

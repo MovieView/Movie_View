@@ -5,7 +5,7 @@ import { ResultSetHeader } from 'mysql2';
 import { getServerSession } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 
-export interface IReviewData {
+export interface ReviewData {
   movieId: number;
   title: string;
   rating: number;
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       return new Response('Authentication Error', { status: 401 });
     }
 
-    const data: IReviewData = await req.json();
+    const data: ReviewData = await req.json();
 
     const movie = await addMovieId(
       data.movieId,
@@ -57,7 +57,7 @@ export async function POST(req: Request) {
   }
 }
 
-async function addReview(userId: string, data: IReviewData) {
+async function addReview(userId: string, data: ReviewData) {
   const id = uuidv4().replace(/-/g, '');
   const sql = `INSERT INTO reviews (id, movies_id, social_accounts_uid, rating, title, content) VALUES(UNHEX(?), ?, ?, ?, ?, ?)`;
   const values = [
