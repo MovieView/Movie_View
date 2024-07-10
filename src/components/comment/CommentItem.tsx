@@ -18,11 +18,10 @@ export default function CommentItem({ reviewId, comment, onUpdate }: Props) {
   const userId = session && formatUserId(session?.provider, session?.uid);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [CommentData, setCommentData] = useState<CommentContent>(comment);
-  const { deleteMyComment, decreaseCommentCount } = useComment(reviewId);
+  const { deleteMyComment } = useComment(reviewId);
 
   const handleDeleteComment = (reviewId: string, commentId: string) => {
     deleteMyComment(reviewId, commentId);
-    decreaseCommentCount();
   };
 
   const handleCloseForm = () => {

@@ -1,18 +1,12 @@
-import { useEffect, useState } from 'react';
-import { Comment } from '@/models/comment.model';
+import { useCallback, useEffect, useState } from 'react';
+import { CommentData } from '@/models/comment.model';
 import {
   useInfiniteQuery,
   useMutation,
   useQueryClient,
 } from '@tanstack/react-query';
 
-export interface CommentInputParams {
-  reviewId: string;
-  commentId: string;
-  content: string;
-}
-
-const MAX_RESULT = 8;
+const MAX_RESULT = 5;
 export const getComments = async (reviewId: string, page = 1) => {
   const response = await fetch(
     `/api/review/${reviewId}?maxResults=${MAX_RESULT}&page=${page}`,
@@ -34,7 +28,7 @@ export const getComments = async (reviewId: string, page = 1) => {
 const createComment = async ({
   reviewId,
   content,
-}: Pick<CommentInputParams, 'reviewId' | 'content'>) => {
+}: Pick<CommentData, 'reviewId' | 'content'>) => {
   const response = await fetch(`/api/review/${reviewId}`, {
     method: 'POST',
     headers: {
@@ -54,7 +48,7 @@ export const updateComment = async ({
   reviewId,
   commentId,
   content,
-}: CommentInputParams) => {
+}: CommentData) => {
   const response = await fetch(`/api/review/${reviewId}/${commentId}`, {
     method: 'PUT',
     headers: {
@@ -73,7 +67,7 @@ export const updateComment = async ({
 const deleteComment = async ({
   reviewId,
   commentId,
-}: Omit<CommentInputParams, 'content'>) => {
+}: Omit<CommentData, 'content'>) => {
   const response = await fetch(`/api/review/${reviewId}/${commentId}`, {
     method: 'DELETE',
     body: JSON.stringify({ commentId }),
@@ -89,7 +83,7 @@ const deleteComment = async ({
 export function useComment(reviewId: string) {
   const queryClient = useQueryClient();
   const [enabled, setEnabled] = useState(false);
-  const [commentCount, setCommentCount] = useState<null | number>(null);
+  const [commentCount, setCommentCount] = useState<number>(0);
   const {
     data: comments,
     fetchNextPage,
@@ -97,6 +91,7 @@ export function useComment(reviewId: string) {
     error,
     hasNextPage,
     isFetching,
+    isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: ['comments', reviewId],
     queryFn: ({ pageParam = 1 }) => getComments(reviewId, pageParam),
@@ -111,8 +106,8 @@ export function useComment(reviewId: string) {
       }
     },
     initialPageParam: 1,
-    enabled: enabled,
     staleTime: 1000 * 60 * 5,
+    enabled,
   });
 
   const deleteReviewMutation = useMutation({
@@ -121,6 +116,7 @@ export function useComment(reviewId: string) {
       queryClient.invalidateQueries({
         queryKey: ['comments', reviewId],
       });
+      decreaseCommentCount();
     },
   });
 
@@ -149,6 +145,7 @@ export function useComment(reviewId: string) {
     mutationFn: createComment,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments', reviewId] });
+      increaseCommentCount();
     },
   });
 
@@ -156,13 +153,13 @@ export function useComment(reviewId: string) {
     addCommentMutation.mutate({ reviewId, content });
   };
 
-  const increaseCommentCount = () => {
-    commentCount && setCommentCount(commentCount + 1);
-  };
+  const increaseCommentCount = useCallback(() => {
+    setCommentCount((prevCount) => prevCount + 1);
+  }, []);
 
-  const decreaseCommentCount = () => {
-    commentCount && setCommentCount(commentCount - 1);
-  };
+  const decreaseCommentCount = useCallback(() => {
+    setCommentCount((prevCount) => prevCount - 1);
+  }, []);
 
   useEffect(() => {
     if (comments && comments.pages) {
@@ -182,8 +179,7 @@ export function useComment(reviewId: string) {
     deleteMyComment,
     addMyComment,
     setEnabled,
-    increaseCommentCount,
-    decreaseCommentCount,
+    isFetchingNextPage,
     commentCount,
   };
 }

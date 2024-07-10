@@ -14,11 +14,12 @@ export default function CommentFormContainer({
   setIsFormOpen,
   text,
 }: Props) {
+  const { setEnabled } = useComment(reviewId);
   const [commentData, setCommentData] = useState<CommentContent>({
     content: '',
   });
 
-  const { addMyComment, increaseCommentCount } = useComment(reviewId);
+  const { addMyComment } = useComment(reviewId);
 
   const handleCloseForm = () => {
     setIsFormOpen(false);
@@ -44,8 +45,6 @@ export default function CommentFormContainer({
     setCommentData({
       content: '',
     });
-
-    increaseCommentCount();
 
     setIsFormOpen(false);
   };

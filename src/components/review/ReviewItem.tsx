@@ -29,7 +29,7 @@ export default function ReviewItem({ movieId, review, sort }: Props) {
   const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
   const [reviewData, setReviewData] = useState<ReviewFormData>(review);
   const [isOpen, setIsOpen] = useState(false);
-  const { commentCount } = useComment(review.id);
+  const { commentCount, setEnabled } = useComment(review.id);
   const { updateMyReview, deleteMyReview } = useReview(movieId, sort);
 
   const handleUpdate = (e: FormEvent) => {
@@ -184,15 +184,16 @@ export default function ReviewItem({ movieId, review, sort }: Props) {
               text='답글'
               onClick={() => {
                 setIsCommentFormOpen(!isCommentFormOpen);
+                setEnabled(true);
               }}
             />
           </div>
 
-          {review.commentsCount > 0 && (
+          {(review.commentsCount > 0 || commentCount > 0) && (
             <div>
               <button
                 className='hover:bg-third py-1 px-2 rounded-lg text-sm inline-flex items-center gap-1'
-                onClick={() => (isOpen ? setIsOpen(false) : setIsOpen(true))}
+                onClick={() => setIsOpen((prev) => !prev)}
               >
                 <IoIosArrowDown
                   className={`transform transition ease-linear duration-300 ${
@@ -205,6 +206,7 @@ export default function ReviewItem({ movieId, review, sort }: Props) {
               </button>
             </div>
           )}
+
           <CommentsList
             isOpen={isOpen}
             reviewId={review.id}

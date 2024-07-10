@@ -6,10 +6,6 @@ import CommentFormContainer from './CommentFormContainer';
 import { Comment } from '@/models/comment.model';
 import Spinner from '../common/Spinner';
 
-export interface CommentFormData {
-  content: string;
-}
-
 interface Props {
   reviewId: string;
   isOpen: boolean;
@@ -36,20 +32,24 @@ export default function CommentsList({
   } = useComment(reviewId);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 1 }
-    );
-    pageEnd.current && observer.observe(pageEnd.current);
-    return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage]);
+    if (isOpen) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasNextPage) {
+            fetchNextPage();
+          }
+        },
+        { threshold: 1 }
+      );
+      pageEnd.current && observer.observe(pageEnd.current);
+      return () => observer.disconnect();
+    }
+  }, [fetchNextPage, hasNextPage, isOpen]);
 
   useEffect(() => {
-    isOpen ? setEnabled(true) : setEnabled(false);
+    if (isOpen) {
+      setEnabled(true);
+    }
   }, [isOpen, setEnabled]);
 
   if (error) {
@@ -66,36 +66,34 @@ export default function CommentsList({
         />
       )}
 
-      {isLoading ? (
-        <Spinner size='xs' />
-      ) : (
+      {isOpen && (
         <>
-          {isOpen && (
-            <>
-              <div>
-                <ul className='flex flex-col gap-4'>
-                  {comments?.pages.flatMap((group: any, i: number) => (
-                    <React.Fragment key={i}>
-                      {group.comments.map((comment: Comment) => (
-                        <li key={comment.id}>
-                          <CommentItem
-                            reviewId={reviewId}
-                            onUpdate={updateMyComment}
-                            comment={comment}
-                          />
-                        </li>
-                      ))}
-                    </React.Fragment>
-                  ))}
-                </ul>
-              </div>
-            </>
+          {isLoading ? (
+            <Spinner size='xs' />
+          ) : (
+            <div>
+              <ul className='flex flex-col gap-4'>
+                {comments?.pages.flatMap((group: any, i: number) => (
+                  <React.Fragment key={i}>
+                    {group.comments.map((comment: Comment) => (
+                      <li key={comment.id}>
+                        <CommentItem
+                          reviewId={reviewId}
+                          onUpdate={updateMyComment}
+                          comment={comment}
+                        />
+                      </li>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </ul>
+
+              {hasNextPage && (
+                <div ref={pageEnd}>{isFetching && <Spinner size='xs' />}</div>
+              )}
+            </div>
           )}
         </>
-      )}
-
-      {hasNextPage && (
-        <div ref={pageEnd}>{isFetching && <Spinner size='xs' />}</div>
       )}
     </>
   );

@@ -29,3 +29,10 @@ export interface ReviewFormData {
   rating: number;
   content: string;
 }
+
+export interface ReviewData {
+  movieId: number;
+  title: string;
+  rating: number;
+  content: string;
+}
