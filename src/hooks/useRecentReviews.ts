@@ -43,25 +43,18 @@ export const useRecentReviews = () => {
 };
 
 export const useInfiniteRecentReviews = (filter: string) => {
-  const {
-    data,
-    isPending,
-    isError,
-    fetchNextPage,
-    hasNextPage,
-    isFetching,
-    refetch,
-  } = useInfiniteQuery({
-    queryKey: ['recent', 'reviews'],
-    queryFn: ({ pageParam }) => getRecentReviews(pageParam, filter),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) => {
-      const isLast =
-        Math.ceil(lastPage.pagination.totalCount / LIMIT) ===
-        lastPage.pagination.currentPage;
-      return isLast ? null : lastPage.pagination.currentPage + 1;
-    },
-  });
+  const { data, isPending, isError, fetchNextPage, hasNextPage, refetch } =
+    useInfiniteQuery({
+      queryKey: ['recent', 'reviews'],
+      queryFn: ({ pageParam }) => getRecentReviews(pageParam, filter),
+      initialPageParam: 1,
+      getNextPageParam: (lastPage) => {
+        const isLast =
+          Math.ceil(lastPage.pagination.totalCount / LIMIT) ===
+          lastPage.pagination.currentPage;
+        return isLast ? null : lastPage.pagination.currentPage + 1;
+      },
+    });
 
   return {
     data,
@@ -69,7 +62,6 @@ export const useInfiniteRecentReviews = (filter: string) => {
     isError,
     fetchNextPage,
     hasNextPage,
-    isFetching,
     refetch,
   };
 };

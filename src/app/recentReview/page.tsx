@@ -15,15 +15,8 @@ export default function RecentReview() {
   const searchParam = useSearchParams();
   const [filter, setFilter] = useState<string>('like');
   const moreRef = useRef<HTMLDivElement | null>(null);
-  const {
-    data,
-    isPending,
-    isError,
-    isFetching,
-    hasNextPage,
-    fetchNextPage,
-    refetch,
-  } = useInfiniteRecentReviews(filter);
+  const { data, isPending, isError, hasNextPage, fetchNextPage, refetch } =
+    useInfiniteRecentReviews(filter);
 
   useEffect(() => {
     refetch();
@@ -59,7 +52,7 @@ export default function RecentReview() {
     );
   };
 
-  if (isPending || isFetching) {
+  if (isPending) {
     return (
       <div className='w-full h-screen flex items-center justify-center'>
         <ReviewLoadingSpinner />
