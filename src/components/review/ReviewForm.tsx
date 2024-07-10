@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEvent, useState } from 'react';
-import ReviewRating from './ReviewRating';
+import ReviewRating from '../review/ReviewRating';
 import { ReviewFormData } from '@/models/review.model';
 
 interface Props {

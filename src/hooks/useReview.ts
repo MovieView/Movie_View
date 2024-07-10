@@ -51,13 +51,26 @@ const createReview = async ({
   title,
   rating,
   content,
-}: ReviewFormData & { movieId: number }) => {
+  movieTitle,
+  posterPath,
+}: ReviewFormData & {
+  movieId: number;
+  movieTitle: string;
+  posterPath: string;
+}) => {
   const response = await fetch(`/api/review`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ movieId, title, rating, content }),
+    body: JSON.stringify({
+      movieId,
+      title,
+      rating,
+      content,
+      movieTitle,
+      posterPath,
+    }),
   });
 
   if (!response.ok) {
@@ -80,7 +93,12 @@ const deleteReview = async (reviewId: string) => {
   return reviewId;
 };
 
-export function useReview(movieId: number, sort: string) {
+export function useReview(
+  movieId: number,
+  sort: string,
+  movieTitle: string,
+  posterPath: string
+) {
   const queryClient = useQueryClient();
   const [isEmpty, setIsEmpty] = useState(false);
   const {
@@ -155,7 +173,14 @@ export function useReview(movieId: number, sort: string) {
     rating: number,
     content: string
   ) => {
-    addReviewMutation.mutate({ movieId, title, rating, content });
+    addReviewMutation.mutate({
+      movieId,
+      title,
+      rating,
+      content,
+      movieTitle,
+      posterPath,
+    });
   };
 
   const deleteMyReview = (reviewId: string) => {

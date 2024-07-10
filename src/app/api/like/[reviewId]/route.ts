@@ -88,7 +88,10 @@ export const DELETE = async (
     }
     const social_accounts_uid = formatUserId(session.provider, session.uid);
 
-    const result = await deleteLike(params.reviewId, social_accounts_uid as string);
+    const result = await deleteLike(
+      params.reviewId,
+      social_accounts_uid as string
+    );
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
