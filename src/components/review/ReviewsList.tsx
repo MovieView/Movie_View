@@ -1,25 +1,32 @@
 'use client';
 import { useReview } from '@/hooks/useReview';
-import ReviewItem from './ReviewItem';
+import ReviewItem from '../review/ReviewItem';
 import React, { useEffect, useRef, useState } from 'react';
-import ReviewEmpty from './ReviewEmpty';
-import ReviewLoadingSpinner from './ReviewLoadingSpinner';
-import ReviewButton from './ReviewButton';
-import ReviewFakeForm from './ReviewFakeForm';
-import ReviewFormContainer from './ReviewFormContainer';
-import ReviewError from './ReviewError';
+import ReviewEmpty from '../review/ReviewEmpty';
+import ReviewLoadingSpinner from '../review/ReviewLoadingSpinner';
+import ReviewButton from '../review/ReviewButton';
+import ReviewFakeForm from '../review/ReviewFakeForm';
+import ReviewFormContainer from '../review/ReviewFormContainer';
+import ReviewError from '../review/ReviewError';
+import { useSession } from 'next-auth/react';
 import { Review } from '@/models/review.model';
 
 interface Props {
   movieId: number;
+  movieTitle: string;
+  posterPath: string;
 }
 
-const sortOptions = [
+export const sortOptions = [
   { id: 'like', value: '인기순' },
   { id: 'latest', value: '최신순' },
 ];
 
-export default function ReviewsList({ movieId }: Props) {
+export default function ReviewsList({
+  movieId,
+  movieTitle,
+  posterPath,
+}: Props) {
   const [sort, setSort] = useState<string>('latest');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const {
@@ -33,7 +40,7 @@ export default function ReviewsList({ movieId }: Props) {
     updateMyReview,
     deleteMyReview,
     addMyReview,
-  } = useReview(movieId, sort);
+  } = useReview(movieId, sort, movieTitle, posterPath);
 
   const pageEnd = useRef<HTMLDivElement | null>(null);
 

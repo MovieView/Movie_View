@@ -10,6 +10,8 @@ export interface ReviewData {
   title: string;
   rating: number;
   content: string;
+  movieTitle: string;
+  posterPath: string;
 }
 
 export async function POST(req: Request) {
@@ -27,7 +29,11 @@ export async function POST(req: Request) {
 
     const data: ReviewData = await req.json();
 
-    const movie = await addMovieId(data.movieId);
+    const movie = await addMovieId(
+      data.movieId,
+      data.movieTitle,
+      data.posterPath
+    );
 
     const review = await addReview(userId, data);
 
@@ -74,9 +80,13 @@ async function addReview(userId: string, data: ReviewData) {
   }
 }
 
-async function addMovieId(movieId: number) {
-  const sql = `INSERT IGNORE INTO movies (id) VALUES (?)`;
-  const values = [movieId];
+async function addMovieId(
+  movieId: number,
+  movieTitle: string,
+  posterPath: string
+) {
+  const sql = `INSERT IGNORE INTO movies (id, title, poster_path) VALUES (?,?,?)`;
+  const values = [movieId, movieTitle, posterPath];
   try {
     const connection = await dbConnectionPoolAsync.getConnection();
     const [result] = await connection.execute(sql, values);

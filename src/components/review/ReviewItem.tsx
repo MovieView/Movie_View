@@ -4,12 +4,12 @@ import { IoIosArrowDown } from 'react-icons/io';
 import LikeButton from '../like/LikeButton';
 import { useSession } from 'next-auth/react';
 import { formatUserId } from '@/utils/formatUserId';
-import ReviewDropDownMenu from './ReviewDropDownMenu';
-import ReviewForm from './ReviewForm';
 import CommentsList from '../comment/CommentsList';
-import ReviewButton from './ReviewButton';
 import { formatDate } from '@/utils/formatDate';
 import { Review, ReviewFormData } from '@/models/review.model';
+import ReviewForm from '../review/ReviewForm';
+import ReviewDropDownMenu from '../review/ReviewDropDownMenu';
+import ReviewButton from '../review/ReviewButton';
 
 interface Props {
   review: Review;
@@ -29,8 +29,8 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
   const [expanded, setExpanded] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
   const [reviewData, setReviewData] = useState<ReviewFormData>(review);
+  const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
   const handleUpdate = (e: FormEvent) => {
@@ -204,6 +204,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
               </button>
             </div>
           )}
+
           <CommentsList
             isOpen={isOpen}
             reviewId={review.id}
@@ -216,7 +217,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
   );
 }
 
-function debounce(callback: () => void, delay: number) {
+export function debounce(callback: () => void, delay: number) {
   let timeout: ReturnType<typeof setTimeout>;
 
   return () => {

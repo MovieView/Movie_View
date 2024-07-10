@@ -90,7 +90,10 @@ export const DELETE = async (
     }
     const social_accounts_uid = formatUserId(session.provider, session.uid);
 
-    const result = await deleteLike(params.reviewId, social_accounts_uid as string);
+    const result = await deleteLike(
+      params.reviewId,
+      social_accounts_uid as string
+    );
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -117,8 +120,10 @@ async function getLike(
   try {
     connection = await dbConnectionPoolAsync.getConnection();
 
-    const [result] = await connection
-      .execute<LikeQueryResult[]>(sql, [social_accounts_uid, reviewId]);
+    const [result] = await connection.execute<LikeQueryResult[]>(sql, [
+      social_accounts_uid,
+      reviewId,
+    ]);
 
     return result[0];
   } catch (err) {
@@ -139,8 +144,11 @@ async function postLike(like: ILike) {
   try {
     connection = await dbConnectionPoolAsync.getConnection();
 
-    const [result] = await connection
-      .execute(sql, [like.id, like.reviews_id, like.social_accounts_uid]);
+    const [result] = await connection.execute(sql, [
+      like.id,
+      like.reviews_id,
+      like.social_accounts_uid,
+    ]);
 
     return result;
   } catch (err) {
@@ -160,8 +168,10 @@ async function deleteLike(reviewId: string, social_accounts_uid: string) {
   try {
     connection = await dbConnectionPoolAsync.getConnection();
 
-    const [result] = await connection
-      .execute(sql, [reviewId, social_accounts_uid]);
+    const [result] = await connection.execute(sql, [
+      reviewId,
+      social_accounts_uid,
+    ]);
 
     return result;
   } catch (err) {

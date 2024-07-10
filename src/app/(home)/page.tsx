@@ -10,6 +10,9 @@ import LoadingError from '@/components/home/LoadingError';
 import LoadMoreButton from '@/components/home/LoadMoreButton';
 import { isInViewport } from '@/utils/domUtils';
 import useMovieSearch from '@/hooks/useMovieSearch';
+import RecentReview from '@/components/recentReview/RecentReview';
+import { useRecentReviews } from '@/hooks/useRecentReviews';
+import ReviewLoadingSpinner from '@/components/review/ReviewLoadingSpinner';
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
 
@@ -34,6 +37,14 @@ export default function Home() {
     isSuccess,
     refetch,
   } = useMovieSearch();
+
+  const {
+    recentReviews,
+    isRecentReviewsError,
+    isRecentReviewsPending,
+    isRecentReviewsFetching,
+    recentReviewsRefetch,
+  } = useRecentReviews();
 
   const searchBarStyle = clsx(
     'w-[90%] md:w-[70%] mx-auto rounded-xl bg-second px-5 py-2 mt-24 text-black flex items-center shadow-md',
@@ -154,12 +165,26 @@ export default function Home() {
             handleSubmit={handleSubmit}
           />
         )}
+
+        {/*지금 뜨는 코멘트*/}
+        {isRecentReviewsError && (
+          <LoadingError refetch={recentReviewsRefetch} />
+        )}
+        {isRecentReviewsPending ||
+          (isRecentReviewsFetching && <ReviewLoadingSpinner />)}
+
+        {!(isRecentReviewsPending || isRecentReviewsFetching) &&
+          recentReviews && (
+            <RecentReview reviews={recentReviews.reviews.slice(0, 6)} />
+          )}
+
         {/* 로딩 중일 경우 */}
         {(isLoading || isRefetching || isPending) && <LoadingPing />}
         {/* 에러 발생 시 */}
         {(isError || isRefetchError || isLoadingError) && (
           <LoadingError refetch={refetch} />
         )}
+
         {/* 영화 포스터 표시하기 */}
         {isSuccess && !(isLoading || isRefetching) && data && (
           <div className='grid w-[90%] md:w-[70%] mx-auto mb-10 grid-cols-2 gap-6 lg:grid-cols-3 lg:gap-10 xl:grid-cols-4'>
@@ -184,6 +209,8 @@ export default function Home() {
             getNextPageButton={getNextPageButton}
           />
         )}
+
+        {/* 다음 페이지 버튼이 로딩 중일 경우 */}
         {isSuccess && isFetchingNextPage && <LoadingPing loadMore={true} />}
 
         {/* 닉네임 설정 모달 */}
