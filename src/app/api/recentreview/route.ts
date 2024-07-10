@@ -74,12 +74,13 @@ async function getRecentReviews(
     ORDER BY ${orderBy}
     LIMIT ?, ?`;
 
+  const connection = await dbConnectionPoolAsync.getConnection();
   try {
-    const connection = await dbConnectionPoolAsync.getConnection();
     const [result] = await connection.execute(sql, values);
     connection.release();
     return result;
   } catch (err) {
+    connection.release();
     console.error(err);
     throw err;
   }
@@ -87,14 +88,15 @@ async function getRecentReviews(
 
 async function recentReviewsCount() {
   const sql = `SELECT COUNT(*) AS totalCount FROM reviews WHERE created_at BETWEEN DATE_ADD(NOW(), INTERVAL -1 WEEK) AND NOW()`;
+  const connection = await dbConnectionPoolAsync.getConnection();
   try {
-    const connection = await dbConnectionPoolAsync.getConnection();
     const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
       sql
     );
     connection.release();
     return result[0];
   } catch (err) {
+    connection.release();
     console.error(err);
     throw err;
   }
