@@ -1,33 +1,32 @@
 import { authOptions } from '@/lib/authOptions';
 import { dbConnectionPoolAsync } from '@/lib/db';
+import { ReviewData } from '@/models/review.model';
 import { formatUserId } from '@/utils/formatUserId';
 import { ResultSetHeader } from 'mysql2';
 import { getServerSession } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 
-export interface ReviewData {
-  movieId: number;
-  title: string;
-  rating: number;
-  content: string;
-}
-
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session?.provider && !session?.uid) {
-      return;
+
+    const { provider, uid } = session ?? {};
+
+    if (!provider || !uid) {
+      return new Response('Authentication Error', { status: 401 });
     }
 
-    const userId = formatUserId(session.provider, session.uid);
+    const userId = formatUserId(provider, uid);
 
     if (!userId) {
-      return new Response('Authentication Error', { status: 401 });
+      return new Response(JSON.stringify({ message: 'Authentication Error' }), {
+        status: 401,
+      });
     }
 
     const data: ReviewData = await req.json();
 
-    const movie = await addMovieId(data.movieId);
+    await addMovieId(data.movieId);
 
     const review = await addReview(userId, data);
 
@@ -63,12 +62,13 @@ async function addReview(userId: string, data: ReviewData) {
     data.content,
   ];
 
+  const connection = await dbConnectionPoolAsync.getConnection();
   try {
-    const connection = await dbConnectionPoolAsync.getConnection();
     const [result] = await connection.execute(sql, values);
     connection.release();
     return (result as ResultSetHeader).affectedRows;
   } catch (err) {
+    connection.release();
     console.error(err);
     throw err;
   }
@@ -77,12 +77,14 @@ async function addReview(userId: string, data: ReviewData) {
 async function addMovieId(movieId: number) {
   const sql = `INSERT IGNORE INTO movies (id) VALUES (?)`;
   const values = [movieId];
+
+  const connection = await dbConnectionPoolAsync.getConnection();
   try {
-    const connection = await dbConnectionPoolAsync.getConnection();
     const [result] = await connection.execute(sql, values);
     connection.release();
     return (result as ResultSetHeader).affectedRows;
   } catch (err) {
+    connection.release();
     console.error(err);
     throw err;
   }
