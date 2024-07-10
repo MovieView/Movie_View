@@ -1,10 +1,18 @@
 import { authOptions } from '@/lib/authOptions';
 import { dbConnectionPoolAsync } from '@/lib/db';
-import { ReviewData } from '@/models/review.model';
 import { formatUserId } from '@/utils/formatUserId';
 import { ResultSetHeader } from 'mysql2';
 import { getServerSession } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
+
+interface ReviewData {
+  movieId: number;
+  title: string;
+  rating: number;
+  content: string;
+  movieTitle: string;
+  posterPath: string;
+}
 
 export async function POST(req: Request) {
   try {
@@ -26,7 +34,7 @@ export async function POST(req: Request) {
 
     const data: ReviewData = await req.json();
 
-    await addMovieId(data.movieId);
+    await addMovieId(data.movieId, data.movieTitle, data.posterPath);
 
     const review = await addReview(userId, data);
 
@@ -74,9 +82,13 @@ async function addReview(userId: string, data: ReviewData) {
   }
 }
 
-async function addMovieId(movieId: number) {
-  const sql = `INSERT IGNORE INTO movies (id) VALUES (?)`;
-  const values = [movieId];
+async function addMovieId(
+  movieId: number,
+  movieTitle: string,
+  posterPath: string
+) {
+  const sql = `INSERT IGNORE INTO movies (id, title, poster_path) VALUES (?,?,?)`;
+  const values = [movieId, movieTitle, posterPath];
 
   const connection = await dbConnectionPoolAsync.getConnection();
   try {

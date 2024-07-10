@@ -4,33 +4,46 @@ import { IoIosArrowDown } from 'react-icons/io';
 import LikeButton from '../like/LikeButton';
 import { useSession } from 'next-auth/react';
 import { formatUserId } from '@/utils/formatUserId';
-import ReviewDropDownMenu from './ReviewDropDownMenu';
-import ReviewForm from './ReviewForm';
 import CommentsList from '../comment/CommentsList';
-import ReviewButton from './ReviewButton';
 import { formatDate } from '@/utils/formatDate';
 import { Review, ReviewFormData } from '@/models/review.model';
 import { useComment } from '@/hooks/useComment';
 import { useReview } from '@/hooks/useReview';
+import ReviewForm from '../review/ReviewForm';
+import ReviewDropDownMenu from '../review/ReviewDropDownMenu';
+import ReviewButton from '../review/ReviewButton';
 
 interface Props {
   review: Review;
   sort: string;
   movieId: number;
+  movieTitle: string;
+  posterPath: string;
 }
 
-export default function ReviewItem({ movieId, review, sort }: Props) {
+export default function ReviewItem({
+  movieId,
+  review,
+  sort,
+  movieTitle,
+  posterPath,
+}: Props) {
   const { data: session } = useSession();
   const userId = session && formatUserId(session?.provider, session?.uid);
   const contentRef = useRef<HTMLPreElement>(null);
   const [expanded, setExpanded] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
   const [reviewData, setReviewData] = useState<ReviewFormData>(review);
+  const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const { commentCount, setEnabled } = useComment(review.id);
-  const { updateMyReview, deleteMyReview } = useReview(movieId, sort);
+  const { updateMyReview, deleteMyReview } = useReview(
+    movieId,
+    sort,
+    movieTitle,
+    posterPath
+  );
 
   const handleUpdate = (e: FormEvent) => {
     e.preventDefault();
@@ -219,7 +232,7 @@ export default function ReviewItem({ movieId, review, sort }: Props) {
   );
 }
 
-function debounce(callback: () => void, delay: number) {
+export function debounce(callback: () => void, delay: number) {
   let timeout: ReturnType<typeof setTimeout>;
 
   return () => {

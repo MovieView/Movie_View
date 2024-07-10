@@ -1,6 +1,6 @@
 'use client';
 import { useReview } from '@/hooks/useReview';
-import ReviewItem from './ReviewItem';
+import ReviewItem from '../review/ReviewItem';
 import React, { useEffect, useRef, useState } from 'react';
 import ReviewEmpty from './ReviewEmpty';
 import ReviewButton from './ReviewButton';
@@ -12,14 +12,20 @@ import Spinner from '../common/Spinner';
 
 interface Props {
   movieId: number;
+  movieTitle: string;
+  posterPath: string;
 }
 
-const sortOptions = [
+export const sortOptions = [
   { id: 'like', value: '인기순' },
   { id: 'latest', value: '최신순' },
 ];
 
-export default function ReviewsList({ movieId }: Props) {
+export default function ReviewsList({
+  movieId,
+  movieTitle,
+  posterPath,
+}: Props) {
   const [sort, setSort] = useState<string>('latest');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const {
@@ -30,7 +36,7 @@ export default function ReviewsList({ movieId }: Props) {
     hasNextPage,
     isFetching,
     isEmpty,
-  } = useReview(movieId, sort);
+  } = useReview(movieId, sort, movieTitle, posterPath);
 
   const pageEnd = useRef<HTMLDivElement | null>(null);
 
@@ -66,6 +72,8 @@ export default function ReviewsList({ movieId }: Props) {
             sort={sort}
             setIsFormOpen={setIsFormOpen}
             text='리뷰 등록'
+            movieTitle={movieTitle}
+            posterPath={posterPath}
           />
         )}
       </div>
@@ -100,6 +108,8 @@ export default function ReviewsList({ movieId }: Props) {
                           review={review}
                           sort={sort}
                           movieId={movieId}
+                          movieTitle={movieTitle}
+                          posterPath={posterPath}
                         />
                       </li>
                     ))}

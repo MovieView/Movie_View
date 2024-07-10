@@ -105,9 +105,12 @@ export default async function MovieInfo({ movieId }: Props) {
           <div className='text-sm'>{movie.overview}</div>
         </div>
       </div>
-
       <MovieCredits cast={credits.cast} />
-      <ReviewsList movieId={Number(movieId)} />
+      <ReviewsList
+        movieId={Number(movieId)}
+        movieTitle={movie.title}
+        posterPath={movie.poster_path}
+      />
     </div>
   );
 }
