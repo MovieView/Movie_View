@@ -26,7 +26,7 @@ export default function RecentReview() {
 
   useEffect(() => {
     refetch();
-  }, [filter]);
+  }, [refetch, filter]);
 
   useEffect(() => {
     const paramFilter = searchParam.get('filter');
@@ -65,7 +65,6 @@ export default function RecentReview() {
       </div>
     );
   }
-
   if (!data || isError) return <ReviewError />;
 
   return (

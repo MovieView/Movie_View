@@ -97,6 +97,9 @@ export default function Home(): React.ReactElement {
         {isRecentReviewsError && (
           <LoadingError refetch={recentReviewsRefetch} />
         )}
+        {isRecentReviewsPending ||
+          (isRecentReviewsFetching && <ReviewLoadingSpinner />)}
+
         {!(isRecentReviewsPending || isRecentReviewsFetching) &&
           recentReviews && (
             <RecentReview reviews={recentReviews.reviews.slice(0, 6)} />
