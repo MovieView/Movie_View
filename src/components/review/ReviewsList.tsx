@@ -2,14 +2,13 @@
 import { useReview } from '@/hooks/useReview';
 import ReviewItem from '../review/ReviewItem';
 import React, { useEffect, useRef, useState } from 'react';
-import ReviewEmpty from '../review/ReviewEmpty';
-import ReviewLoadingSpinner from '../review/ReviewLoadingSpinner';
-import ReviewButton from '../review/ReviewButton';
-import ReviewFakeForm from '../review/ReviewFakeForm';
-import ReviewFormContainer from '../review/ReviewFormContainer';
-import ReviewError from '../review/ReviewError';
-import { useSession } from 'next-auth/react';
+import ReviewEmpty from './ReviewEmpty';
+import ReviewButton from './ReviewButton';
+import ReviewFakeForm from './ReviewFakeForm';
+import ReviewFormContainer from './ReviewFormContainer';
+import ReviewError from './ReviewError';
 import { Review } from '@/models/review.model';
+import Spinner from '../common/Spinner';
 
 interface Props {
   movieId: number;
@@ -37,19 +36,12 @@ export default function ReviewsList({
     hasNextPage,
     isFetching,
     isEmpty,
-    updateMyReview,
-    deleteMyReview,
-    addMyReview,
   } = useReview(movieId, sort, movieTitle, posterPath);
 
   const pageEnd = useRef<HTMLDivElement | null>(null);
 
   const handleSort = (value: string) => {
     setSort(value);
-  };
-
-  const handleDeleteReview = (reviewId: string) => {
-    deleteMyReview(reviewId);
   };
 
   useEffect(() => {
@@ -77,15 +69,17 @@ export default function ReviewsList({
         {isFormOpen && (
           <ReviewFormContainer
             movieId={movieId}
-            onSubmit={addMyReview}
+            sort={sort}
             setIsFormOpen={setIsFormOpen}
             text='리뷰 등록'
+            movieTitle={movieTitle}
+            posterPath={posterPath}
           />
         )}
       </div>
 
       {isLoading ? (
-        <ReviewLoadingSpinner />
+        <Spinner size='xs' />
       ) : (
         <>
           {isEmpty && <ReviewEmpty />}
@@ -112,8 +106,10 @@ export default function ReviewsList({
                       <li key={review.id}>
                         <ReviewItem
                           review={review}
-                          onUpdate={updateMyReview}
-                          onDelete={handleDeleteReview}
+                          sort={sort}
+                          movieId={movieId}
+                          movieTitle={movieTitle}
+                          posterPath={posterPath}
                         />
                       </li>
                     ))}
@@ -123,7 +119,9 @@ export default function ReviewsList({
             </>
           )}
 
-          <div ref={pageEnd}>{isFetching && <ReviewLoadingSpinner />}</div>
+          {hasNextPage && (
+            <div ref={pageEnd}>{isFetching && <Spinner size='xs' />}</div>
+          )}
         </>
       )}
     </div>

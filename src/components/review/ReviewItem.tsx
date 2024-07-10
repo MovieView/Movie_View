@@ -7,22 +7,27 @@ import { formatUserId } from '@/utils/formatUserId';
 import CommentsList from '../comment/CommentsList';
 import { formatDate } from '@/utils/formatDate';
 import { Review, ReviewFormData } from '@/models/review.model';
+import { useComment } from '@/hooks/useComment';
+import { useReview } from '@/hooks/useReview';
 import ReviewForm from '../review/ReviewForm';
 import ReviewDropDownMenu from '../review/ReviewDropDownMenu';
 import ReviewButton from '../review/ReviewButton';
 
 interface Props {
   review: Review;
-  onUpdate: (
-    reviewId: string,
-    title: string,
-    rating: number,
-    content: string
-  ) => void;
-  onDelete: (reviewId: string) => void;
+  sort: string;
+  movieId: number;
+  movieTitle: string;
+  posterPath: string;
 }
 
-export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
+export default function ReviewItem({
+  movieId,
+  review,
+  sort,
+  movieTitle,
+  posterPath,
+}: Props) {
   const { data: session } = useSession();
   const userId = session && formatUserId(session?.provider, session?.uid);
   const contentRef = useRef<HTMLPreElement>(null);
@@ -32,6 +37,13 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
   const [reviewData, setReviewData] = useState<ReviewFormData>(review);
   const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const { commentCount, setEnabled } = useComment(review.id);
+  const { updateMyReview, deleteMyReview } = useReview(
+    movieId,
+    sort,
+    movieTitle,
+    posterPath
+  );
 
   const handleUpdate = (e: FormEvent) => {
     e.preventDefault();
@@ -48,7 +60,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
       return;
     }
 
-    onUpdate(
+    updateMyReview(
       review.id,
       newReview.title,
       Number(newReview.rating),
@@ -131,7 +143,7 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
                   <ReviewDropDownMenu
                     handleEdit={handleCloseForm}
                     reviewId={review.id}
-                    onDeleteReview={onDelete}
+                    onDeleteReview={deleteMyReview}
                   />
                 )}
               </div>
@@ -185,22 +197,25 @@ export default function ReviewItem({ review, onUpdate, onDelete }: Props) {
               text='답글'
               onClick={() => {
                 setIsCommentFormOpen(!isCommentFormOpen);
+                setEnabled(true);
               }}
             />
           </div>
 
-          {review.commentsCount > 0 && (
+          {(review.commentsCount > 0 || commentCount > 0) && (
             <div>
               <button
                 className='hover:bg-third py-1 px-2 rounded-lg text-sm inline-flex items-center gap-1'
-                onClick={() => (isOpen ? setIsOpen(false) : setIsOpen(true))}
+                onClick={() => setIsOpen((prev) => !prev)}
               >
                 <IoIosArrowDown
                   className={`transform transition ease-linear duration-300 ${
                     isOpen ? 'rotate-180' : 'rotate-0'
                   }`}
                 />
-                <span>{`답글 ${review.commentsCount}개`}</span>
+                <span>{`답글 ${
+                  commentCount ? commentCount : review.commentsCount
+                }개`}</span>
               </button>
             </div>
           )}

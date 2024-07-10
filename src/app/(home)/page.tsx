@@ -12,9 +12,9 @@ import { isInViewport } from '@/utils/domUtils';
 import useMovieSearch from '@/hooks/useMovieSearch';
 import RecentReview from '@/components/recentReview/RecentReview';
 import { useRecentReviews } from '@/hooks/useRecentReviews';
-import ReviewLoadingSpinner from '@/components/review/ReviewLoadingSpinner';
 import { useSession } from 'next-auth/react';
 import { useForm } from 'react-hook-form';
+import Spinner from '@/components/common/Spinner';
 
 export default function Home() {
   const getNextPageButton = React.useRef(null);
@@ -171,7 +171,7 @@ export default function Home() {
           <LoadingError refetch={recentReviewsRefetch} />
         )}
         {isRecentReviewsPending ||
-          (isRecentReviewsFetching && <ReviewLoadingSpinner />)}
+          (isRecentReviewsFetching && <Spinner size='xs' />)}
 
         {!(isRecentReviewsPending || isRecentReviewsFetching) &&
           recentReviews && (

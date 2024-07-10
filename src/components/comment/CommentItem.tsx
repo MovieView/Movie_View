@@ -5,25 +5,24 @@ import React, { FormEvent, useEffect, useState } from 'react';
 import CommentForm from './CommentForm';
 import ReviewDropDownMenu from '../review/ReviewDropDownMenu';
 import { Comment, CommentContent } from '@/models/comment.model';
+import { useComment } from '@/hooks/useComment';
 
 interface Props {
   reviewId: string;
   comment: Comment;
-  onDeleteComment: (reviewId: string, commentId: string) => void;
   onUpdate: (reviewId: string, commentId: string, content: string) => void;
-  onAdd: (reviewId: string, content: string) => void;
 }
 
-export default function CommentItem({
-  reviewId,
-  comment,
-  onDeleteComment,
-  onUpdate,
-}: Props) {
+export default function CommentItem({ reviewId, comment, onUpdate }: Props) {
   const { data: session } = useSession();
   const userId = session && formatUserId(session?.provider, session?.uid);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [CommentData, setCommentData] = useState<CommentContent>(comment);
+  const { deleteMyComment } = useComment(reviewId);
+
+  const handleDeleteComment = (reviewId: string, commentId: string) => {
+    deleteMyComment(reviewId, commentId);
+  };
 
   const handleCloseForm = () => {
     setIsFormOpen(!isFormOpen);
@@ -85,7 +84,7 @@ export default function CommentItem({
                   handleEdit={handleCloseForm}
                   reviewId={reviewId}
                   commentId={comment.id}
-                  onDeleteComment={onDeleteComment}
+                  onDeleteComment={handleDeleteComment}
                 />
               )}
               <pre className={`break-words whitespace-pre-wrap`}>

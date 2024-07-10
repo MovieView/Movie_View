@@ -1,14 +1,10 @@
 import { useComment } from '@/hooks/useComment';
-import React, { useEffect, useRef, useState } from 'react';
-import ReviewLoadingSpinner from '../review/ReviewLoadingSpinner';
+import React, { useEffect, useRef } from 'react';
 import ReviewError from '../review/ReviewError';
 import CommentItem from './CommentItem';
 import CommentFormContainer from './CommentFormContainer';
 import { Comment } from '@/models/comment.model';
-
-export interface ICommentFormData {
-  content: string;
-}
+import Spinner from '../common/Spinner';
 
 interface Props {
   reviewId: string;
@@ -32,26 +28,28 @@ export default function CommentsList({
     hasNextPage,
     isFetching,
     setEnabled,
-    addMyComment,
-    deleteMyComment,
     updateMyComment,
   } = useComment(reviewId);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 1 }
-    );
-    pageEnd.current && observer.observe(pageEnd.current);
-    return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage]);
+    if (isOpen) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting && hasNextPage) {
+            fetchNextPage();
+          }
+        },
+        { threshold: 1 }
+      );
+      pageEnd.current && observer.observe(pageEnd.current);
+      return () => observer.disconnect();
+    }
+  }, [fetchNextPage, hasNextPage, isOpen]);
 
   useEffect(() => {
-    isOpen ? setEnabled(true) : setEnabled(false);
+    if (isOpen) {
+      setEnabled(true);
+    }
   }, [isOpen, setEnabled]);
 
   if (error) {
@@ -63,44 +61,39 @@ export default function CommentsList({
       {isCommentFormOpen && (
         <CommentFormContainer
           reviewId={reviewId}
-          onSubmit={addMyComment}
           setIsFormOpen={setIsCommentFormOpen}
           text='답글 등록'
         />
       )}
 
-      {isLoading ? (
-        <ReviewLoadingSpinner />
-      ) : (
+      {isOpen && (
         <>
-          {isOpen && (
-            <>
-              <div>
-                <ul className='flex flex-col gap-4'>
-                  {comments?.pages.flatMap((group: any, i: number) => (
-                    <React.Fragment key={i}>
-                      {group.comments.map((comment: Comment) => (
-                        <li key={comment.id}>
-                          <CommentItem
-                            reviewId={reviewId}
-                            onDeleteComment={deleteMyComment}
-                            onUpdate={updateMyComment}
-                            onAdd={addMyComment}
-                            comment={comment}
-                          />
-                        </li>
-                      ))}
-                    </React.Fragment>
-                  ))}
-                </ul>
-              </div>
-            </>
+          {isLoading ? (
+            <Spinner size='xs' />
+          ) : (
+            <div>
+              <ul className='flex flex-col gap-4'>
+                {comments?.pages.flatMap((group: any, i: number) => (
+                  <React.Fragment key={i}>
+                    {group.comments.map((comment: Comment) => (
+                      <li key={comment.id}>
+                        <CommentItem
+                          reviewId={reviewId}
+                          onUpdate={updateMyComment}
+                          comment={comment}
+                        />
+                      </li>
+                    ))}
+                  </React.Fragment>
+                ))}
+              </ul>
+
+              {hasNextPage && (
+                <div ref={pageEnd}>{isFetching && <Spinner size='xs' />}</div>
+              )}
+            </div>
           )}
         </>
-      )}
-
-      {hasNextPage && (
-        <div ref={pageEnd}>{isFetching && <ReviewLoadingSpinner />}</div>
       )}
     </>
   );

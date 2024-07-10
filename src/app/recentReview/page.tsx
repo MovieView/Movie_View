@@ -1,11 +1,11 @@
 'use client';
 
+import Spinner from '@/components/common/Spinner';
 import RecentReviewItem, {
   IRecentReview,
 } from '@/components/recentReview/RecentReviewItem';
 import ReviewButton from '@/components/review/ReviewButton';
 import ReviewError from '@/components/review/ReviewError';
-import ReviewLoadingSpinner from '@/components/review/ReviewLoadingSpinner';
 import { sortOptions } from '@/components/review/ReviewsList';
 import { useInfiniteRecentReviews } from '@/hooks/useRecentReviews';
 import { useSearchParams } from 'next/navigation';
@@ -58,7 +58,7 @@ export default function RecentReview() {
   if (isPending || loading) {
     return (
       <div className='w-full h-screen flex items-center justify-center'>
-        <ReviewLoadingSpinner />
+        <Spinner size='xs' />
       </div>
     );
   }
@@ -88,7 +88,7 @@ export default function RecentReview() {
         )}
       </div>
 
-      <div ref={moreRef}>{hasNextPage && <ReviewLoadingSpinner />}</div>
+      <div ref={moreRef}>{hasNextPage && <Spinner size='xs' />}</div>
     </div>
   );
 }

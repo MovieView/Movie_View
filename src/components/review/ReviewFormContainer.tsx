@@ -1,25 +1,26 @@
 import { FormEvent, useState } from 'react';
 import ReviewForm from '../review/ReviewForm';
 import { ReviewFormData } from '@/models/review.model';
+import { useReview } from '@/hooks/useReview';
 
 interface Props {
   movieId: number;
-  onSubmit: (
-    movieId: number,
-    title: string,
-    rating: number,
-    content: string
-  ) => void;
+  sort: string;
   setIsFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
   text: string;
+  movieTitle: string;
+  posterPath: string;
 }
 
 export default function ReviewFormContainer({
   movieId,
-  onSubmit,
   setIsFormOpen,
   text,
+  sort,
+  movieTitle,
+  posterPath,
 }: Props) {
+  const { addMyReview } = useReview(movieId, sort, movieTitle, posterPath);
   const [reviewData, setReviewData] = useState<ReviewFormData>({
     title: '',
     rating: 0,
@@ -49,7 +50,7 @@ export default function ReviewFormContainer({
       return;
     }
 
-    onSubmit(
+    addMyReview(
       newReview.movieId,
       newReview.title,
       newReview.rating,

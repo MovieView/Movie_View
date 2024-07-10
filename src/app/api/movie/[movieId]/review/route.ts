@@ -18,13 +18,14 @@ export async function GET(
     let page = searchParams.get('page') ?? PAGE;
     let sort = searchParams.get('sort') ?? SORT;
     const session = await getServerSession(authOptions);
-    if (!session?.provider && !session?.uid) {
-      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-        status: 401,
-      });
+
+    const { provider, uid } = session ?? {};
+
+    if (!provider || !uid) {
+      return new Response('Authentication Error', { status: 401 });
     }
 
-    const userId = formatUserId(session.provider, session.uid);
+    const userId = formatUserId(provider, uid);
 
     if (!userId) {
       return new Response(JSON.stringify({ message: 'Unauthorized' }), {
@@ -77,7 +78,7 @@ async function getReviews(
   const sql = `SELECT HEX(r.id) AS id, r.movies_id AS movieId, r.social_accounts_uid AS userId, r.rating, r.title, 
                 r.content, r.created_at AS createdAt, r.updated_at AS updatedAt,
                 REPLACE(JSON_EXTRACT(s.extra_data, '$.username'), '"', '') AS nickname, 
-                REPLACE(JSON_EXTRACT(s.extra_data, '$.filePath'), '"', '') AS filePath,
+                REPLACE(JSON_EXTRACT(s.extra_data, '$.filepath'), '"', '') AS filePath,
                 (SELECT COUNT(*) FROM reviews_likes AS rl WHERE HEX(rl.reviews_id) = HEX(r.id)) AS likes,
                 (SELECT COUNT(*) FROM reviews_comments AS rc WHERE HEX(rc.reviews_id) = HEX(r.id)) AS commentsCount
                 ${liked}
@@ -87,12 +88,13 @@ async function getReviews(
                 ORDER BY ${orderBy}
                 LIMIT ?, ?`;
 
+  const connection = await dbConnectionPoolAsync.getConnection();
   try {
-    const connection = await dbConnectionPoolAsync.getConnection();
     const [result] = await connection.execute(sql, values);
     connection.release();
     return result;
   } catch (err) {
+    connection.release();
     console.error(err);
     throw err;
   }
@@ -101,8 +103,8 @@ async function getReviews(
 async function reviewsCount(movieId: number) {
   const sql = `SELECT COUNT(*) AS totalCount FROM reviews WHERE movies_id=?`;
   const values = [movieId];
+  const connection = await dbConnectionPoolAsync.getConnection();
   try {
-    const connection = await dbConnectionPoolAsync.getConnection();
     const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
       sql,
       values
@@ -110,6 +112,7 @@ async function reviewsCount(movieId: number) {
     connection.release();
     return result[0];
   } catch (err) {
+    connection.release();
     console.error(err);
     throw err;
   }

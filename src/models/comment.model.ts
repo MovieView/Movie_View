@@ -21,3 +21,9 @@ export interface Pagination {
 export interface CommentContent {
   content: string;
 }
+
+export interface CommentData {
+  reviewId: string;
+  commentId: string;
+  content: string;
+}

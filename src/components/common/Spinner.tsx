@@ -3,16 +3,13 @@ interface IProps {
   item?: boolean;
 }
 
-export default function Spinner ({
-  size,
-  item = false
-}: IProps) {
+export default function Spinner({ size, item = false }: IProps) {
   const sizeMapping = {
     xs: '2rem',
     sm: '3rem',
-    lg: '6rem'
+    lg: '6rem',
   };
-  
+
   const spinnerSize: string = sizeMapping[size] || '6rem';
 
   const spinner = (

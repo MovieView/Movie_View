@@ -105,12 +105,13 @@ async function deleteCommentById(commentId: number, userId: number) {
   const values: Array<string | number> = [commentId, userId];
   const sql = `DELETE FROM reviews_comments WHERE id=UNHEX(?) AND users_id=?`;
 
+  const connection = await dbConnectionPoolAsync.getConnection();
   try {
-    const connection = await dbConnectionPoolAsync.getConnection();
     const [result] = await connection.execute(sql, values);
     connection.release();
     return result;
   } catch (err) {
+    connection.release();
     console.error(err);
     throw err;
   }
@@ -123,12 +124,13 @@ async function updateCommentById(
 ) {
   const sql = `UPDATE reviews_comments SET content=? WHERE id=UNHEX(?) AND users_id=? `;
   const values: Array<string | number> = [content, commentId, userId];
+  const connection = await dbConnectionPoolAsync.getConnection();
   try {
-    const connection = await dbConnectionPoolAsync.getConnection();
     const [result] = await connection.execute(sql, values);
     connection.release();
     return result;
   } catch (err) {
+    connection.release();
     console.error(err);
     throw err;
   }
@@ -138,17 +140,16 @@ async function getUser(uid: string) {
   const sql = `SELECT users_id AS userId, uid FROM social_accounts WHERE uid=?`;
   const values = [uid];
 
+  const connection = await dbConnectionPoolAsync.getConnection();
   try {
-    const connection = await dbConnectionPoolAsync.getConnection();
     const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
       sql,
       values
     );
-
     connection.release();
-
     return result[0];
   } catch (err) {
+    connection.release();
     console.error(err);
     throw err;
   }
