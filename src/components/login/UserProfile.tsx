@@ -3,24 +3,62 @@
 import { signOut, useSession } from 'next-auth/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 const UserProfile = () => {
   const { data: session } = useSession();
-  const [showAlert, setShowAlert] = useState(false);
+  const [profileImg, setProfileImg] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (session && session.user) {
+      const userId = session.uid;
+      const provider = session.provider;
+
+      const storageKey = `${provider}_profileImg`;
+
+      const cachedProfileImg = localStorage.getItem(storageKey);
+      if (cachedProfileImg) {
+        setProfileImg(cachedProfileImg);
+      } else {
+        // 서버에서 프로필 이미지 가져오기
+        getProfileImg(userId, provider);
+      }
+    }
+  }, [session]);
+
+  const getProfileImg = async (userId: string, provider: string) => {
+    try {
+      const response = await fetch(`/api/profile-image`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          provider,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save user');
+      }
+
+      const result = await response.json();
+      const filePath = result.filepath[0]['filepath'];
+      const storageKey = `${provider}_profileImg`;
+      localStorage.setItem(storageKey, filePath);
+      setProfileImg(filePath);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const handleLogOut = async () => {
     await signOut({ callbackUrl: '/' });
-
-    setShowAlert(true);
-  };
-
-  const redirectToHome = () => {
-    setShowAlert(false);
   };
 
   return (
-    <div className="flex justify-between items-center text-xl gap-4">
+    <div className='flex justify-between items-center text-xl gap-4'>
       {session ? (
         <>
           <Image

@@ -1,6 +1,7 @@
 import { useLike } from '@/hooks/useLike';
 import { AiFillLike, AiOutlineLike } from 'react-icons/ai';
 
+
 interface IProps {
   reviewId: string;
   liked: number;
@@ -12,6 +13,7 @@ const LikeButton = ({
   liked,
   likesCount
 }: IProps) => {
+
   const { likes, likeToggle, isLoading, isError } = useLike(reviewId);
   return (
     <>

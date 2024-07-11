@@ -1,19 +1,35 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { RiMore2Line } from 'react-icons/ri';
 
+
 interface IProps {
   handleEdit: () => void;
-  onDelete: (reviewId: string) => void;
+  onDeleteReview?: (reviewId: string) => void;
+  onDeleteComment?: (reviewId: string, commentId: string) => void;
   reviewId: string;
+  commentId?: string;
 }
 
 export default function ReviewDropDownMenu({
   handleEdit,
-  onDelete,
+}: IProps) {
+  onDeleteReview,
+  onDeleteComment,
   reviewId,
+  commentId,
 }: IProps) {
   const [isDropMenuOpen, setIsDropMenuOpen] = useState(false);
   const dropMenuRef = useRef<HTMLDivElement | null>(null);
+
+  const handleClick = () => {
+    if (commentId && onDeleteComment) {
+      return onDeleteComment(reviewId, commentId);
+    }
+
+    if (onDeleteReview) {
+      return onDeleteReview(reviewId);
+    }
+  };
 
   useEffect(() => {
     const handleOutsideClose = (e: { target: any }) => {
@@ -38,10 +54,7 @@ export default function ReviewDropDownMenu({
           <button className='hover:bg-third py-1' onClick={handleEdit}>
             수정
           </button>
-          <button
-            className='hover:bg-third py-1'
-            onClick={() => onDelete(reviewId)}
-          >
+          <button className='hover:bg-third py-1' onClick={handleClick}>
             삭제
           </button>
         </div>

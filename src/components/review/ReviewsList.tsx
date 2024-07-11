@@ -1,31 +1,33 @@
 'use client';
-import { IReview, useReview } from '@/hooks/useReview';
-import ReviewItem from './ReviewItem';
+
+
+import { useReview } from '@/hooks/useReview';
+import ReviewItem from '../review/ReviewItem';
 import React, { useEffect, useRef, useState } from 'react';
 import ReviewEmpty from './ReviewEmpty';
-import ReviewLoadingSpinner from './ReviewLoadingSpinner';
 import ReviewButton from './ReviewButton';
 import ReviewFakeForm from './ReviewFakeForm';
 import ReviewFormContainer from './ReviewFormContainer';
 import ReviewError from './ReviewError';
-import { useSession } from 'next-auth/react';
-
-export interface IReviewFormData {
-  title: string;
-  rating: number;
-  content: string;
-}
+import { Review } from '@/models/review.model';
+import Spinner from '../common/Spinner';
 
 interface IProps {
   movieId: number;
+  movieTitle: string;
+  posterPath: string;
 }
 
-const sortOptions = [
+export const sortOptions = [
   { id: 'like', value: '인기순' },
   { id: 'latest', value: '최신순' },
 ];
 
-export default function ReviewsList({ movieId }: IProps) {
+export default function ReviewsList({
+  movieId,
+  movieTitle,
+  posterPath,
+}: IProps) {
   const [sort, setSort] = useState<string>('latest');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const {
@@ -36,19 +38,12 @@ export default function ReviewsList({ movieId }: IProps) {
     hasNextPage,
     isFetching,
     isEmpty,
-    updateMyReview,
-    deleteMyReview,
-    addMyReview,
-  } = useReview(movieId, sort);
+  } = useReview(movieId, sort, movieTitle, posterPath);
 
   const pageEnd = useRef<HTMLDivElement | null>(null);
 
   const handleSort = (value: string) => {
     setSort(value);
-  };
-
-  const handleDeleteReview = (reviewId: string) => {
-    deleteMyReview(reviewId);
   };
 
   useEffect(() => {
@@ -76,15 +71,17 @@ export default function ReviewsList({ movieId }: IProps) {
         {isFormOpen && (
           <ReviewFormContainer
             movieId={movieId}
-            onSubmit={addMyReview}
+            sort={sort}
             setIsFormOpen={setIsFormOpen}
             text='리뷰 등록'
+            movieTitle={movieTitle}
+            posterPath={posterPath}
           />
         )}
       </div>
 
       {isLoading ? (
-        <ReviewLoadingSpinner />
+        <Spinner size='xs' />
       ) : (
         <>
           {isEmpty && <ReviewEmpty />}
@@ -107,12 +104,14 @@ export default function ReviewsList({ movieId }: IProps) {
               <ul className='flex flex-col gap-4'>
                 {reviews?.pages.flatMap((group: any, i: number) => (
                   <React.Fragment key={i}>
-                    {group.reviews.map((review: IReview) => (
+                    {group.reviews.map((review: Review) => (
                       <li key={review.id}>
                         <ReviewItem
                           review={review}
-                          onUpdate={updateMyReview}
-                          onDelete={handleDeleteReview}
+                          sort={sort}
+                          movieId={movieId}
+                          movieTitle={movieTitle}
+                          posterPath={posterPath}
                         />
                       </li>
                     ))}
@@ -122,7 +121,9 @@ export default function ReviewsList({ movieId }: IProps) {
             </>
           )}
 
-          <div ref={pageEnd}>{isFetching && <ReviewLoadingSpinner />}</div>
+          {hasNextPage && (
+            <div ref={pageEnd}>{isFetching && <Spinner size='xs' />}</div>
+          )}
         </>
       )}
     </div>
