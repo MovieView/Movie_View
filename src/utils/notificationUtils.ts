@@ -21,5 +21,7 @@ export function formatDate(date: string) {
     return `${diffInHours}시간 전`;
   } else if (diffInDays < 7) {
     return `${diffInDays}일 전`;
+  } else {
+    return dateObj.toLocaleDateString();
   }
 }
