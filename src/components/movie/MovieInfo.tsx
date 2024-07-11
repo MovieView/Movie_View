@@ -1,9 +1,10 @@
 import { API_URL } from '@/constants';
-import { Credits, Genre, Movie } from '@/models/movie.model';
+import { Credits, Genre, Movie, SimilarMovieInfo } from '@/models/movie.model';
 import ErrorOMG from '@/app/detail/[movieId]/error';
 import ReviewsList from '../review/ReviewsList';
 import Image from 'next/image';
 import MovieCredits from './MovieCredits';
+import MovieSimilar from './MovieSimilar';
 
 interface Props {
   movieId: string;
@@ -48,15 +49,40 @@ export async function getMovieCredits(
   }
 }
 
+export async function getSimilarMovies(
+  movieId: string
+): Promise<SimilarMovieInfo | null> {
+  try {
+    const response = await fetch(
+      `${API_URL}/${movieId}/similar?api_key=${process.env.TMDB_API_KEY}&language=ko-KR`
+    );
+    const data = await response.json();
+    if (response.ok) {
+      return data;
+    } else {
+      console.error('Error fetching similar movie:', data.status_message);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching similar movie:', error);
+    throw error;
+  }
+}
+
 export default async function MovieInfo({ movieId }: Props) {
   const movie = await getMovie(movieId);
   const credits = await getMovieCredits(movieId);
+  const similarMovies = await getSimilarMovies(movieId);
 
   if (!movie) {
     return <ErrorOMG />;
   }
 
   if (!credits) {
+    return <ErrorOMG />;
+  }
+
+  if (!similarMovies) {
     return <ErrorOMG />;
   }
 
@@ -106,6 +132,7 @@ export default async function MovieInfo({ movieId }: Props) {
         </div>
       </div>
       <MovieCredits cast={credits.cast} />
+      <MovieSimilar similarMovies={similarMovies.results} />
       <ReviewsList
         movieId={Number(movieId)}
         movieTitle={movie.title}
