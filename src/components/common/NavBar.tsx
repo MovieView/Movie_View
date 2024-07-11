@@ -8,15 +8,16 @@ import NotificationButton from '../notification/NotificationButton';
 import { useSession } from 'next-auth/react';
 import NotificationDummyButton from '../notification/NotificationDummyButton';
 
-interface NavBarProps {
+
+interface INavBarProps {
   isFixed: boolean;
 }
 
-const NavBar: React.FC<NavBarProps> = ({ isFixed }) => {
+const NavBar: React.FC<INavBarProps> = ({ isFixed }) => {
   const {data: session} = useSession();
 
   const navBarStyle = clsx(
-    'justify-between', 'items-center', 'py-5', 'px-10', 'bg-first', 'w-full', 'flex', 'shadow-lg',
+    'justify-between', 'items-center', 'py-5', 'px-10', 'w-full', 'flex', 'bg-fourth', 'shadow-md',
     isFixed ? 'fixed' : 'relative',
     isFixed ? 'z-10': 'z-0'
   ); 
@@ -27,7 +28,7 @@ const NavBar: React.FC<NavBarProps> = ({ isFixed }) => {
         <h1 className="text-xl font-semibold">MovieView</h1>
       </Link>
       <div className="flex justify-between items-center text-xl gap-4">
-        <NotificationDummyButton />
+        <NotificationDummyButton /> 
         {session && <NotificationButton />}
         <UserProfile />
       </div>
