@@ -37,6 +37,7 @@ export default function ReviewItem({
   const [reviewData, setReviewData] = useState<ReviewFormData>(review);
   const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [count, setCount] = useState(review.commentsCount);
   const { commentCount, setEnabled } = useComment(review.id);
   const { updateMyReview, deleteMyReview } = useReview(
     movieId,
@@ -100,6 +101,12 @@ export default function ReviewItem({
     setReviewData({ ...review });
     handleResize();
   }, [review]);
+
+  useEffect(() => {
+    if (commentCount !== null) {
+      setCount(commentCount);
+    }
+  }, [commentCount]);
 
   return (
     <>
@@ -202,7 +209,7 @@ export default function ReviewItem({
             />
           </div>
 
-          {(review.commentsCount > 0 || commentCount > 0) && (
+          {count > 0 && (
             <div>
               <button
                 className='hover:bg-third py-1 px-2 rounded-lg text-sm inline-flex items-center gap-1'
@@ -213,9 +220,7 @@ export default function ReviewItem({
                     isOpen ? 'rotate-180' : 'rotate-0'
                   }`}
                 />
-                <span>{`답글 ${
-                  commentCount ? commentCount : review.commentsCount
-                }개`}</span>
+                <span>{`답글 ${count}개`}</span>
               </button>
             </div>
           )}
