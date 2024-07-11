@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { CommentData } from '@/models/comment.model';
 import {
   useInfiniteQuery,
@@ -83,7 +83,7 @@ const deleteComment = async ({
 export function useComment(reviewId: string) {
   const queryClient = useQueryClient();
   const [enabled, setEnabled] = useState(false);
-  const [commentCount, setCommentCount] = useState<number>(0);
+  const [commentCount, setCommentCount] = useState<number | null>(null);
   const {
     data: comments,
     fetchNextPage,
@@ -153,13 +153,13 @@ export function useComment(reviewId: string) {
     addCommentMutation.mutate({ reviewId, content });
   };
 
-  const increaseCommentCount = useCallback(() => {
-    setCommentCount((prevCount) => prevCount + 1);
-  }, []);
+  const increaseCommentCount = () => {
+    commentCount && setCommentCount(commentCount + 1);
+  };
 
-  const decreaseCommentCount = useCallback(() => {
-    setCommentCount((prevCount) => prevCount - 1);
-  }, []);
+  const decreaseCommentCount = () => {
+    commentCount && setCommentCount(commentCount - 1);
+  };
 
   useEffect(() => {
     if (comments && comments.pages) {
