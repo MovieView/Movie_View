@@ -2,7 +2,7 @@
  
 import { usePathname } from 'next/navigation'
 import { splitStringWithPlaceholders } from "@/utils/notificationUtils";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 
 const useNotification = (navbar?: boolean) => {
@@ -95,7 +95,7 @@ const useNotification = (navbar?: boolean) => {
     }
   };
 
-  const fetchNotification = async () => {
+  const fetchNotification = useCallback(async () => {
     setIsLoading(true);
     setError(null);
 
@@ -114,11 +114,11 @@ const useNotification = (navbar?: boolean) => {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [currentPage, navbar]);
 
   useEffect(() => {
     fetchNotification();
-  }, [location, currentPage]);
+  }, [location, currentPage, fetchNotification]);
 
   return { 
     notification, 

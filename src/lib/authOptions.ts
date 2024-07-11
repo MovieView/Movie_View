@@ -68,7 +68,7 @@ export const authOptions: NextAuthOptions = {
         let myAccountId;
 
         if (count >= 1) {
-          await connection.release();
+          connection.release();
           return true;
         }
 
@@ -118,7 +118,7 @@ export const authOptions: NextAuthOptions = {
           [myAccountId, providerId, formUid(provider), lastLogin, extraData]
         );
 
-        await connection.release();
+        connection.release();
         return true;
       } catch (err) {
         console.error('Failed to save user:', err);
