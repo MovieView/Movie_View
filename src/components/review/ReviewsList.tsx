@@ -1,4 +1,6 @@
 'use client';
+
+
 import { useReview } from '@/hooks/useReview';
 import ReviewItem from '../review/ReviewItem';
 import React, { useEffect, useRef, useState } from 'react';
@@ -10,7 +12,7 @@ import ReviewError from './ReviewError';
 import { Review } from '@/models/review.model';
 import Spinner from '../common/Spinner';
 
-interface Props {
+interface IProps {
   movieId: number;
   movieTitle: string;
   posterPath: string;
@@ -25,7 +27,7 @@ export default function ReviewsList({
   movieId,
   movieTitle,
   posterPath,
-}: Props) {
+}: IProps) {
   const [sort, setSort] = useState<string>('latest');
   const [isFormOpen, setIsFormOpen] = useState(false);
   const {

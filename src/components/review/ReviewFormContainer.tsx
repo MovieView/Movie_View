@@ -3,7 +3,8 @@ import ReviewForm from '../review/ReviewForm';
 import { ReviewFormData } from '@/models/review.model';
 import { useReview } from '@/hooks/useReview';
 
-interface Props {
+
+interface IProps {
   movieId: number;
   sort: string;
   setIsFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -19,7 +20,7 @@ export default function ReviewFormContainer({
   sort,
   movieTitle,
   posterPath,
-}: Props) {
+}: IProps) {
   const { addMyReview } = useReview(movieId, sort, movieTitle, posterPath);
   const [reviewData, setReviewData] = useState<ReviewFormData>({
     title: '',

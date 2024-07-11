@@ -26,6 +26,17 @@ REDIS_URL=**<Redis URL>**
 ## TMDB
 TMDB_API_KEY=**<TMDB API KEY>**
 TMDB_ACCESS_TOKEN=**<TMDB ACCESS TOKEN>**
+
+## NextAuth
+NEXTAUTH_URL_INTERNAL=**<SERVER URL>**
+NEXTAUTH_SECRET=**<SECRET>**
+
+GITHUB_CLIENT_ID=**<GITHUB CLIENT ID>**
+GITHUB_CLIENT_SECRET=**<GITHUB CLIENT SECRET>**
+KAKAO_CLIENT_ID=**<KAKAO CLIENT ID>**
+KAKAO_CLIENT_SECRET=**<KAKAO CLIENT SECRET>**
+GOOGLE_CLIENT_ID=**<GOOGLE CLIENT ID>**
+GOOGLE_CLIENT_SECRET=**<GOOGLE CLIENT SECRET>**
 ```
 * 설치 전에 .env 파일을 생성하고 위와 같이 설정해주세요.
   * Before the installation, create a .env file in the root of the project, and set it up as above.
@@ -36,6 +47,14 @@ TMDB_ACCESS_TOKEN=**<TMDB ACCESS TOKEN>**
 * DB 관련 정보는 보안을 위해 설정하지 않았습니다. 직접 설정해주세요.
   * For security reasons, we did not set up the DB information. Please set it up yourself. 
   * Contact us for the information on the schema and tables.
+
+* Redis는 로컬에서 실행하여 사용할 경우, [Docker](https://hub.docker.com/r/redis/redis-stack-server)를 사용하여 실행하시는 것을 추천드립니다.
+  * If you plan on running Redis locally, we highly recommend running an instance of Redis using [Docker](https://hub.docker.com/r/redis/redis-stack-server).
+  * The format of the value for REDIS_URL is as follows: `redis://:[YOUR_PASSWORD]@[IP-ADDR]:[PORT]/0`
+
+* NextAuth 관련 정보는 [NextAuth](https://next-auth.js.org/)에서 확인하실 수 있습니다. 현재 구현된 로그인은 GitHub, Kakao, Google 로그인이 가능합니다.
+  * You can check the NextAuth related information at [NextAuth](https://next-auth.js.org/). As of now, you can log in with GitHub, Kakao, and Google.
+
 <br />
 
 ## ✨ 프로젝트 소개

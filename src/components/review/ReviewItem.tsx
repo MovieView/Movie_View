@@ -13,7 +13,7 @@ import ReviewForm from '../review/ReviewForm';
 import ReviewDropDownMenu from '../review/ReviewDropDownMenu';
 import ReviewButton from '../review/ReviewButton';
 
-interface Props {
+interface IProps {
   review: Review;
   sort: string;
   movieId: number;
@@ -27,7 +27,7 @@ export default function ReviewItem({
   sort,
   movieTitle,
   posterPath,
-}: Props) {
+}: IProps) {
   const { data: session } = useSession();
   const userId = session && formatUserId(session?.provider, session?.uid);
   const contentRef = useRef<HTMLPreElement>(null);
@@ -193,7 +193,6 @@ export default function ReviewItem({
               <span className='text-gray-400 text-sm'>(수정됨)</span>
             )}
           </div>
-
           <div className='flex gap-3'>
             <LikeButton
               reviewId={review.id}

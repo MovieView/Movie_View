@@ -1,10 +1,11 @@
 import React from 'react';
 
-interface Props {
+
+interface IProps {
   setIsFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function ReviewFakeForm({ setIsFormOpen }: Props) {
+export default function ReviewFakeForm({ setIsFormOpen }: IProps) {
   return (
     <div className='flex mb-4' onClick={() => setIsFormOpen(true)}>
       <input
