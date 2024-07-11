@@ -12,7 +12,6 @@ interface IProps {
 
 export default function ReviewDropDownMenu({
   handleEdit,
-}: IProps) {
   onDeleteReview,
   onDeleteComment,
   reviewId,

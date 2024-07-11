@@ -1,7 +1,7 @@
 import Image from 'next/image';
 
 
-const NotificationDummyButton = () => {
+const NotificationFakeButton = () => {
   let className = 'flex flex-col items-center justify-center p-1 rounded-lg relative hover:bg-second invisible';
 
   return (
@@ -19,4 +19,4 @@ const NotificationDummyButton = () => {
   );
 }
 
-export default NotificationDummyButton;
+export default NotificationFakeButton;

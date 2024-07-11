@@ -6,7 +6,7 @@ import Link from 'next/link';
 import UserProfile from '../login/UserProfile';
 import NotificationButton from '../notification/NotificationButton';
 import { useSession } from 'next-auth/react';
-import NotificationDummyButton from '../notification/NotificationDummyButton';
+import NotificationFakeButton from '../notification/NotificationFakeButton';
 
 
 interface INavBarProps {
@@ -28,7 +28,7 @@ const NavBar: React.FC<INavBarProps> = ({ isFixed }) => {
         <h1 className="text-xl font-semibold">MovieView</h1>
       </Link>
       <div className="flex justify-between items-center text-xl gap-4">
-        <NotificationDummyButton /> 
+        <NotificationFakeButton />
         {session && <NotificationButton />}
         <UserProfile />
       </div>

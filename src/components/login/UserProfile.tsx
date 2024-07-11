@@ -68,20 +68,6 @@ const UserProfile = () => {
             height={9}
             alt='user profile image'
           />
-          {/* 로그아웃 알림창 */}
-          {showAlert && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-              <div className="bg-white p-4 rounded-lg w-80">
-                <p className="text-lg">{`${session.user.name}님 안녕히 가세요!`}</p>
-                <button
-                  className="mt-2 bg-slate-300 text-white px-4 py-2 rounded-lg"
-                  onClick={redirectToHome}
-                >
-                  확인
-                </button>
-              </div>
-            </div>
-          )}
           <button className="text-lg font-medium" onClick={handleLogOut}>Logout</button>
         </>
       ) : (
