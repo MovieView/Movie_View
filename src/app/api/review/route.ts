@@ -1,33 +1,40 @@
-import { authOPtions } from '@/lib/authOptions';
+import { authOptions } from '@/lib/authOptions';
 import { dbConnectionPoolAsync } from '@/lib/db';
 import { formatUserId } from '@/utils/formatUserId';
 import { ResultSetHeader } from 'mysql2';
 import { getServerSession } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 
-export interface IReviewData {
+interface ReviewData {
   movieId: number;
   title: string;
   rating: number;
   content: string;
+  movieTitle: string;
+  posterPath: string;
 }
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOPtions);
-    if (!session?.provider && !session?.uid) {
-      return;
-    }
+    const session = await getServerSession(authOptions);
 
-    const userId = formatUserId(session.provider, session.uid);
+    const { provider, uid } = session ?? {};
 
-    if (!userId) {
+    if (!provider || !uid) {
       return new Response('Authentication Error', { status: 401 });
     }
 
-    const data: IReviewData = await req.json();
+    const userId = formatUserId(provider, uid);
 
-    const movie = await addMovieId(data.movieId);
+    if (!userId) {
+      return new Response(JSON.stringify({ message: 'Authentication Error' }), {
+        status: 401,
+      });
+    }
+
+    const data: ReviewData = await req.json();
+
+    await addMovieId(data.movieId, data.movieTitle, data.posterPath);
 
     const review = await addReview(userId, data);
 
@@ -51,7 +58,7 @@ export async function POST(req: Request) {
   }
 }
 
-async function addReview(userId: string, data: IReviewData) {
+async function addReview(userId: string, data: ReviewData) {
   const id = uuidv4().replace(/-/g, '');
   const sql = `INSERT INTO reviews (id, movies_id, social_accounts_uid, rating, title, content) VALUES(UNHEX(?), ?, ?, ?, ?, ?)`;
   const values = [
@@ -63,26 +70,33 @@ async function addReview(userId: string, data: IReviewData) {
     data.content,
   ];
 
+  const connection = await dbConnectionPoolAsync.getConnection();
   try {
-    const connection = await dbConnectionPoolAsync.getConnection();
     const [result] = await connection.execute(sql, values);
     connection.release();
     return (result as ResultSetHeader).affectedRows;
   } catch (err) {
+    connection.release();
     console.error(err);
     throw err;
   }
 }
 
-async function addMovieId(movieId: number) {
-  const sql = `INSERT IGNORE INTO movies (id) VALUES (?)`;
-  const values = [movieId];
+async function addMovieId(
+  movieId: number,
+  movieTitle: string,
+  posterPath: string
+) {
+  const sql = `INSERT IGNORE INTO movies (id, title, poster_path) VALUES (?,?,?)`;
+  const values = [movieId, movieTitle, posterPath];
+
+  const connection = await dbConnectionPoolAsync.getConnection();
   try {
-    const connection = await dbConnectionPoolAsync.getConnection();
-    const [result] = await await connection.execute(sql, values);
+    const [result] = await connection.execute(sql, values);
     connection.release();
     return (result as ResultSetHeader).affectedRows;
   } catch (err) {
+    connection.release();
     console.error(err);
     throw err;
   }

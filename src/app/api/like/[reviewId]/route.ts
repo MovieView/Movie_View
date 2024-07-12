@@ -1,14 +1,12 @@
-import { authOPtions } from '@/lib/authOptions';
+import { authOptions } from '@/lib/authOptions';
 import { dbConnectionPoolAsync } from '@/lib/db';
+import { Like } from '@/models/likes.model';
 import { formatUserId } from '@/utils/formatUserId';
 import { RowDataPacket } from 'mysql2';
 import { getServerSession } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 
-interface LikeQueryResult extends RowDataPacket {
-  liked: number;
-  likes: number;
-}
+interface LikeQueryResult extends Like, RowDataPacket {}
 
 interface ILike {
   id: string;
@@ -21,7 +19,7 @@ export const GET = async (
   { params }: { params: { reviewId: string } }
 ) => {
   try {
-    const session = await getServerSession(authOPtions);
+    const session = await getServerSession(authOptions);
     if (!session?.provider && !session?.uid) {
       return;
     }
@@ -50,7 +48,7 @@ export const POST = async (
   { params }: { params: { reviewId: string } }
 ) => {
   try {
-    const session = await getServerSession(authOPtions);
+    const session = await getServerSession(authOptions);
     if (!session?.provider && !session?.uid) {
       return;
     }
@@ -84,13 +82,16 @@ export const DELETE = async (
   { params }: { params: { reviewId: string } }
 ) => {
   try {
-    const session = await getServerSession(authOPtions);
+    const session = await getServerSession(authOptions);
     if (!session?.provider && !session?.uid) {
       return;
     }
     const social_accounts_uid = formatUserId(session.provider, session.uid);
 
-    const result = await deleteLike(params.reviewId, social_accounts_uid as string);
+    const result = await deleteLike(
+      params.reviewId,
+      social_accounts_uid as string
+    );
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
@@ -106,8 +107,8 @@ export const DELETE = async (
 async function getLike(
   reviewId: string,
   social_accounts_uid: string
-): Promise<LikeQueryResult> {
-  let connection;
+): Promise<Like> {
+  let connection = await dbConnectionPoolAsync.getConnection();
   const sql = `SELECT 
                 COALESCE(SUM(CASE WHEN social_accounts_uid = ? THEN 1 ELSE 0 END), 0) AS liked,
                 COUNT(*) AS likes
@@ -115,61 +116,49 @@ async function getLike(
               WHERE HEX(reviews_id) = ?;`;
 
   try {
-    connection = await dbConnectionPoolAsync.getConnection();
-
     const [result] = await connection
       .execute<LikeQueryResult[]>(sql, [social_accounts_uid, reviewId]);
 
+    connection.release();
     return result[0];
   } catch (err) {
+    connection.release();
     console.error(err);
     throw err;
-  } finally {
-    if (connection) {
-      connection.release();
-    }
   }
 }
 
 async function postLike(like: ILike) {
-  let connection;
+  let connection = await dbConnectionPoolAsync.getConnection();
   const sql = `INSERT IGNORE INTO movie_view.reviews_likes (id, reviews_id, social_accounts_uid)
              VALUES ( UNHEX(?), UNHEX(?), ? );`;
 
   try {
-    connection = await dbConnectionPoolAsync.getConnection();
-
     const [result] = await connection
       .execute(sql, [like.id, like.reviews_id, like.social_accounts_uid]);
-
+    
+    connection.release();
     return result;
   } catch (err) {
+    connection.release();
     console.error(err);
     throw err;
-  } finally {
-    if (connection) {
-      connection.release();
-    }
   }
 }
 
 async function deleteLike(reviewId: string, social_accounts_uid: string) {
-  let connection;
+  let connection = await dbConnectionPoolAsync.getConnection();
   const sql = `DELETE FROM movie_view.reviews_likes WHERE reviews_id=UNHEX(?) AND social_accounts_uid=?;`;
 
   try {
-    connection = await dbConnectionPoolAsync.getConnection();
-
     const [result] = await connection
       .execute(sql, [reviewId, social_accounts_uid]);
 
+    connection.release();
     return result;
   } catch (err) {
+    connection.release();
     console.error(err);
     throw err;
-  } finally {
-    if (connection) {
-      connection.release();
-    }
   }
 }

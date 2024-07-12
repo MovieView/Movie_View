@@ -1,13 +1,14 @@
-import MovieInfo, { getMovie } from '@/components/movie/MovieInfo';
+import MovieInfo from '@/components/movie/MovieInfo';
 import { Suspense } from 'react';
-import Spinner from '@/components/Common/Spinner';
+import Spinner from '@/components/common/Spinner';
+import { fetchMovie } from '@/app/api/movie/[movieId]/route';
 
 interface IParams {
   params: { movieId: string };
 }
 
 export async function generateMetadata({ params: { movieId } }: IParams) {
-  const movie = await getMovie(movieId);
+  const movie = await fetchMovie(movieId);
   return {
     title: movie?.title ? movie.title : 'Unknown',
   };
