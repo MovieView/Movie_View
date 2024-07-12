@@ -17,6 +17,11 @@ const nextConfig = {
         hostname: 'lh3.googleusercontent.com',
         port: '',
       },
+      {
+        protocol: 'http',
+        hostname: 't1.kakaocdn.net',
+        port: '',
+      },
     ],
   },
 };

@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { FaHeart } from 'react-icons/fa6';
+import Link from 'next/link';
 
 const updateProfile = async (userId: string, profilePicture?: File, userName?: string) => {
   const formData = new FormData();
@@ -69,10 +70,6 @@ const Edit = () => {
     }
   };
 
-  const heartList = () => {
-    // 좋아요 한 리스트로 이동
-  };
-
   if (!session) {
     return <div>먼저 로그인해주세요.</div>;
   }
@@ -83,7 +80,7 @@ const Edit = () => {
       <div className='w-full flex justify-center'>
         <div className='relative w-full max-w-4xl p-10 text-[20px] font-bold flex items-center justify-between'>
           <span className='mx-auto'>프로필 수정</span>
-          <FaHeart className='absolute right-[20px] text-first' onClick={heartList} />
+          <Link href={'/my-page/movies-like'}><FaHeart className='absolute right-[20px] text-first' /></Link>
         </div>
       </div>
 

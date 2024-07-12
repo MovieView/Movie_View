@@ -6,7 +6,6 @@ interface IParams {
   params: { movieId: string };
 }
 
-
 export default async function MovieDetail({ params: { movieId } }: IParams) {
   return (
     <div className='w-full bg-white relative flex flex-col grow'>
