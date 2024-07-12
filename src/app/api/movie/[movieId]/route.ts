@@ -26,7 +26,7 @@ export const GET = async (
   }
 };
 
-export async function fetchMovie(movieId: string): Promise<Movie | null> {
+async function fetchMovie(movieId: string): Promise<Movie | null> {
   try {
     const response = await fetch(
       `${API_URL}/${movieId}?api_key=${process.env.TMDB_API_KEY}&language=ko-KR`
@@ -45,7 +45,7 @@ export async function fetchMovie(movieId: string): Promise<Movie | null> {
   }
 }
 
-export async function fetchMovieCredits(movieId: string): Promise<Credits | null> {
+async function fetchMovieCredits(movieId: string): Promise<Credits | null> {
   try {
     const response = await fetch(
       `${API_URL}/${movieId}/credits?api_key=${process.env.TMDB_API_KEY}&language=ko-KR`
