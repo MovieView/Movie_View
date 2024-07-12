@@ -1,5 +1,5 @@
-import { API_URL } from "@/constants";
-import { Credits, Movie } from "@/models/movie.model";
+import { API_URL } from '@/constants';
+import { Credits, Movie, SimilarMovieInfo } from '@/models/movie.model';
 
 export const GET = async (
   req: Request,
@@ -8,10 +8,12 @@ export const GET = async (
   try {
     const movie = await fetchMovie(params.movieId);
     const credits = await fetchMovieCredits(params.movieId);
+    const similarMovies = await fetchSimilarMovies(params.movieId);
 
     const results = {
       movie,
       credits,
+      similarMovies,
     };
 
     return new Response(JSON.stringify(results), {
@@ -26,7 +28,7 @@ export const GET = async (
   }
 };
 
-export async function fetchMovie(movieId: string): Promise<Movie | null> {
+async function fetchMovie(movieId: string): Promise<Movie | null> {
   try {
     const response = await fetch(
       `${API_URL}/${movieId}?api_key=${process.env.TMDB_API_KEY}&language=ko-KR`
@@ -45,7 +47,7 @@ export async function fetchMovie(movieId: string): Promise<Movie | null> {
   }
 }
 
-export async function fetchMovieCredits(movieId: string): Promise<Credits | null> {
+async function fetchMovieCredits(movieId: string): Promise<Credits | null> {
   try {
     const response = await fetch(
       `${API_URL}/${movieId}/credits?api_key=${process.env.TMDB_API_KEY}&language=ko-KR`
@@ -59,6 +61,26 @@ export async function fetchMovieCredits(movieId: string): Promise<Credits | null
     }
   } catch (error) {
     console.error('Error fetching movie credits:', error);
+    throw error;
+  }
+}
+
+async function fetchSimilarMovies(
+  movieId: string
+): Promise<SimilarMovieInfo | null> {
+  try {
+    const response = await fetch(
+      `${API_URL}/${movieId}/similar?api_key=${process.env.TMDB_API_KEY}&language=ko-KR`
+    );
+    const data = await response.json();
+    if (response.ok) {
+      return data;
+    } else {
+      console.error('Error fetching similar movie:', data.status_message);
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching similar movie:', error);
     throw error;
   }
 }
