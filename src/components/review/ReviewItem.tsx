@@ -6,7 +6,7 @@ import { useSession } from 'next-auth/react';
 import { formatUserId } from '@/utils/formatUserId';
 import CommentsList from '../comment/CommentsList';
 import { formatDate } from '@/utils/formatDate';
-import { Review, ReviewFormData } from '@/models/review.model';
+import { IReview, IReviewFormData } from '@/models/review.model';
 import { useComment } from '@/hooks/useComment';
 import { useReview } from '@/hooks/useReview';
 import ReviewForm from '../review/ReviewForm';
@@ -14,7 +14,7 @@ import ReviewDropDownMenu from '../review/ReviewDropDownMenu';
 import ReviewButton from '../review/ReviewButton';
 
 interface IProps {
-  review: Review;
+  review: IReview;
   sort: string;
   movieId: number;
   movieTitle: string;
@@ -34,7 +34,7 @@ export default function ReviewItem({
   const [expanded, setExpanded] = useState(false);
   const [showButton, setShowButton] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [reviewData, setReviewData] = useState<ReviewFormData>(review);
+  const [reviewData, setReviewData] = useState<IReviewFormData>(review);
   const [isCommentFormOpen, setIsCommentFormOpen] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [count, setCount] = useState(review.commentsCount);

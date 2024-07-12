@@ -4,20 +4,20 @@ import { useSession } from 'next-auth/react';
 import React, { FormEvent, useEffect, useState } from 'react';
 import CommentForm from './CommentForm';
 import ReviewDropDownMenu from '../review/ReviewDropDownMenu';
-import { Comment, CommentContent } from '@/models/comment.model';
+import { IComment, ICommentContent } from '@/models/comment.model';
 import { useComment } from '@/hooks/useComment';
 
-interface Props {
+interface IProps {
   reviewId: string;
-  comment: Comment;
+  comment: IComment;
   onUpdate: (reviewId: string, commentId: string, content: string) => void;
 }
 
-export default function CommentItem({ reviewId, comment, onUpdate }: Props) {
+export default function CommentItem({ reviewId, comment, onUpdate }: IProps) {
   const { data: session } = useSession();
   const userId = session && formatUserId(session?.provider, session?.uid);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [CommentData, setCommentData] = useState<CommentContent>(comment);
+  const [CommentData, setCommentData] = useState<ICommentContent>(comment);
   const { deleteMyComment } = useComment(reviewId);
 
   const handleDeleteComment = (reviewId: string, commentId: string) => {

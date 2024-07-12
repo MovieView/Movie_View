@@ -1,6 +1,5 @@
 'use client';
 
-
 import { useReview } from '@/hooks/useReview';
 import ReviewItem from '../review/ReviewItem';
 import React, { useEffect, useRef, useState } from 'react';
@@ -9,7 +8,7 @@ import ReviewButton from './ReviewButton';
 import ReviewFakeForm from './ReviewFakeForm';
 import ReviewFormContainer from './ReviewFormContainer';
 import ReviewError from './ReviewError';
-import { Review } from '@/models/review.model';
+import { IReview } from '@/models/review.model';
 import Spinner from '../common/Spinner';
 
 interface IProps {
@@ -104,7 +103,7 @@ export default function ReviewsList({
               <ul className='flex flex-col gap-4'>
                 {reviews?.pages.flatMap((group: any, i: number) => (
                   <React.Fragment key={i}>
-                    {group.reviews.map((review: Review) => (
+                    {group.reviews.map((review: IReview) => (
                       <li key={review.id}>
                         <ReviewItem
                           review={review}

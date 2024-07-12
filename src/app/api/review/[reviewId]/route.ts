@@ -4,8 +4,8 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { formatUserId } from '@/utils/formatUserId';
 import { v4 as uuidv4 } from 'uuid';
-import { CommentContent } from '@/models/comment.model';
-import { ReviewData } from '@/models/review.model';
+import { ICommentContent } from '@/models/comment.model';
+import { IReviewData } from '@/models/review.model';
 
 // 대댓글 조회
 const MAX_RESULT = 8;
@@ -77,7 +77,7 @@ export async function POST(
     }
 
     // 대댓글 내용 받아오기
-    const data: CommentContent = await req.json();
+    const data: ICommentContent = await req.json();
 
     // 대댓글 내용 DB 저장
     await addComment(params.reviewId, user.userId, data.content);
@@ -174,7 +174,7 @@ export async function PUT(
       );
     }
 
-    const data: ReviewData = await req.json();
+    const data: IReviewData = await req.json();
 
     await updateReview(params.reviewId, userId, data);
 
@@ -230,7 +230,7 @@ async function deleteReview(reviewId: string, userId: string) {
 async function updateReview(
   reviewId: string,
   userId: string,
-  data: ReviewData
+  data: IReviewData
 ) {
   const sql = `UPDATE reviews SET title=?, rating=?, content=? WHERE id=UNHEX(?) AND social_accounts_uid=? `;
   const values: Array<string | number> = [

@@ -1,4 +1,4 @@
-export interface Review {
+export interface IReview {
   id: string;
   movieId: number;
   userId: string;
@@ -14,23 +14,23 @@ export interface Review {
   commentsCount: number;
 }
 
-export interface Pagination {
+export interface IPagination {
   currentPage: number;
   totalCount: number;
 }
 
-export interface ReviewList {
-  reviews: Review[];
-  pagination: Pagination;
+export interface IReviewList {
+  reviews: IReview[];
+  pagination: IPagination;
 }
 
-export interface ReviewFormData {
+export interface IReviewFormData {
   title: string;
   rating: number;
   content: string;
 }
 
-export interface ReviewData {
+export interface IReviewData {
   movieId: number;
   title: string;
   rating: number;
