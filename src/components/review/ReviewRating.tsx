@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { FaStar, FaStarHalf } from 'react-icons/fa';
 
-
 interface IProps {
   rating: number;
   onRatingChange: (newRating: number) => void;

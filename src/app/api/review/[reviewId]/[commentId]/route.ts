@@ -2,7 +2,7 @@ import { dbConnectionPoolAsync } from '@/lib/db';
 import { formatUserId } from '@/utils/formatUserId';
 import { getServerSession } from 'next-auth';
 import { FieldPacket, RowDataPacket } from 'mysql2';
-import { CommentContent } from '@/models/comment.model';
+import { ICommentContent } from '@/models/comment.model';
 import { authOptions } from '@/lib/authOptions';
 
 // 대댓글 삭제
@@ -82,7 +82,7 @@ export async function PUT(
     }
 
     // 대댓글 수정 내용 받아오기
-    const data: CommentContent = await req.json();
+    const data: ICommentContent = await req.json();
 
     // DB에서 데이터 수정
     await updateCommentById(params.commentId, user.userId, data.content);

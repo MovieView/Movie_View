@@ -1,11 +1,11 @@
 import React, { ChangeEvent, FormEvent } from 'react';
-import { CommentContent } from '@/models/comment.model';
+import { ICommentContent } from '@/models/comment.model';
 
-interface Props {
-  comment: CommentContent;
+interface IProps {
+  comment: ICommentContent;
   text: string;
   handleCloseForm: () => void;
-  setComment: React.Dispatch<React.SetStateAction<CommentContent>>;
+  setComment: React.Dispatch<React.SetStateAction<ICommentContent>>;
   onSubmit: (e: FormEvent) => void;
 }
 
@@ -15,7 +15,7 @@ export default function CommentForm({
   handleCloseForm,
   setComment,
   onSubmit,
-}: Props) {
+}: IProps) {
   const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setComment({ ...comment, [name]: value });

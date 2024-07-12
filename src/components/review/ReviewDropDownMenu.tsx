@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { RiMore2Line } from 'react-icons/ri';
-
 
 interface IProps {
   handleEdit: () => void;

@@ -1,4 +1,4 @@
-export interface Comment {
+export interface IComment {
   userId: string;
   content: string;
   createdAt: string;
@@ -8,21 +8,21 @@ export interface Comment {
   updatedAt: string;
 }
 
-export interface CommentList {
-  comments: Comment[];
-  pagination: Pagination;
+export interface ICommentList {
+  comments: IComment[];
+  pagination: IPagination;
 }
 
-export interface Pagination {
+export interface IPagination {
   currentPage: number;
   totalCount: number;
 }
 
-export interface CommentContent {
+export interface ICommentContent {
   content: string;
 }
 
-export interface CommentData {
+export interface ICommentData {
   reviewId: string;
   commentId: string;
   content: string;

@@ -1,4 +1,4 @@
-import { Review, ReviewFormData } from '@/models/review.model';
+import { IReview, IReviewFormData } from '@/models/review.model';
 import {
   useInfiniteQuery,
   useMutation,
@@ -30,7 +30,7 @@ const updateReview = async ({
   title,
   rating,
   content,
-}: ReviewFormData & { reviewId: string }) => {
+}: IReviewFormData & { reviewId: string }) => {
   const response = await fetch(`/api/review/${reviewId}`, {
     method: 'PUT',
     headers: {
@@ -53,7 +53,7 @@ const createReview = async ({
   content,
   movieTitle,
   posterPath,
-}: ReviewFormData & {
+}: IReviewFormData & {
   movieId: number;
   movieTitle: string;
   posterPath: string;
@@ -101,6 +101,7 @@ export function useReview(
 ) {
   const queryClient = useQueryClient();
   const [isEmpty, setIsEmpty] = useState(false);
+  const [enabled, setEnabled] = useState(false);
   const {
     data: reviews,
     fetchNextPage,
@@ -122,6 +123,8 @@ export function useReview(
       }
     },
     initialPageParam: 1,
+    staleTime: 1000 * 60 * 5,
+    enabled,
   });
 
   const deleteReviewMutation = useMutation({
@@ -134,7 +137,9 @@ export function useReview(
 
         const newPages = oldData.pages.map((group: any) => ({
           ...group,
-          reviews: group.reviews.filter((item: Review) => item.id !== reviewId),
+          reviews: group.reviews.filter(
+            (item: IReview) => item.id !== reviewId
+          ),
         }));
 
         return {
@@ -214,5 +219,6 @@ export function useReview(
     updateMyReview,
     deleteMyReview,
     addMyReview,
+    setEnabled,
   };
 }

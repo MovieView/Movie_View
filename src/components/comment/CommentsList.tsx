@@ -3,10 +3,11 @@ import React, { useEffect, useRef } from 'react';
 import ReviewError from '../review/ReviewError';
 import CommentItem from './CommentItem';
 import CommentFormContainer from './CommentFormContainer';
-import { Comment } from '@/models/comment.model';
+import { IComment } from '@/models/comment.model';
 import Spinner from '../common/Spinner';
+import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 
-interface Props {
+interface IProps {
   reviewId: string;
   isOpen: boolean;
   isCommentFormOpen: boolean;
@@ -18,7 +19,7 @@ export default function CommentsList({
   isOpen,
   isCommentFormOpen,
   setIsCommentFormOpen,
-}: Props) {
+}: IProps) {
   const pageEnd = useRef<HTMLDivElement | null>(null);
   const {
     comments,
@@ -31,20 +32,16 @@ export default function CommentsList({
     updateMyComment,
   } = useComment(reviewId);
 
-  useEffect(() => {
-    if (isOpen) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting && hasNextPage) {
-            fetchNextPage();
-          }
-        },
-        { threshold: 1 }
-      );
-      pageEnd.current && observer.observe(pageEnd.current);
-      return () => observer.disconnect();
-    }
-  }, [fetchNextPage, hasNextPage, isOpen]);
+  useIntersectionObserver(
+    pageEnd,
+    ([entry]) => {
+      if (entry.isIntersecting && hasNextPage) {
+        fetchNextPage();
+      }
+    },
+    { threshold: 1 },
+    isOpen
+  );
 
   useEffect(() => {
     if (isOpen) {
@@ -75,7 +72,7 @@ export default function CommentsList({
               <ul className='flex flex-col gap-4'>
                 {comments?.pages.flatMap((group: any, i: number) => (
                   <React.Fragment key={i}>
-                    {group.comments.map((comment: Comment) => (
+                    {group.comments.map((comment: IComment) => (
                       <li key={comment.id}>
                         <CommentItem
                           reviewId={reviewId}

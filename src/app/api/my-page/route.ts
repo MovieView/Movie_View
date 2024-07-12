@@ -8,7 +8,7 @@ import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { url } from 'inspector';
 
-interface IUserData{
+interface IUserData {
   username: string;
   filePath: string;
 }
@@ -16,10 +16,10 @@ function sanitizeFilename(filename: string): string {
   return filename.replace(/[^a-zA-Z0-9_\u0600-\u06FF.]/g, '_');
 }
 
-async function uploadImage(req:NextRequest) {
+async function uploadImage(req: NextRequest) {
   try {
     const formData = await req.formData();
-    
+
     const file = formData.get('profilePicture') as unknown as File | null;
     if (!file) {
       throw new Error('File blob is required.');
@@ -45,8 +45,8 @@ async function uploadImage(req:NextRequest) {
       },
     });
 
-    let url = "https://" + process.env.AWS_S3_NAME + ".s3.";
-    url += process.env.AWS_REGION + ".amazonaws.com/";
+    let url = 'https://' + process.env.AWS_S3_NAME + '.s3.';
+    url += process.env.AWS_REGION + '.amazonaws.com/';
     url += fileDirectory;
 
     const uploadParams = {
@@ -55,12 +55,12 @@ async function uploadImage(req:NextRequest) {
       Body: file,
       ContentType: file.type!,
     };
-  
+
     const upload = new Upload({
       client: s3Client,
       params: uploadParams,
     });
-    
+
     try {
       upload.done();
       return url;
@@ -68,16 +68,14 @@ async function uploadImage(req:NextRequest) {
       console.error('S3 버킷 업로드 중 오류 발생\n', e);
       throw new Error('S3 버킷 업로드 중 오류 발생');
     }
-
   } catch (e) {
     console.error('파일 업로드 중 오류 발생\n', e);
     throw new Error('Something went wrong.');
   }
-  
 }
 
 export async function PUT(req: NextRequest) {
-  try{
+  try {
     const session = await getServerSession({ req, ...authOptions });
     if (!session || !session.user || !session.user.email) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
@@ -93,28 +91,32 @@ export async function PUT(req: NextRequest) {
     const req_copy = req.clone();
 
     const formData = await req_copy.formData();
-    if(formData.get('profilePicture') != null){
+    if (formData.get('profilePicture') != null) {
       filePath = await uploadImage(req);
     }
-    if(formData.get('username') != null){
+    if (formData.get('username') != null) {
       username = formData.get('username');
     }
-    
-    
-    executeQury(userId, username, filePath)
-    
-  } catch (err:any) {
-    console.error('Error in PUT request\n', );
+
+    executeQury(userId, username, filePath);
+  } catch (err: any) {
+    console.error('Error in PUT request\n');
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
-  return NextResponse.json({ done: 'ok', message: '프로필 변경 성공'}, { status: 200 });
+  return NextResponse.json(
+    { done: 'ok', message: '프로필 변경 성공' },
+    { status: 200 }
+  );
 }
 
 async function getExtraData(userId: string) {
   const connection = await dbConnectionPoolAsync.getConnection();
-  
+
   try {
-    const [rows]: [any[], any] = await connection.execute('SELECT extra_data FROM social_accounts WHERE uid = ?', [userId]);
+    const [rows]: [any[], any] = await connection.execute(
+      'SELECT extra_data FROM social_accounts WHERE uid = ?',
+      [userId]
+    );
 
     if (rows.length > 0) {
       const extraDataString = rows[0].extra_data;
@@ -133,28 +135,32 @@ async function getExtraData(userId: string) {
 
 async function executeQury(userId: string, username: string, filePath: string) {
   const connection = await dbConnectionPoolAsync.getConnection();
-  
+
   try {
     await connection.execute('SET SQL_SAFE_UPDATES=0');
 
-    let updateQuery = 'UPDATE movie_view.social_accounts SET extra_data = ? WHERE uid = ?';
+    let updateQuery =
+      'UPDATE movie_view.social_accounts SET extra_data = ? WHERE uid = ?';
     let data: IUserData = {
       username: '',
       filePath: '',
     };
-    if (username){
+    if (username) {
       data['username'] = username;
     }
-    if(filePath){
+    if (filePath) {
       data['filePath'] = filePath;
     }
 
-    const result = await connection.execute(updateQuery, [JSON.stringify(data), userId]);
+    const result = await connection.execute(updateQuery, [
+      JSON.stringify(data),
+      userId,
+    ]);
     connection.release();
     console.log('Update successful:', result);
   } catch (error) {
     connection.release();
     console.error('Error execute qury:', error);
     throw new Error('Error execute qury: ' + error);
-  } 
+  }
 }
