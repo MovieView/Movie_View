@@ -10,6 +10,7 @@ import ReviewFormContainer from './ReviewFormContainer';
 import ReviewError from './ReviewError';
 import { IReview } from '@/models/review.model';
 import Spinner from '../common/Spinner';
+import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 
 interface IProps {
   movieId: number;
@@ -37,26 +38,64 @@ export default function ReviewsList({
     hasNextPage,
     isFetching,
     isEmpty,
+    setEnabled,
   } = useReview(movieId, sort, movieTitle, posterPath);
 
   const pageEnd = useRef<HTMLDivElement | null>(null);
+  const reviewRef = useRef<HTMLDivElement | null>(null);
 
   const handleSort = (value: string) => {
     setSort(value);
   };
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage) {
-          fetchNextPage();
-        }
-      },
-      { threshold: 1 }
-    );
-    pageEnd.current && observer.observe(pageEnd.current);
-    return () => observer.disconnect();
-  }, [fetchNextPage, hasNextPage]);
+  // useEffect(() => {
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       if (entries[0].isIntersecting && hasNextPage) {
+  //         fetchNextPage();
+  //       }
+  //     },
+  //     { threshold: 1 }
+  //   );
+  //   pageEnd.current && observer.observe(pageEnd.current);
+  //   return () => observer.disconnect();
+  // }, [fetchNextPage, hasNextPage]);
+
+  // useEffect(() => {
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       console.log(entries);
+  //       if (entries[0].isIntersecting) {
+  //         setEnabled(true);
+  //       }
+  //     },
+  //     { threshold: 1 }
+  //   );
+  //   reviewRef.current && observer.observe(reviewRef.current);
+  //   return () => observer.disconnect();
+  // }, [setEnabled]);
+
+  useIntersectionObserver(
+    pageEnd,
+    ([entry]) => {
+      if (entry.isIntersecting && hasNextPage) {
+        fetchNextPage();
+      }
+    },
+    { threshold: 1 },
+    true
+  );
+
+  useIntersectionObserver(
+    reviewRef,
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        setEnabled(true);
+      }
+    },
+    { threshold: 1 },
+    true
+  );
 
   if (error) {
     return <ReviewError />;
@@ -64,7 +103,7 @@ export default function ReviewsList({
 
   return (
     <div className='p-2 my-10'>
-      <div className='w-full max-w-3xl mx-auto'>
+      <div ref={reviewRef} className='w-full max-w-3xl mx-auto'>
         {!isFormOpen && <ReviewFakeForm setIsFormOpen={setIsFormOpen} />}
 
         {isFormOpen && (

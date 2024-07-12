@@ -5,6 +5,7 @@ import CommentItem from './CommentItem';
 import CommentFormContainer from './CommentFormContainer';
 import { IComment } from '@/models/comment.model';
 import Spinner from '../common/Spinner';
+import useIntersectionObserver from '@/hooks/useIntersectionObserver';
 
 interface IProps {
   reviewId: string;
@@ -31,20 +32,16 @@ export default function CommentsList({
     updateMyComment,
   } = useComment(reviewId);
 
-  useEffect(() => {
-    if (isOpen) {
-      const observer = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting && hasNextPage) {
-            fetchNextPage();
-          }
-        },
-        { threshold: 1 }
-      );
-      pageEnd.current && observer.observe(pageEnd.current);
-      return () => observer.disconnect();
-    }
-  }, [fetchNextPage, hasNextPage, isOpen]);
+  useIntersectionObserver(
+    pageEnd,
+    ([entry]) => {
+      if (entry.isIntersecting && hasNextPage) {
+        fetchNextPage();
+      }
+    },
+    { threshold: 1 },
+    isOpen
+  );
 
   useEffect(() => {
     if (isOpen) {

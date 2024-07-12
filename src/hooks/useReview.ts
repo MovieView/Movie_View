@@ -101,6 +101,7 @@ export function useReview(
 ) {
   const queryClient = useQueryClient();
   const [isEmpty, setIsEmpty] = useState(false);
+  const [enabled, setEnabled] = useState(false);
   const {
     data: reviews,
     fetchNextPage,
@@ -122,6 +123,8 @@ export function useReview(
       }
     },
     initialPageParam: 1,
+    staleTime: 1000 * 60 * 5,
+    enabled,
   });
 
   const deleteReviewMutation = useMutation({
@@ -216,5 +219,6 @@ export function useReview(
     updateMyReview,
     deleteMyReview,
     addMyReview,
+    setEnabled,
   };
 }
