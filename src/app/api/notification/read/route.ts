@@ -27,6 +27,7 @@ export async function PUT(req: Request) {
   try {
     const [result] = await connection.query<ResultSetHeader>(sqlQueryStatement, [socialAccountsUID]);
     if (result.affectedRows === 0) {
+      connection.release();
       return new Response(JSON.stringify({ message: "No data" }), {
         status: 404,
       });
