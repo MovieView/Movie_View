@@ -2,9 +2,8 @@ import { dbConnectionPoolAsync } from '@/lib/db';
 import { NextRequest } from 'next/server';
 
 export const POST = async (req: NextRequest) => {
+  const connection = await dbConnectionPoolAsync.getConnection();
   try {
-    const connection = await dbConnectionPoolAsync.getConnection();
-
     const { userId, provider } = await req.json();
 
     const formUid = (provider: string) => {
@@ -25,7 +24,7 @@ export const POST = async (req: NextRequest) => {
     `;
 
     const [result] = await connection.execute(sql, [formUid(provider)]);
-
+    connection.release();
     if (!result) {
       return new Response(
         JSON.stringify({ error: '프로필이 존재하지 않습니다.' }),
@@ -47,6 +46,7 @@ export const POST = async (req: NextRequest) => {
       );
     }
   } catch (err) {
+    connection.release();
     return new Response(
       JSON.stringify({ error: '프로필 사진 불러오기 실패' }),
       {

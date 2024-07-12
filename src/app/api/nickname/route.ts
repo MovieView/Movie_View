@@ -19,6 +19,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
 
     // 닉네임이 없는 경우
     if (!nickname) {
+      connection.release();
       return new Response(
         JSON.stringify({ error: '닉네임은 필수로 설정해야 합니다.' }),
         {

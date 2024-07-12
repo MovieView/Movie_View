@@ -3,6 +3,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import Link from 'next/link';
+// import UserProfile from '../login/UserProfile';
 import UserProfile from '../login/UserProfile';
 import NotificationButton from '../notification/NotificationButton';
 import { useSession } from 'next-auth/react';
