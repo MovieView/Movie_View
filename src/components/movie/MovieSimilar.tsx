@@ -13,25 +13,21 @@ interface MovieCardProps {
   movie: SimilarMovie;
 }
 const MovieCard = ({ movie }: MovieCardProps) => {
-  const cardHeight = '150px';
   return (
-    <div className='flex-shrink-0 w-[calc((100%-12px)/2)] md:w-[calc((100%-24px)/3)] xl:w-[calc((100%-60px)/5)] h-full'>
+    <div className='flex-shrink-0 w-[calc((100%-36px)/4)] md:w-[calc((100%-48px)/5)] xl:w-[calc((100%-108px)/10)] '>
       <Link href={`/detail/${movie.id}`}>
-        {movie.backdrop_path ? (
+        {movie.poster_path ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={`https://image.tmdb.org/t/p/original${movie.backdrop_path}`}
+            src={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
             className='w-full h-full object-cover rounded-md'
             alt={movie.title}
-            style={{ minHeight: cardHeight }}
           />
         ) : (
-          <div
-            className='bg-slate-500 w-full rounded-md'
-            style={{ minHeight: cardHeight }}
-          ></div>
+          <div className='bg-slate-500 w-full h-full rounded-md flex items-center justify-center'>
+            {movie.title}
+          </div>
         )}
-        <p className='text-center mt-3 text-slate-300'>{movie.title}</p>
       </Link>
     </div>
   );
@@ -45,11 +41,11 @@ const MovieSimilar = ({ similarMovies }: MovieSimilarProps) => {
 
   const handleResize = useCallback(() => {
     if (window.innerWidth <= 768) {
-      setItemsPerView(2);
+      setItemsPerView(4);
     } else if (window.innerWidth <= 1280) {
-      setItemsPerView(3);
-    } else {
       setItemsPerView(5);
+    } else {
+      setItemsPerView(10);
     }
   }, []);
 
@@ -81,14 +77,17 @@ const MovieSimilar = ({ similarMovies }: MovieSimilarProps) => {
   };
 
   const transformValue = useMemo(() => {
-    return currentIndex * -100;
+    if (typeof window !== 'undefined') {
+      return currentIndex * -100 - (18 / window.innerWidth) * 100;
+    }
+    return 0;
   }, [currentIndex]);
 
   return (
     <div className='mx-auto max-w-5xl mt-6 lg:px-8 px-6'>
       <div className='font-bold text-lg mb-3'>비슷한 영화</div>
 
-      <div className='relative bg-black px-3 py-3 rounded'>
+      <div className='relative px-3 py-3 rounded'>
         <div className='overflow-hidden'>
           <div
             className='flex gap-3'
