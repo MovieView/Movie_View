@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { FaHeart } from 'react-icons/fa6';
+import Link from 'next/link';
 
 const updateProfile = async (
   userId: string,
@@ -65,10 +66,6 @@ const Edit = () => {
     }
   };
 
-  const heartList = () => {
-    // 좋아요 한 리스트로 이동
-  };
-
   if (!session) {
     return <div>먼저 로그인해주세요.</div>;
   }
@@ -82,48 +79,47 @@ const Edit = () => {
         <div className='w-full flex justify-center'>
           <div className='relative w-full max-w-4xl p-10 text-[20px] font-bold flex items-center justify-between'>
             <span className='mx-auto'>프로필 수정</span>
-            <FaHeart
-              className='absolute right-[20px] text-first'
-              onClick={heartList}
-            />
+            <Link href={'/my-page/movies-like'}>
+              <FaHeart className='absolute right-[20px] text-first' />
+            </Link>
           </div>
-        </div>
 
-        <div className='relative flex justify-center items-center w-32 h-32 rounded-full border-2 border border-gray-400 cursor-pointer'>
-          <input
-            type='file'
-            accept='.png, .jpg, .jpeg'
-            onChange={handleImageChange}
-            className='absolute inset-0 opacity-0 cursor-pointer'
-          />
-          {/* {preview ? (
+          <div className='relative flex justify-center items-center w-32 h-32 rounded-full border-2 border border-gray-400 cursor-pointer'>
+            <input
+              type='file'
+              accept='.png, .jpg, .jpeg'
+              onChange={handleImageChange}
+              className='absolute inset-0 opacity-0 cursor-pointer'
+            />
+            {/* {preview ? (
             <img src={preview} alt='Preview' layout="fill" objectFit="cover" className='rounded-full' />
           ) : (
             <img src={session.user?.image || '/default-profile.png'} alt='Profile' layout="fill" objectFit="cover" className='rounded-full' />
           )} */}
-          {preview ? (
-            <img src={preview} alt='Preview' className='rounded-full' />
-          ) : (
-            <img
-              src={session.user?.image || '/default-profile.png'}
-              alt='Profile'
-              className='rounded-full'
-            />
-          )}
+            {preview ? (
+              <img src={preview} alt='Preview' className='rounded-full' />
+            ) : (
+              <img
+                src={session.user?.image || '/default-profile.png'}
+                alt='Profile'
+                className='rounded-full'
+              />
+            )}
+          </div>
+          <input
+            type='text'
+            placeholder='수정하실 닉네임을 입력해주세요.'
+            value={userName}
+            onChange={handleUserNameChange}
+            className='w-4/5 h-10  border border-gray rounded p-2'
+          />
+          <button
+            type='submit'
+            className='px-4 py-2 bg-blue-500 text-white rounded'
+          >
+            수정하기
+          </button>
         </div>
-        <input
-          type='text'
-          placeholder='수정하실 닉네임을 입력해주세요.'
-          value={userName}
-          onChange={handleUserNameChange}
-          className='w-4/5 h-10  border border-gray rounded p-2'
-        />
-        <button
-          type='submit'
-          className='px-4 py-2 bg-blue-500 text-white rounded'
-        >
-          수정하기
-        </button>
       </form>
     </div>
   );
