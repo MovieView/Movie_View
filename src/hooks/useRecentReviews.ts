@@ -30,7 +30,8 @@ export const useRecentReviews = () => {
   } = useQuery({
     queryKey: ['reviews', 'recent'],
     queryFn: () => getRecentReviews(1, 'like'),
-    staleTime: 5000,
+    staleTime: 50000,
+    gcTime: 50000,
   });
 
   return {
@@ -61,6 +62,8 @@ export const useInfiniteRecentReviews = (filter: string) => {
         lastPage.pagination.currentPage;
       return isLast ? null : lastPage.pagination.currentPage + 1;
     },
+    staleTime: 50000,
+    gcTime: 50000,
   });
 
   return {
