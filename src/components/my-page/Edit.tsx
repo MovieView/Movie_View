@@ -3,7 +3,11 @@ import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { FaHeart } from 'react-icons/fa6';
 
-const updateProfile = async (userId: string, profilePicture?: File, userName?: string) => {
+const updateProfile = async (
+  userId: string,
+  profilePicture?: File,
+  userName?: string
+) => {
   const formData = new FormData();
 
   formData.append('userId', userId);
@@ -16,7 +20,7 @@ const updateProfile = async (userId: string, profilePicture?: File, userName?: s
 
   const response = await fetch('/api/my-page', {
     method: 'PUT',
-    body: formData
+    body: formData,
   });
 
   if (!response.ok) {
@@ -29,7 +33,9 @@ const updateProfile = async (userId: string, profilePicture?: File, userName?: s
 
 const Edit = () => {
   const { data: session } = useSession();
-  const [selectedImage, setSelectedImage] = useState<File | undefined>(undefined);
+  const [selectedImage, setSelectedImage] = useState<File | undefined>(
+    undefined
+  );
   const [preview, setPreview] = useState<string | null>(null);
   const [userName, setUserName] = useState<string>('');
 
@@ -69,15 +75,20 @@ const Edit = () => {
 
   return (
     <div className='bg-gray-100 w-2/5 h-auto text-black-600 rounded-lg mb-20 pb-10 border border-first'>
-      <form onSubmit={handleSubmit} className='flex flex-col justify-center items-center space-y-4'>
-      <div className='w-full flex justify-center'>
-        <div className='relative w-full max-w-4xl p-10 text-[20px] font-bold flex items-center justify-between'>
-          <span className='mx-auto'>프로필 수정</span>
-          <FaHeart className='absolute right-[20px] text-first' onClick={heartList} />
+      <form
+        onSubmit={handleSubmit}
+        className='flex flex-col justify-center items-center space-y-4'
+      >
+        <div className='w-full flex justify-center'>
+          <div className='relative w-full max-w-4xl p-10 text-[20px] font-bold flex items-center justify-between'>
+            <span className='mx-auto'>프로필 수정</span>
+            <FaHeart
+              className='absolute right-[20px] text-first'
+              onClick={heartList}
+            />
+          </div>
         </div>
-      </div>
 
-        
         <div className='relative flex justify-center items-center w-32 h-32 rounded-full border-2 border border-gray-400 cursor-pointer'>
           <input
             type='file'
@@ -93,7 +104,11 @@ const Edit = () => {
           {preview ? (
             <img src={preview} alt='Preview' className='rounded-full' />
           ) : (
-            <img src={session.user?.image || '/default-profile.png'} alt='Profile' className='rounded-full' />
+            <img
+              src={session.user?.image || '/default-profile.png'}
+              alt='Profile'
+              className='rounded-full'
+            />
           )}
         </div>
         <input
@@ -103,7 +118,10 @@ const Edit = () => {
           onChange={handleUserNameChange}
           className='w-4/5 h-10  border border-gray rounded p-2'
         />
-        <button type='submit' className='px-4 py-2 bg-blue-500 text-white rounded'>
+        <button
+          type='submit'
+          className='px-4 py-2 bg-blue-500 text-white rounded'
+        >
           수정하기
         </button>
       </form>

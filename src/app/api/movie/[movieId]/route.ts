@@ -1,5 +1,5 @@
-import { API_URL } from "@/constants";
-import { Credits, Movie } from "@/models/movie.model";
+import { API_URL } from '@/constants';
+import { Credits, Movie } from '@/models/movie.model';
 
 export const GET = async (
   req: Request,
@@ -45,7 +45,9 @@ export async function fetchMovie(movieId: string): Promise<Movie | null> {
   }
 }
 
-export async function fetchMovieCredits(movieId: string): Promise<Credits | null> {
+export async function fetchMovieCredits(
+  movieId: string
+): Promise<Credits | null> {
   try {
     const response = await fetch(
       `${API_URL}/${movieId}/credits?api_key=${process.env.TMDB_API_KEY}&language=ko-KR`
