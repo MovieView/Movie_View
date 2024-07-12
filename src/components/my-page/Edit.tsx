@@ -93,51 +93,51 @@ const Edit = () => {
               <FaHeart className='absolute right-[20px] text-first' />
             </Link>
           </div>
+        </div>
 
-          <div className='relative flex justify-center items-center w-32 h-32 rounded-full border-2 border-gray-400 cursor-pointer overflow-hidden'>
-            <input
-              type='file'
-              accept='.png, .jpg, .jpeg'
-              onChange={handleImageChange}
-              className='absolute inset-0 opacity-0 cursor-pointer'
-            />
-
-            {preview ? (
-              <img
-                src={preview}
-                alt='Preview'
-                className='w-full h-full object-cover rounded-full'
-              />
-            ) : (
-              <img
-                src={session.user?.image || '/default-profile.png'}
-                alt='Profile'
-                className='w-full h-full object-cover rounded-full'
-              />
-            )}
-          </div>
-
+        <div className='relative flex justify-center items-center w-32 h-32 rounded-full border-2 border-gray-400 cursor-pointer overflow-hidden'>
           <input
-            type='text'
-            placeholder='수정하실 닉네임을 입력해주세요.'
-            value={userName}
-            onChange={handleUserNameChange}
-            className='w-4/5 h-10  border border-gray rounded p-2'
+            type='file'
+            accept='.png, .jpg, .jpeg'
+            onChange={handleImageChange}
+            className='absolute inset-0 opacity-0 cursor-pointer'
           />
 
-          {inProcess ? (
-            <button className='px-4 py-2 bg-gray-500 text-white rounded'>
-              수정하기
-            </button>
+          {preview ? (
+            <img
+              src={preview}
+              alt='Preview'
+              className='w-full h-full object-cover rounded-full'
+            />
           ) : (
-            <button
-              type='submit'
-              className='px-4 py-2 bg-blue-500 text-white rounded'
-            >
-              수정하기
-            </button>
+            <img
+              src={session.user?.image || '/default-profile.png'}
+              alt='Profile'
+              className='w-full h-full object-cover rounded-full'
+            />
           )}
         </div>
+
+        <input
+          type='text'
+          placeholder='수정하실 닉네임을 입력해주세요.'
+          value={userName}
+          onChange={handleUserNameChange}
+          className='w-4/5 h-10  border border-gray rounded p-2'
+        />
+
+        {inProcess ? (
+          <button className='px-4 py-2 bg-gray-500 text-white rounded'>
+            수정하기
+          </button>
+        ) : (
+          <button
+            type='submit'
+            className='px-4 py-2 bg-blue-500 text-white rounded'
+          >
+            수정하기
+          </button>
+        )}
       </form>
     </div>
   );
