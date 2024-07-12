@@ -88,7 +88,7 @@ const MovieSimilar = ({ similarMovies }: MovieSimilarProps) => {
         {leftBtnVisible && (
           <button
             onClick={handlePrev}
-            className='absolute -left-5 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-buttonShadow flex justify-center items-center'
+            className='absolute -left-5 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-white shadow-buttonShadow flex justify-center items-center'
           >
             <IoIosArrowBack size={25} />
           </button>
@@ -96,7 +96,7 @@ const MovieSimilar = ({ similarMovies }: MovieSimilarProps) => {
         {rightBtnVisible && (
           <button
             onClick={handleNext}
-            className='absolute -right-5 top-1/2 transform -translate-y-1/2 z-10 w-10 h-10 rounded-full bg-white shadow-buttonShadow flex justify-center items-center'
+            className='absolute -right-5 top-1/2 transform -translate-y-1/2 w-10 h-10 rounded-full bg-white shadow-buttonShadow flex justify-center items-center'
           >
             <IoIosArrowForward size={25} />
           </button>
