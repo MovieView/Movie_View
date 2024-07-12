@@ -22,6 +22,7 @@ import { expect, jest, test } from '@jest/globals'
 import { fireEvent, render } from '@testing-library/react'
 import { describe } from 'node:test'
 import NotificationContainer from '../NotificationContainer'
+import { resolve } from 'path';
 
 
 describe('NotificationContainer', () => {
@@ -49,7 +50,7 @@ describe('NotificationContainer', () => {
     }
   ]
 
-  test('renders NotificationButton component', async () => {
+  test('renders NotificationContainer component', async () => {
     const {findAllByText} = render(
       <NotificationContainer 
         visibility={true}
@@ -58,10 +59,19 @@ describe('NotificationContainer', () => {
         notifications={notifications}
         isLoading={false}
         error={null}
+        currentPage={1}
+        totalPage={1}
+        turnFirstPage={jest.fn()}
+        turnLastPage={jest.fn()}
+        turnNextPage={jest.fn()}
+        turnPreviousPage={jest.fn()}
+        isMarkProcessing={false}
+        markError={null}
+        markEveryAsRead={async () => {}}
       />
     );
 
-    const notificationContainer = await findAllByText('유저 알림 (3)');
+    const notificationContainer = await findAllByText('유저 알림');
     expect(notificationContainer).toHaveLength(1);
 
     const notificationItems = await findAllByText('Hello, World!');
@@ -69,7 +79,7 @@ describe('NotificationContainer', () => {
     expect(notificationItems).not.toHaveLength(4);
   });
 
-  test('renders NotificationButton component with error', async () => {
+  test('renders NotificationContainer component with error', async () => {
     const {findAllByText} = render(
       <NotificationContainer 
         visibility={true}
@@ -78,6 +88,15 @@ describe('NotificationContainer', () => {
         notifications={notifications}
         isLoading={false}
         error={'Error'}
+        currentPage={1}
+        totalPage={1}
+        turnFirstPage={jest.fn()}
+        turnLastPage={jest.fn()}
+        turnNextPage={jest.fn()}
+        turnPreviousPage={jest.fn()}
+        isMarkProcessing={false}
+        markError={null}
+        markEveryAsRead={async () => {}}
       />
     );
 
@@ -94,6 +113,15 @@ describe('NotificationContainer', () => {
         notifications={notifications}
         isLoading={true}
         error={null}
+        currentPage={1}
+        totalPage={1}
+        turnFirstPage={jest.fn()}
+        turnLastPage={jest.fn()}
+        turnNextPage={jest.fn()}
+        turnPreviousPage={jest.fn()}
+        isMarkProcessing={false}
+        markError={null}
+        markEveryAsRead={async () => {}}
       />
     );
 
@@ -113,6 +141,15 @@ describe('NotificationContainer', () => {
         notifications={[]}
         isLoading={false}
         error={null}
+        currentPage={1}
+        totalPage={1}
+        turnFirstPage={jest.fn()}
+        turnLastPage={jest.fn()}
+        turnNextPage={jest.fn()}
+        turnPreviousPage={jest.fn()}
+        isMarkProcessing={false}
+        markError={null}
+        markEveryAsRead={async () => {}}
       />
     );
 
@@ -135,6 +172,15 @@ describe('NotificationContainer', () => {
         notifications={notifications}
         isLoading={false}
         error={null}
+        currentPage={1}
+        totalPage={1}
+        turnFirstPage={jest.fn()}
+        turnLastPage={jest.fn()}
+        turnNextPage={jest.fn()}
+        turnPreviousPage={jest.fn()}
+        isMarkProcessing={false}
+        markError={null}
+        markEveryAsRead={async () => {}}
       />
     );
 

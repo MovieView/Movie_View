@@ -74,7 +74,7 @@ const NotificationContainer : React.FC<INotificationContainerProps> = ({
     setDeleteMode(!deleteMode);
   };
 
-  let parentContainerClassName = 'h-dvh sm:h-auto w-full sm:w-[400px] bg-white fixed sm:absolute top-[80px] sm:top-[50px] right-0 rounded-lg shadow-lg overflow-hidden overflow-y-auto'
+  let parentContainerClassName = 'h-dvh sm:h-auto w-full sm:w-[400px] bg-white fixed sm:absolute top-[80px] sm:top-[50px] right-0 rounded-lg shadow-lg overflow-hidden overflow-y-auto z-20'
   if (!visibility) {
     parentContainerClassName += ' hidden';
   }
@@ -127,7 +127,7 @@ const NotificationContainer : React.FC<INotificationContainerProps> = ({
       setProcessingError(e.message);
       setIsProcessing(false);
     }
-  }, [isLoading]);
+  }, [isLoading, notifications]);
 
   useEffect(() => {
     if (!visibility) {
@@ -142,6 +142,7 @@ const NotificationContainer : React.FC<INotificationContainerProps> = ({
       id='notification-container'
     >
       <NotificationContainerHeader
+        totalCount={notifications?.length}
         closeContainerCallback={changeVisibility}
         toggleSettingsCallback={toggleSettings}
       />
@@ -209,7 +210,6 @@ const NotificationContainer : React.FC<INotificationContainerProps> = ({
         (
           !isProcessing && !isLoading && 
           (!fetchError && !processingError) 
-          && notifications?.length && processedNotifications?.length
         ) && 
         processedNotifications?.map((processedNotification, index) => {
           return (
@@ -228,15 +228,9 @@ const NotificationContainer : React.FC<INotificationContainerProps> = ({
         })
       }
       {/* 알림 메시지가 없을 때 */}
-      {(!isProcessing && !isLoading && !fetchError && notifications?.length === 0) && (
-        <div className='p-4 text-base flex flex-col items-center justify-center gap-4'>
-          <Image
-            src='/icons/notification-empty-black.svg'
-            alt='Notification'
-            width={50}
-            height={50}
-            className='w-6 h-6'
-          />
+      {(!isProcessing && !isLoading && !fetchError && !notifications?.length) && (
+        <div className='p-4 py-8 text-base flex flex-col items-center justify-center gap-4'>
+          <span className='text-gray-500 text-2xl'>{"٭(•﹏•)٭"}</span>
           <p className='text-center text-gray-500 font-medium'>새로운 알림이 없습니다.</p>
         </div>
       )}

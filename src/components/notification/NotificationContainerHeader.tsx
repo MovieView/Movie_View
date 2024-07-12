@@ -2,11 +2,13 @@ import Image from "next/image"
 
 
 interface NotificationContainerHeaderProps {
+  totalCount: number | undefined;
   closeContainerCallback: () => void;
   toggleSettingsCallback: () => void;
 }
 
 const NotificationContainerHeader : React.FC<NotificationContainerHeaderProps> = ({
+  totalCount,
   closeContainerCallback,
   toggleSettingsCallback
 }) => {
@@ -26,17 +28,19 @@ const NotificationContainerHeader : React.FC<NotificationContainerHeaderProps> =
         </div>
         유저 알림 
       </div>
-      <div className='flex flex-col items-center justify-center rounded-lg hover:bg-fourth p-1'>
-        <button onClick={toggleSettingsCallback}>
-          <Image
-            src={'/icons/settings-black.svg'}
-            alt='Settings'
-            width={20}
-            height={20}
-            className='w-6 h-6'
-          />
-        </button>
-      </div>
+      {(totalCount) ? (
+        <div className='flex flex-col items-center justify-center rounded-lg hover:bg-fourth p-1'>
+          <button onClick={toggleSettingsCallback}>
+            <Image
+              src={'/icons/settings-black.svg'}
+              alt='Settings'
+              width={20}
+              height={20}
+              className='w-6 h-6'
+            />
+          </button>
+        </div>
+      ) : null}
     </div>
   )
 }
