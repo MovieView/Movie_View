@@ -33,12 +33,14 @@ const Edit = () => {
   const [selectedImage, setSelectedImage] = useState<File | undefined>(undefined);
   const [preview, setPreview] = useState<string | null>(null);
   const [userName, setUserName] = useState<string>('');
+  const [inProcess, setInProcess] = useState<Boolean>(true);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && (file.type === 'image/png' || file.type === 'image/jpeg')) {
       setSelectedImage(file);
       setPreview(URL.createObjectURL(file));
+      setInProcess(false);
     } else {
       alert('png, jpg 파일만 업로드 가능합니다.');
     }
@@ -46,16 +48,24 @@ const Edit = () => {
 
   const handleUserNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(event.target.value);
+    setInProcess(false);
+    if(event.target.value === ''){
+      setInProcess(true);
+    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (session && (selectedImage || userName)) {
+      setInProcess(true);
       try {
         const data = await updateProfile(session.uid, selectedImage, userName);
+        alert('프로필이 성공적으로 변경되었습니다.')
         console.log(data.message);
       } catch (error) {
         console.error(error);
+      } finally {
+        setInProcess(false);
       }
     }
   };
@@ -74,25 +84,21 @@ const Edit = () => {
         </div>
       </div>
 
+      <div className='relative flex justify-center items-center w-32 h-32 rounded-full border-2 border-gray-400 cursor-pointer overflow-hidden'>
+        <input
+          type='file'
+          accept='.png, .jpg, .jpeg'
+          onChange={handleImageChange}
+          className='absolute inset-0 opacity-0 cursor-pointer'
+        />
         
-        <div className='relative flex justify-center items-center w-32 h-32 rounded-full border-2 border border-gray-400 cursor-pointer'>
-          <input
-            type='file'
-            accept='.png, .jpg, .jpeg'
-            onChange={handleImageChange}
-            className='absolute inset-0 opacity-0 cursor-pointer'
-          />
-          {/* {preview ? (
-            <img src={preview} alt='Preview' layout="fill" objectFit="cover" className='rounded-full' />
-          ) : (
-            <img src={session.user?.image || '/default-profile.png'} alt='Profile' layout="fill" objectFit="cover" className='rounded-full' />
-          )} */}
-          {preview ? (
-            <img src={preview} alt='Preview' className='rounded-full' />
-          ) : (
-            <img src={session.user?.image || '/default-profile.png'} alt='Profile' className='rounded-full' />
-          )}
-        </div>
+        {preview ? (
+          <img src={preview} alt='Preview' className='w-full h-full object-cover rounded-full' />
+        ) : (
+          <img src={session.user?.image || '/default-profile.png'} alt='Profile' className='w-full h-full object-cover rounded-full' />
+        )}
+      </div>
+
         <input
           type='text'
           placeholder='수정하실 닉네임을 입력해주세요.'
@@ -100,9 +106,11 @@ const Edit = () => {
           onChange={handleUserNameChange}
           className='w-4/5 h-10  border border-gray rounded p-2'
         />
-        <button type='submit' className='px-4 py-2 bg-blue-500 text-white rounded'>
-          수정하기
-        </button>
+        
+        { inProcess ? (<button className='px-4 py-2 bg-gray-500 text-white rounded'>수정하기</button>)
+        : (<button type='submit' className='px-4 py-2 bg-blue-500 text-white rounded'>수정하기</button>)
+        }
+        
       </form>
     </div>
   );
