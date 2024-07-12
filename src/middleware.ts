@@ -17,6 +17,9 @@ export async function middleware(req: NextRequest) {
     );
     return NextResponse.redirect(signInUrl);
   }
+  if (req.method === 'PUT' && req.nextUrl.pathname.startsWith('/api/my-page')) {
+    req.headers.delete('Content-Type');
+  }
 
   return NextResponse.next();
 }
@@ -27,5 +30,6 @@ export const config = {
     '/api/review/:path*',
     '/api/like/:path*',
     '/api/movie/:id(\\d+)/review',
+    '/api/my-page',
   ],
 };

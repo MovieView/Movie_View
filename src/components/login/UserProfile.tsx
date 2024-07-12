@@ -61,13 +61,15 @@ const UserProfile = () => {
     <div className='flex justify-between items-center text-xl gap-4'>
       {session ? (
         <>
-          <Image
-            src={`${session.user?.image}`}
-            className="rounded-full h-9 w-9"
-            width={9}
-            height={9}
-            alt='user profile image'
-          />
+          <Link href="/my-page">
+            <Image
+              src={`${session.user?.image}`}
+              className="rounded-full h-9 w-9"
+              width={9}
+              height={9}
+              alt='user profile image'
+            />
+          </Link>
           <button className="text-lg font-medium" onClick={handleLogOut}>Logout</button>
         </>
       ) : (
