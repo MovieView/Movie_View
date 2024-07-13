@@ -5,8 +5,6 @@ export const GET = async (req: NextRequest) => {
   const connection = await dbConnectionPoolAsync.getConnection();
 
   try {
-    // const { userId, provider } = await req.json();
-
     const { searchParams } = new URL(req.url);
 
     const userId = searchParams.get('user-id');
@@ -41,15 +39,6 @@ export const GET = async (req: NextRequest) => {
     `;
 
     const [result, rows] = await connection.execute(sql, [formUid(provider)]);
-
-    /**
-     *
-     *
-     * 이미지 수정 이후에 null로 조회됨
-     *
-     *
-     */
-    // console.log(result);
 
     if (!result) {
       connection.release();
