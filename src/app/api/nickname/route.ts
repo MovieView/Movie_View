@@ -3,6 +3,7 @@ import { dbConnectionPoolAsync } from '@/lib/db';
 
 export const POST = async (req: NextRequest, res: NextResponse) => {
   const connection = await dbConnectionPoolAsync.getConnection();
+
   try {
     const { nickname, userId, provider } = await req.json();
 
@@ -19,7 +20,6 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
 
     // 닉네임이 없는 경우
     if (!nickname) {
-      connection.release();
       return new Response(
         JSON.stringify({ error: '닉네임은 필수로 설정해야 합니다.' }),
         {
@@ -41,6 +41,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       formUid(provider),
     ]);
 
+    await connection.commit();
     connection.release();
 
     return new Response(JSON.stringify({ message: '닉네임 업데이트 완료' }), {
@@ -49,7 +50,9 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
     });
   } catch (err) {
     console.error('Database error:', err);
+    await connection.rollback();
     connection.release();
+
     return new Response(JSON.stringify({ error: '닉네임 업데이트 실패' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

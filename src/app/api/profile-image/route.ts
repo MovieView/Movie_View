@@ -1,10 +1,27 @@
 import { dbConnectionPoolAsync } from '@/lib/db';
 import { NextRequest } from 'next/server';
 
-export const POST = async (req: NextRequest) => {
+export const GET = async (req: NextRequest) => {
   const connection = await dbConnectionPoolAsync.getConnection();
+
   try {
-    const { userId, provider } = await req.json();
+    // const { userId, provider } = await req.json();
+
+    const { searchParams } = new URL(req.url);
+
+    const userId = searchParams.get('user-id');
+    const provider = searchParams.get('provider');
+
+    if (!provider) {
+      connection.release();
+      return new Response(
+        JSON.stringify({ error: '프로버이더 정보가 올바르지 않습니다.' }),
+        {
+          status: 400,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
 
     const formUid = (provider: string) => {
       switch (provider) {
@@ -23,9 +40,19 @@ export const POST = async (req: NextRequest) => {
       WHERE uid = ?
     `;
 
-    const [result] = await connection.execute(sql, [formUid(provider)]);
-    connection.release();
+    const [result, rows] = await connection.execute(sql, [formUid(provider)]);
+
+    /**
+     *
+     *
+     * 이미지 수정 이후에 null로 조회됨
+     *
+     *
+     */
+    // console.log(result);
+
     if (!result) {
+      connection.release();
       return new Response(
         JSON.stringify({ error: '프로필이 존재하지 않습니다.' }),
         {
@@ -34,6 +61,8 @@ export const POST = async (req: NextRequest) => {
         }
       );
     } else {
+      connection.release();
+
       return new Response(
         JSON.stringify({
           message: '프로필 사진 불러오기 완료',
@@ -47,6 +76,7 @@ export const POST = async (req: NextRequest) => {
     }
   } catch (err) {
     connection.release();
+
     return new Response(
       JSON.stringify({ error: '프로필 사진 불러오기 실패' }),
       {
