@@ -10,7 +10,7 @@ import { url } from 'inspector';
 
 interface IUserData {
   username: string;
-  filePath: string;
+  filepath: string;
 }
 function sanitizeFilename(filename: string): string {
   return filename.replace(/[^a-zA-Z0-9_\u0600-\u06FF.]/g, '_');
@@ -77,7 +77,7 @@ async function uploadImage(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   try {
     const session = await getServerSession({ req, ...authOptions });
-    if (!session || !session.user || !session.user.email) {
+    if (!session || !session.user) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
     const userId = formatUserId(session.provider, session.uid);
@@ -85,20 +85,20 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ message: 'Invalid User' }, { status: 401 });
     }
     const beforeData = await getExtraData(userId);
-    let filePath = beforeData.filePath;
+    let filepath = beforeData.filepath;
     let username = beforeData.username;
 
     const req_copy = req.clone();
 
     const formData = await req_copy.formData();
     if (formData.get('profilePicture') != null) {
-      filePath = await uploadImage(req);
+      filepath = await uploadImage(req);
     }
     if (formData.get('username') != null) {
       username = formData.get('username');
     }
 
-    executeQury(userId, username, filePath);
+    executeQury(userId, username, filepath);
   } catch (err: any) {
     console.error('Error in PUT request\n');
     return NextResponse.json({ error: err.message }, { status: 400 });
@@ -133,7 +133,7 @@ async function getExtraData(userId: string) {
   }
 }
 
-async function executeQury(userId: string, username: string, filePath: string) {
+async function executeQury(userId: string, username: string, filepath: string) {
   const connection = await dbConnectionPoolAsync.getConnection();
 
   try {
@@ -143,13 +143,13 @@ async function executeQury(userId: string, username: string, filePath: string) {
       'UPDATE movie_view.social_accounts SET extra_data = ? WHERE uid = ?';
     let data: IUserData = {
       username: '',
-      filePath: '',
+      filepath: '',
     };
     if (username) {
       data['username'] = username;
     }
-    if (filePath) {
-      data['filePath'] = filePath;
+    if (filepath) {
+      data['filepath'] = filepath;
     }
 
     const result = await connection.execute(updateQuery, [
