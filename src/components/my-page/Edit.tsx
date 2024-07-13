@@ -25,7 +25,7 @@ const updateProfile = async (
   });
 
   if (!response.ok) {
-    console.log(response.json());
+    console.log(await response.json());
     throw new Error('Failed to update profile');
   }
 
@@ -39,7 +39,15 @@ const Edit = () => {
   );
   const [preview, setPreview] = useState<string | null>(null);
   const [userName, setUserName] = useState<string>('');
-  const [inProcess, setInProcess] = useState<Boolean>(true);
+  const [inProcess, setInProcess] = useState<boolean>(true);
+  const [isProfileUpdated, setIsProfileUpdated] = useState<boolean>(false);
+
+  useEffect(() => {
+    // 프로필 수정 이후 바로 프로필 적용
+    if (isProfileUpdated) {
+      window.location.reload();
+    }
+  }, [isProfileUpdated]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -68,6 +76,7 @@ const Edit = () => {
         const data = await updateProfile(session.uid, selectedImage, userName);
         alert('프로필이 성공적으로 변경되었습니다.');
         console.log(data.message);
+        setIsProfileUpdated(true);
       } catch (error) {
         console.error(error);
       } finally {
