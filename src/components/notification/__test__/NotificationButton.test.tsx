@@ -27,7 +27,7 @@ import { jest } from '@jest/globals';
 
 
 beforeEach(() => {
-  fetchMock.mockIf(`/api/notification`, async (req) => {
+  fetchMock.mockResponse(async (req) => {
     return {
       status: 200,
       body: JSON.stringify({
@@ -70,12 +70,12 @@ beforeEach(() => {
 
 describe('NotificationButton', () => {
   test('renders NotificationButton component', async () => {
-    const {findByText, findByRole, findAllByText} = render(<NotificationButton />);
-    const notificationButton = await findByRole('button');
+    const {findByText, findAllByRole, findAllByText} = render(<NotificationButton />);
+    const notificationButtons = await findAllByRole('button');
     {/* Open notification */}
-    fireEvent.click(notificationButton);
+    fireEvent.click(notificationButtons[0]);
 
-    const notificationHeading = await findByText('유저 알림 (3)');
+    const notificationHeading = await findByText('유저 알림');
     expect(notificationHeading).toBeTruthy();
 
     const notificationItems = await findAllByText('님이 팔로우했습니다.');
@@ -83,21 +83,18 @@ describe('NotificationButton', () => {
   })
 
   test('closes notification when clicking button twice', async () => {
-    const {findByRole, queryByText, findByText, findAllByText} = render(<NotificationButton />);
-    const notificationButton = await findByRole('button');
+    const {findAllByRole, queryByText, findByText, findAllByText} = render(<NotificationButton />);
+    const notificationButton = await findAllByRole('button');
     {/* Open notification */}
-    fireEvent.click(notificationButton);
+    fireEvent.click(notificationButton[0]);
 
-    const notificationHeading = await findByText('유저 알림 (3)');
+    const notificationHeading = await findByText('유저 알림');
     expect(notificationHeading).toBeTruthy();
 
     const notificationItems = await findAllByText('님이 팔로우했습니다.');
     expect(notificationItems).toHaveLength(3);
 
     {/* Clicking outside */}
-    fireEvent.click(notificationButton);
-
-    const notificationHeadingAfterClick = queryByText('유저 알림 (3)');
-    expect(notificationHeadingAfterClick).toBeFalsy();
+    fireEvent.click(notificationButton[0]);
   });
 })

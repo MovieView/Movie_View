@@ -1,9 +1,9 @@
 import React, { FormEvent, useState } from 'react';
 import CommentForm from './CommentForm';
-import { CommentContent } from '@/models/comment.model';
+import { ICommentContent } from '@/models/comment.model';
 import { useComment } from '@/hooks/useComment';
 
-interface Props {
+interface IProps {
   reviewId: string;
   setIsFormOpen: React.Dispatch<React.SetStateAction<boolean>>;
   text: string;
@@ -13,9 +13,8 @@ export default function CommentFormContainer({
   reviewId,
   setIsFormOpen,
   text,
-}: Props) {
-  const { setEnabled } = useComment(reviewId);
-  const [commentData, setCommentData] = useState<CommentContent>({
+}: IProps) {
+  const [commentData, setCommentData] = useState<ICommentContent>({
     content: '',
   });
 

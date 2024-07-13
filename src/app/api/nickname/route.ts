@@ -2,9 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { dbConnectionPoolAsync } from '@/lib/db';
 
 export const POST = async (req: NextRequest, res: NextResponse) => {
-  try {
-    const connection = await dbConnectionPoolAsync.getConnection();
+  const connection = await dbConnectionPoolAsync.getConnection();
 
+  try {
     const { nickname, userId, provider } = await req.json();
 
     const formUid = (provider: string) => {
@@ -41,7 +41,8 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       formUid(provider),
     ]);
 
-    await connection.release();
+    await connection.commit();
+    connection.release();
 
     return new Response(JSON.stringify({ message: '닉네임 업데이트 완료' }), {
       status: 200,
@@ -49,6 +50,9 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
     });
   } catch (err) {
     console.error('Database error:', err);
+    await connection.rollback();
+    connection.release();
+
     return new Response(JSON.stringify({ error: '닉네임 업데이트 실패' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

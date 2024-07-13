@@ -36,6 +36,7 @@ describe('NotificationItem', () => {
         read={false}
         message={['Hello, World!']}
         changeVisibility={changeVisibility}
+        deleteMode={false}
       />
     );
 
@@ -64,6 +65,7 @@ describe('NotificationItem', () => {
         read={false}
         message={['Hello, World!']}
         changeVisibility={changeVisibility}
+        deleteMode={false}
       />
     );
 
@@ -88,6 +90,7 @@ describe('NotificationItem', () => {
         read={true}
         message={['Hello, World!']}
         changeVisibility={changeVisibility}
+        deleteMode={false}
       />
     );
 
@@ -113,6 +116,7 @@ describe('NotificationItem', () => {
         read={false}
         message={['Hello, World!']}
         changeVisibility={changeVisibility}
+        deleteMode={false}
       />
     );
 

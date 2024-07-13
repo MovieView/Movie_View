@@ -87,8 +87,8 @@ export async function GET(req: Request) {
   const connection : PoolConnection = await dbConnectionPoolAsync.getConnection();
   try {
     const [rows] = await connection.query<INotification[]>(sqlQueryStatement, [socialAccountsUID]);
-
     if (rows.length === 0) {
+      connection.release();
       return new Response(JSON.stringify({ message: "No data" }), {
         status: 404,
       });
@@ -98,7 +98,6 @@ export async function GET(req: Request) {
     const [totalCountRows] = await connection.query<ITotalCount[]>(sqlQueryStatementForTotalCount, [socialAccountsUID]);
 
     connection.release();
-
     return new Response(JSON.stringify({
       unreadCount: unreadCountRows[0].unread_count, 
       rows,

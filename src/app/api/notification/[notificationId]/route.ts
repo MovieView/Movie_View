@@ -37,6 +37,7 @@ export async function DELETE(
       [socialAccountsUID, params.notificationId]
     );
     if (result.affectedRows === 0) {
+      connection.release();
       return new Response(JSON.stringify({ message: "No data" }), {
         status: 404,
       });

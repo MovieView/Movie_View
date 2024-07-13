@@ -1,12 +1,12 @@
-import { ChangeEvent, FormEvent, useState } from 'react';
+import { ChangeEvent, FormEvent } from 'react';
 import ReviewRating from '../review/ReviewRating';
-import { ReviewFormData } from '@/models/review.model';
+import { IReviewFormData } from '@/models/review.model';
 
 interface IProps {
-  review: ReviewFormData;
+  review: IReviewFormData;
   text: string;
   handleCloseForm: () => void;
-  setReview: React.Dispatch<React.SetStateAction<ReviewFormData>>;
+  setReview: React.Dispatch<React.SetStateAction<IReviewFormData>>;
   onSubmit: (e: FormEvent) => void;
 }
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { CommentData } from '@/models/comment.model';
+import { ICommentData } from '@/models/comment.model';
 import {
   useInfiniteQuery,
   useMutation,
@@ -28,7 +28,7 @@ export const getComments = async (reviewId: string, page = 1) => {
 const createComment = async ({
   reviewId,
   content,
-}: Pick<CommentData, 'reviewId' | 'content'>) => {
+}: Pick<ICommentData, 'reviewId' | 'content'>) => {
   const response = await fetch(`/api/review/${reviewId}`, {
     method: 'POST',
     headers: {
@@ -48,7 +48,7 @@ export const updateComment = async ({
   reviewId,
   commentId,
   content,
-}: CommentData) => {
+}: ICommentData) => {
   const response = await fetch(`/api/review/${reviewId}/${commentId}`, {
     method: 'PUT',
     headers: {
@@ -67,7 +67,7 @@ export const updateComment = async ({
 const deleteComment = async ({
   reviewId,
   commentId,
-}: Omit<CommentData, 'content'>) => {
+}: Omit<ICommentData, 'content'>) => {
   const response = await fetch(`/api/review/${reviewId}/${commentId}`, {
     method: 'DELETE',
     body: JSON.stringify({ commentId }),

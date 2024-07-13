@@ -1,8 +1,7 @@
 import { FormEvent, useState } from 'react';
 import ReviewForm from '../review/ReviewForm';
-import { ReviewFormData } from '@/models/review.model';
+import { IReviewFormData } from '@/models/review.model';
 import { useReview } from '@/hooks/useReview';
-
 
 interface IProps {
   movieId: number;
@@ -22,7 +21,7 @@ export default function ReviewFormContainer({
   posterPath,
 }: IProps) {
   const { addMyReview } = useReview(movieId, sort, movieTitle, posterPath);
-  const [reviewData, setReviewData] = useState<ReviewFormData>({
+  const [reviewData, setReviewData] = useState<IReviewFormData>({
     title: '',
     rating: 0,
     content: '',

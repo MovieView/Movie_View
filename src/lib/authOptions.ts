@@ -34,8 +34,9 @@ export const authOptions: NextAuthOptions = {
     },
 
     async signIn({ user, account }) {
+      const connection = await dbConnectionPoolAsync.getConnection();
+
       try {
-        const connection = await dbConnectionPoolAsync.getConnection();
         const userId = user.id;
         const provider = account?.provider as string;
         const username = user.name;
@@ -68,7 +69,7 @@ export const authOptions: NextAuthOptions = {
         let myAccountId;
 
         if (count >= 1) {
-          await connection.release();
+          connection.release();
           return true;
         }
 
@@ -118,9 +119,13 @@ export const authOptions: NextAuthOptions = {
           [myAccountId, providerId, formUid(provider), lastLogin, extraData]
         );
 
-        await connection.release();
+        await connection.commit();
+        connection.release();
         return true;
       } catch (err) {
+        await connection.rollback();
+        connection.release();
+
         console.error('Failed to save user:', err);
         return false;
       }
