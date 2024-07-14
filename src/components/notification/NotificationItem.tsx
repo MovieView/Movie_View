@@ -2,7 +2,7 @@ import { formatDate } from '@/utils/notificationUtils';
 import Image from 'next/image'
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Spinner from '../common/Spinner';
 
 
@@ -28,7 +28,7 @@ const NotificationItem : React.FC<INotificationItemProps> = ({
   changeVisibility
 }) => {
   const { push } = useRouter();
-  const [currentRead, setCurrentRead] = useState<boolean>(read);
+  const [currentRead, setCurrentRead] = useState<boolean>();
   const [processingRead, setProcessingRead] = useState<boolean>(false);
   const [isDeleted, setIsDeleted] = useState<boolean>(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -53,35 +53,41 @@ const NotificationItem : React.FC<INotificationItemProps> = ({
 
   const handleDeleteClick = async (event: React.MouseEvent) => {
     event.preventDefault();
-    setDeleteError(null);
-    setProcessingRead(true);
-
     if (!deleteMode) {
       return;
     }
 
+    setDeleteError(null);
+    setProcessingRead(true);
+
     if (!id) {
       setDeleteError('Notification ID is missing');
+      setProcessingRead(false);
       return;
     }
 
-    if (!isDeleted) {
-      const fetchOptions = {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json'
+    try {
+      if (!isDeleted) {
+        const fetchOptions = {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+        const response : Response = await fetch(`/api/notification/${id}`, fetchOptions);
+        if (!response.ok) {
+          console.error('Error deleting notification:', response.statusText);
+          return;
         }
-      };
-      const response : Response = await fetch(`/api/notification/${id}`, fetchOptions);
-      if (!response.ok) {
-        console.error('Error deleting notification:', response.statusText);
-        return;
+
+        setIsDeleted(true);
       }
 
-      setIsDeleted(true);
+      setProcessingRead(false);
+    } catch (error) {
+      setDeleteError('Failed to delete notification');
+      setProcessingRead(false);
     }
-
-    setProcessingRead(false);
   }
 
   const handleClick = async (event: React.MouseEvent) => {
@@ -92,28 +98,42 @@ const NotificationItem : React.FC<INotificationItemProps> = ({
 
     setProcessingRead(true);
 
-    if (!currentRead && id) {
-      const fetchOptions = {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
+    try {
+      if (!currentRead && id) {
+        const fetchOptions = {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        };
+        const response : Response = await fetch(`/api/notification/${id}/read`, fetchOptions);
+        if (!response.ok) {
+          console.error('Error marking notification as read:', response.statusText);
+
+          setCurrentRead(false);
+          setProcessingRead(false);
+          return;
         }
-      };
-      const response : Response = await fetch(`/api/notification/${id}/read`, fetchOptions);
-      if (!response.ok) {
-        console.error('Error marking notification as read:', response.statusText);
-        return;
+        console.log('Successfully marked notification as read');
+        setCurrentRead(true);
       }
 
-      setCurrentRead(true);
-    }
+      setProcessingRead(false);
+      changeVisibility();
 
-    if (url) {
-      push(url);
+      if (url) {
+        push(url);
+      }
+
+    } catch (error) {
+      setCurrentRead(false);
+      setProcessingRead(false);
     }
-    setProcessingRead(false);
-    changeVisibility();
   };
+
+  useEffect(() => {
+    setCurrentRead(read);
+  }, [read]);
 
   if (processingRead) {
     return (
@@ -129,7 +149,7 @@ const NotificationItem : React.FC<INotificationItemProps> = ({
     <div className={className}>
       <div className={iconContainerClassName}>
         {/* 읽음 처리 여부에 따라 알림 아이콘 색상 변경 */}
-        {(!currentRead && !deleteMode )&& (
+        {(!currentRead && !deleteMode) && (
           <div className='rounded-full p-1 bg-red-600'>
           </div>
         )}
