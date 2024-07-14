@@ -1,45 +1,39 @@
 'use client';
 
+import useUserProfilePicture from '@/hooks/useUserProfilePicture';
 import { signOut, useSession } from 'next-auth/react';
-import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import Spinner from '../common/Spinner';
 
 const UserProfile = () => {
   const { data: session } = useSession();
-  const [profileImg, setProfileImg] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { profilePicture, getProfilePicture, isLoading, error } =
+    useUserProfilePicture();
+
+  const chooseImageForDisplay = () => {
+    if (!isLoading) {
+      if (error) {
+        return <img src={'/default-profile.png'} alt='Profile' className='w-full h-full object-cover rounded-full' />;
+      } else {
+        if (profilePicture) {
+          return <img src={profilePicture} alt='Profile' className='w-full h-full object-cover rounded-full' />;
+        } else {
+          return <img src={'/default-profile.png'} alt='Profile' className='w-full h-full object-cover rounded-full' />;
+        }
+      }
+    }
+    return <Spinner size='xs'/>;
+  }
 
   useEffect(() => {
     if (session && session.user) {
       const userId = session.uid;
       const provider = session.provider;
 
-      getProfileImg(userId, provider);
+      getProfilePicture(userId, provider);
     }
   }, [session]);
-
-  const getProfileImg = async (userId: string, provider: string) => {
-    try {
-      const response = await fetch(
-        `/api/profile-image?user-id=${userId}&provider=${provider}`
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to get filepath');
-      }
-
-      const result = await response.json();
-
-      const filePath = result.filepath[0].filepath;
-
-      setProfileImg(filePath);
-    } catch (error) {
-      console.log(`이미지 가져오기 실패 : ${error}`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const handleLogOut = async () => {
     await signOut({ callbackUrl: '/' });
@@ -51,21 +45,7 @@ const UserProfile = () => {
         <>
           <Link href='/my-page'>
             <div className='relative h-9 w-9'>
-              {profileImg && !isLoading ? (
-                <Image
-                  src={profileImg}
-                  className='rounded-full'
-                  layout='fill'
-                  objectFit='cover'
-                  alt='user profile image'
-                  onLoadingComplete={() => setIsLoading(false)}
-                />
-              ) : (
-                <div
-                  className='rounded-full h-full w-full'
-                  style={{ backgroundColor: 'transparent' }}
-                />
-              )}
+              {chooseImageForDisplay()}
             </div>
           </Link>
           <button className='text-lg font-medium' onClick={handleLogOut}>

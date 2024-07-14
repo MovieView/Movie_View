@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { FaHeart } from 'react-icons/fa6';
 import Link from 'next/link';
+import useUserProfilePicture from '@/hooks/useUserProfilePicture';
+import Spinner from '../common/Spinner';
 
 const updateProfile = async (
   userId: string,
@@ -34,6 +36,12 @@ const updateProfile = async (
 
 const Edit = () => {
   const { data: session } = useSession();
+  const { 
+    profilePicture, 
+    getProfilePicture,
+    isLoading,
+    error,
+  } = useUserProfilePicture();
   const [selectedImage, setSelectedImage] = useState<File | undefined>(
     undefined
   );
@@ -41,6 +49,15 @@ const Edit = () => {
   const [userName, setUserName] = useState<string>('');
   const [inProcess, setInProcess] = useState<boolean>(true);
   const [isProfileUpdated, setIsProfileUpdated] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (session && session.user) {
+      const userId = session.uid;
+      const provider = session.provider;
+
+      getProfilePicture(userId, provider);
+    }  
+  }, [session]);
 
   useEffect(() => {
     // 프로필 수정 이후 바로 프로필 적용
@@ -85,6 +102,25 @@ const Edit = () => {
     }
   };
 
+  const chooseImageForDisplay = () => {
+    if (!isLoading) {
+      if (preview) {
+        return <img src={preview} alt='Preview' className='w-full h-full object-cover rounded-full' />;
+      } else {
+        if (error) {
+          return <img src={'/default-profile.png'} alt='Profile' className='w-full h-full object-cover rounded-full' />;
+        } else {
+          if (profilePicture) {
+            return <img src={profilePicture} alt='Profile' className='w-full h-full object-cover rounded-full' />;
+          } else {
+            return <img src={'/default-profile.png'} alt='Profile' className='w-full h-full object-cover rounded-full' />;
+          }
+        }
+      }
+    }
+    return <Spinner size='sm' />;
+  };
+
   if (!session) {
     return <div>먼저 로그인해주세요.</div>;
   }
@@ -111,20 +147,7 @@ const Edit = () => {
             onChange={handleImageChange}
             className='absolute inset-0 opacity-0 cursor-pointer'
           />
-
-          {preview ? (
-            <img
-              src={preview}
-              alt='Preview'
-              className='w-full h-full object-cover rounded-full'
-            />
-          ) : (
-            <img
-              src={session.user?.image || '/default-profile.png'}
-              alt='Profile'
-              className='w-full h-full object-cover rounded-full'
-            />
-          )}
+          {chooseImageForDisplay()}
         </div>
 
         <input
