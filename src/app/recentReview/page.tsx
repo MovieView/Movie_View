@@ -13,9 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 
 export default function RecentReview() {
   const searchParam = useSearchParams();
-  const [filter, setFilter] = useState<string | null>(
-    searchParam.get('filter')
-  );
+  const [filter, setFilter] = useState<string>('like');
   const moreRef = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
