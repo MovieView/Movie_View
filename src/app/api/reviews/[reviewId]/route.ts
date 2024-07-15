@@ -258,6 +258,7 @@ async function deleteReview(reviewId: string, userId: string, connection: PoolCo
     const [result] = await connection.execute(sql, values);
     return result;
   } catch (err) {
+    console.log(err);
     throw err;
   }
 }

@@ -83,11 +83,16 @@ export const POST = async (
     );
 
     if (reviewWriterSocialAccountsUID) {
+      const movieId = await getMovieIdUsingReviewId(params.reviewId, connection);
+      if (!movieId) {
+        throw new Error('Failed to get movie ID using review ID');
+      }
+
       await createReviewLikeNotification(
         reviewWriterSocialAccountsUID,
         session.user.name as string,
         session.user.image as string,
-        params.movieId,
+        movieId,
         connection
       );
     }
@@ -100,6 +105,7 @@ export const POST = async (
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    console.log(error);
     await connection?.rollback();
     connection?.release();
 
@@ -277,6 +283,32 @@ async function getReviewWriterSocialAccountsUID(
     }
 
     return result[0].social_accounts_uid;
+  } catch (err) {
+    throw err;
+  }
+}
+
+const getMovieIdUsingReviewId = async (
+  reviewId: string,
+  connection: PoolConnection
+) => {
+  const sql = `
+    SELECT movies_id
+    FROM movie_view.reviews
+    WHERE HEX(id) = ?;
+  `;
+
+  try {
+    const [result] = await connection.execute<RowDataPacket[]>(sql, [reviewId]);
+    if (result.length === 0) {
+      return null;
+    }
+
+    if (!result[0].movies_id) {
+      return null;
+    }
+
+    return result[0].movies_id;
   } catch (err) {
     throw err;
   }
