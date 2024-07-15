@@ -5,6 +5,13 @@ import GoogleProvider from 'next-auth/providers/google';
 import { getDBConnection } from './db';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { PoolConnection } from 'mysql2/promise';
+import { 
+  formProviderId, 
+  formatUserId, 
+  generateUniqueInt 
+} from '@/utils/authUtils';
+import { formatDateToMySQL } from '@/utils/dateUtils';
+
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -35,43 +42,31 @@ export const authOptions: NextAuthOptions = {
     },
 
     async signIn({ user, account }) {
+      const userId = user.id;
+      const provider = account?.provider as string;
+      const username = user.name;
+      const filepath = user.image;
+
+      const officialUID = formatUserId(provider, userId);
+      if (!officialUID) {
+        return false;
+      }
+
       let connection : PoolConnection | undefined;
       try {
-        const userId = user.id;
-        const provider = account?.provider as string;
-        const username = user.name;
-        const filepath = user.image;
-
-        const formUid = (provider: string) => {
-          switch (provider) {
-            case 'github':
-              return 'github_' + userId;
-            case 'kakao':
-              return 'kakao_' + userId;
-            case 'google':
-              return 'google_' + userId;
-          }
-        };
-
         connection = await getDBConnection();
         await connection.beginTransaction();
         const [results] = await connection.execute<RowDataPacket[]>(
           `SELECT COUNT(*) AS count FROM users u LEFT JOIN social_accounts s ON u.id = s.users_id WHERE s.uid = ?`,
-          [formUid(provider)]
+          [officialUID]
         );
         const count = results[0].count;
-
-        const generateUniqueInt = () => {
-          const timestamp = Date.now();
-          const randomNum = Math.floor(Math.random() * 1000);
-          return timestamp * 1000 + randomNum;
-        };
 
         const usersId = generateUniqueInt();
         let myAccountId;
 
         if (count >= 1) {
-          await connection.commit();
+          await connection.rollback();
           connection.release();
           return true;
         }
@@ -86,40 +81,12 @@ export const authOptions: NextAuthOptions = {
 
         const extraData = JSON.stringify({ username, filepath });
 
-        const formProviderId = (provider: string) => {
-          switch (provider) {
-            case 'github':
-              return 0;
-            case 'kakao':
-              return 1;
-            case 'google':
-              return 2;
-          }
-        };
-
-        const formatDateToMySQL = (date: Date) => {
-          const pad = (num: number) => (num < 10 ? '0' : '') + num;
-          return (
-            date.getFullYear() +
-            '-' +
-            pad(date.getMonth() + 1) +
-            '-' +
-            pad(date.getDate()) +
-            ' ' +
-            pad(date.getHours()) +
-            ':' +
-            pad(date.getMinutes()) +
-            ':' +
-            pad(date.getSeconds())
-          );
-        };
-
         const providerId = formProviderId(provider);
         const lastLogin = formatDateToMySQL(new Date());
 
         await connection.execute(
           'INSERT INTO social_accounts (users_id, providers_id, uid, last_login, extra_data) VALUES (?, ?, ?, ?, ?)',
-          [myAccountId, providerId, formUid(provider), lastLogin, extraData]
+          [myAccountId, providerId, officialUID, lastLogin, extraData]
         );
 
         await connection.commit();

@@ -1,5 +1,5 @@
 import { getDBConnection } from '@/lib/db';
-import { formatUserId } from '@/utils/formatUserId';
+import { formatUserId } from '@/utils/authUtils';
 import { PoolConnection } from 'mysql2/promise';
 import { NextRequest } from 'next/server';
 

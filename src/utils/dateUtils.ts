@@ -12,3 +12,20 @@ export function formatDate(dateStr: string): string {
   const formattedDate = date && formatter.format(date);
   return formattedDate;
 }
+
+export const formatDateToMySQL = (date: Date) => {
+  const pad = (num: number) => (num < 10 ? '0' : '') + num;
+  return (
+    date.getFullYear() +
+    '-' +
+    pad(date.getMonth() + 1) +
+    '-' +
+    pad(date.getDate()) +
+    ' ' +
+    pad(date.getHours()) +
+    ':' +
+    pad(date.getMinutes()) +
+    ':' +
+    pad(date.getSeconds())
+  );
+};

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDBConnection } from '@/lib/db';
 import { PoolConnection } from 'mysql2/promise';
-import { formatUserId } from '@/utils/formatUserId';
+import { formatUserId } from '@/utils/authUtils';
 
 
 export const POST = async (req: NextRequest, res: NextResponse) => {
@@ -37,6 +37,7 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
 
     connection = await getDBConnection();
     await connection.beginTransaction();
+
     const [result] = await connection.execute(sql, [
       nickname,
       formatUserId(provider, userId),

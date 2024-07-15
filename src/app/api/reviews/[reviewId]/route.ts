@@ -2,13 +2,12 @@ import { getDBConnection } from '@/lib/db';
 import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
-import { formatUserId } from '@/utils/formatUserId';
+import { formatUserId } from '@/utils/authUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { ICommentContent } from '@/models/comment.model';
 import { IReviewData } from '@/models/review.model';
 import { PoolConnection } from 'mysql2/promise';
 
-// 대댓글 조회
 const MAX_RESULT = 8;
 const PAGE = 1;
 
@@ -51,7 +50,6 @@ export async function GET(
   }
 }
 
-// 대댓글 추가
 export async function POST(
   req: Request,
   { params }: { params: { reviewId: string } }
@@ -82,10 +80,8 @@ export async function POST(
       });
     }
 
-    // 대댓글 내용 받아오기
     const data: ICommentContent = await req.json();
 
-    // 대댓글 내용 DB 저장
     await addComment(
       params.reviewId, 
       user.userId, 
@@ -258,7 +254,6 @@ async function deleteReview(reviewId: string, userId: string, connection: PoolCo
     const [result] = await connection.execute(sql, values);
     return result;
   } catch (err) {
-    console.log(err);
     throw err;
   }
 }

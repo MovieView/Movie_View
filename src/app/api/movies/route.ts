@@ -11,7 +11,6 @@ interface MovieData {
   posterUrl: string
 }
 
-
 export const GET = async (request: NextRequest) => {
   const { searchParams } = new URL(request.url);
   const title : string | null = searchParams.get('title');
@@ -28,6 +27,7 @@ export const GET = async (request: NextRequest) => {
   const redisSearchUserKey : string = `search_movie:${userIP}`;
   const redisData : string | null = await getRedisData(client, redisSearchUserKey);
   if (redisData) {
+    await client.quit();
     return new Response(JSON.stringify({
       error: 'You are being rate limited. Please try again later.'
     }), {
@@ -46,6 +46,7 @@ export const GET = async (request: NextRequest) => {
   }
 
   if (!accessTokenTMDB) {
+    await client.quit();
     throw new Error('API key is missing');
   }
  
@@ -73,6 +74,7 @@ export const GET = async (request: NextRequest) => {
   const cacheAPIResultKey : string = `tmdb:${url}`;
   const cacheAPIData : string | null = await getRedisData(client, cacheAPIResultKey);
   if (cacheAPIData) {
+    await client.quit();
     return new Response(cacheAPIData, {
       status: 200,
       headers: {
@@ -83,6 +85,7 @@ export const GET = async (request: NextRequest) => {
 
   const resp : Response = await fetch(url, fetchParams);
   if (!resp.ok) {
+    await client.quit();
     throw new Error('Failed to fetch data');
   }
 

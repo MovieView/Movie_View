@@ -1,7 +1,7 @@
 import { authOptions } from '@/lib/authOptions';
 import { getDBConnection } from '@/lib/db';
 import { Like } from '@/models/likes.model';
-import { formatUserId } from '@/utils/formatUserId';
+import { formatUserId } from '@/utils/authUtils';
 import { RowDataPacket } from 'mysql2';
 import { PoolConnection } from 'mysql2/promise';
 import { getServerSession } from 'next-auth';
@@ -68,26 +68,30 @@ export const POST = async (
     return new Response('Authentication Error', { status: 401 });
   }
 
+  const movieData = await req.json()
+  const like = {
+    id: uuidv4().replace(/-/g, ''),
+    movies_id: params.movieId,
+    movie_title: movieData.movieTitle,
+    poster_path: movieData.posterPath,
+    social_accounts_uid: social_accounts_uid,
+  };
+
   let connection: PoolConnection | undefined;
   try {
-    const movieData = await req.json()
-    const like = {
-      id: uuidv4().replace(/-/g, ''),
-      movies_id: params.movieId,
-      movie_title: movieData.movieTitle,
-      poster_path: movieData.posterPath,
-      social_accounts_uid: social_accounts_uid,
-    };
-
     connection = await getDBConnection() as PoolConnection;
+    await connection.beginTransaction();
+
     const result = await postLike(like, connection);
 
+    await connection.commit();
     connection.release();
     return new Response(JSON.stringify(result), {
       status: 201,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    await connection?.rollback();
     connection?.release();
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,

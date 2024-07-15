@@ -1,7 +1,7 @@
 import { authOptions } from '@/lib/authOptions';
 import { getDBConnection } from '@/lib/db';
 import { Like } from '@/models/likes.model';
-import { formatUserId } from '@/utils/formatUserId';
+import { formatUserId } from '@/utils/authUtils';
 import { RowDataPacket } from 'mysql2';
 import { PoolConnection, ResultSetHeader } from 'mysql2/promise';
 import { getServerSession } from 'next-auth';
@@ -105,7 +105,6 @@ export const POST = async (
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.log(error);
     await connection?.rollback();
     connection?.release();
 

@@ -2,7 +2,7 @@ import { getDBConnection } from '@/lib/db';
 import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
-import { formatUserId } from '@/utils/formatUserId';
+import { formatUserId } from '@/utils/authUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { ICommentContent } from '@/models/comment.model';
 import { PoolConnection } from 'mysql2/promise';

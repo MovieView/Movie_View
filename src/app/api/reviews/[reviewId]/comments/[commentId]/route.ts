@@ -1,5 +1,5 @@
 import { getDBConnection } from '@/lib/db';
-import { formatUserId } from '@/utils/formatUserId';
+import { formatUserId } from '@/utils/authUtils';
 import { getServerSession } from 'next-auth';
 import { FieldPacket, RowDataPacket } from 'mysql2';
 import { ICommentContent } from '@/models/comment.model';

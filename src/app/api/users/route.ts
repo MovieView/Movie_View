@@ -1,7 +1,7 @@
 import { extname, posix } from 'path';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
-import { formatUserId } from '@/utils/formatUserId';
+import { formatUserId } from '@/utils/authUtils';
 import { getDBConnection } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 import { S3Client } from '@aws-sdk/client-s3';
@@ -28,6 +28,8 @@ export async function PUT(req: NextRequest) {
   let connection : PoolConnection | undefined;
   try {
     connection = await getDBConnection();
+    await connection.beginTransaction();
+
     const beforeData = await getExtraData(userId, connection);
     let filepath = beforeData.filepath;
     let username = beforeData.username;
@@ -42,14 +44,17 @@ export async function PUT(req: NextRequest) {
       username = formData.get('username');
     }
 
-    executeQury(
+    await updateUser(
       userId, 
       username, 
       filepath,
       connection
     );
-    connection?.release();
+
+    await connection.commit();
+    connection.release();
   } catch (err: any) {
+    await connection?.rollback();
     connection?.release();
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
@@ -78,7 +83,7 @@ async function getExtraData(userId: string, connection: PoolConnection) {
   }
 }
 
-async function executeQury(
+async function updateUser(
   userId: string, 
   username: string, 
   filepath: string, 
