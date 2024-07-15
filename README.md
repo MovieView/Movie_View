@@ -26,6 +26,14 @@ REDIS_URL=**<Redis URL>**
 ## TMDB
 TMDB_API_KEY=**<TMDB API KEY>**
 TMDB_ACCESS_TOKEN=**<TMDB ACCESS TOKEN>**
+
+## GITHUB, KAKAO, GOOGLE
+GITHUB_CLIENT_ID=**<GITHUB CLIENT ID>**
+GITHUB_CLIENT_SECRET=**<GITHUB CLIENT SECRET>**
+KAKAO_CLIENT_ID=**<KAKAO CLIENT ID>**
+KAKAO_CLIENT_SECRET=**<KAKAO CLIENT SECRET>**
+GOOGLE_CLIENT_ID=**<GOOGLE CLIENT ID>**
+GOOGLE_CLIENT_SECRET=**<GOOGLE CLIENT SECRET>**
 ```
 * 설치 전에 .env 파일을 생성하고 위와 같이 설정해주세요.
   * Before the installation, create a .env file in the root of the project, and set it up as above.
@@ -64,28 +72,70 @@ TMDB_ACCESS_TOKEN=**<TMDB ACCESS TOKEN>**
 - 개발 기간 : 3주
 - 팀원
 <table>
-  <tbody>
     <tr>
       <td align="center"><a href="https://github.com/jeong922"><img src="https://item.kakaocdn.net/do/b5d3d6a7b67fbf5afdaffb79fffbf8b18f324a0b9c48f77dbce3a43bd11ce785" width="100px;" alt=""/><br /><sub><b>이화정 </b></sub></a><br /></td>
       <td align="center"><a href="https://github.com/jh0222"><img src="https://item.kakaocdn.net/do/47112f1ae6f87f4323cb73f65a8c5424f604e7b0e6900f9ac53a43965300eb9a" width="100px;" alt=""/><br /><sub><b>서지현 </b></sub></a><br /></td>
       <td align="center"><a href="https://github.com/choongnyeong6215"><img src="https://avatars.githubusercontent.com/u/138146406?v=4" width="100px;" alt=""/><br /><sub><b>이충녕 </b></sub></a><br /></td>
       <td align="center"><a href="https://github.com/7jw92nVd1kLaq1"><img src="https://avatars.githubusercontent.com/u/75822302?v=4" width="100px;" alt=""/><br /><sub><b>위수종 </b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/Wongilk"><img src="https://avatars.githubusercontent.com/u/108254103?s=96&v=4" width="100px;" alt=""/><br /><sub><b>김원길 </b></sub></a><br /></td>
+      <td align="center"><a href="https://github.com/msy8709"><img src="https://avatars.githubusercontent.com/u/126440803?v=4" width="100px;" alt=""/><br /><sub><b>문소영 </b></sub></a><br /></td>
      <tr/>
-  </tbody>
 </table>
 <br />
 
 ## ✅ 주요 기능
-- 로그인/로그아웃
-- 영화 목록 보기
-    - 무한 스크롤
-- 영화 검색
-    - 실시간 검색처럼
-    - 한번에 너무 많은 data 요청 안 되게 하기
-- 영화 상세 정보
-- 리뷰 목록 보기/등록/수정/삭제
-    - 리뷰 목록 무한 스크롤
-- 리뷰 좋아요 기능
+<table>
+  <tr>
+    <th>담당자</th>
+    <th>기능</th>
+  </tr>
+  <tr>
+    <td>서지현</td>
+    <td>
+      - 영화 상세 정보<br>
+      - 리뷰별/영화별 좋아요 추가/삭제<br>
+      - 마이페이지: 영화 좋아요 페이지
+    </td>
+  </tr>
+  <tr>
+    <td>위수종</td>
+    <td>
+      - 영화 목록<br>
+      - 영화 검색<br>
+      - 데이터베이스<br>
+      - 배포<br>
+      - 다크모드/색깔 설정<br>
+      - 대댓글/좋아요에 대한 알림
+    </td>
+  </tr>
+  <tr>
+    <td>이화정</td>
+    <td>
+      - 리뷰 등록/수정/삭제<br>
+      - 대댓글 기능/수정/삭제
+    </td>
+  </tr>
+  <tr>
+    <td>이충녕</td>
+    <td>
+      - 로그인/로그아웃<br>
+      - 닉네임 추가
+    </td>
+  </tr>
+  <tr>
+    <td>김원길</td>
+    <td>
+      - 지금 뜨는 코멘트<br>
+      - 관련 영화 나오는거
+    </td>
+  </tr>
+  <tr>
+    <td>문소영</td>
+    <td>
+      - 마이페이지: 회원정보 수정
+    </td>
+  </tr>
+</table>
 <br />
 
 ## 🖥️ 화면 구성
