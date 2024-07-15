@@ -9,7 +9,7 @@ const useMarkNotificationAsRead = () => {
     setIsProcessing(true);
     setError(null);
     try {
-      const response = await fetch('/api/notification/read', {
+      const response = await fetch('/api/notifications', {
         method: 'PUT'
       });
       if (!response.ok) {
@@ -26,7 +26,7 @@ const useMarkNotificationAsRead = () => {
     setIsProcessing(true);
     setError(null);
     try {
-      const response = await fetch(`/api/notification/${notificationId}/read`, {
+      const response = await fetch(`/api/notifications/${notificationId}`, {
         method: 'PUT'
       });
       if (!response.ok) {

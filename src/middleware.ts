@@ -31,5 +31,8 @@ export const config = {
     '/api/like/:path*',
     '/api/movie/:id(\\d+)/review',
     '/api/my-page',
+    '/api/users/:path*',
+    '/api/movies/:path*',
+    '/api/notifications/:path*',
   ],
 };

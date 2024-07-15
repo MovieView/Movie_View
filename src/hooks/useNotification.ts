@@ -94,7 +94,7 @@ const useNotification = (navbar?: boolean) => {
     setError(null);
     setNotification(null);
 
-    const url = '/api/notification?page=' + currentPage + (navbar ? '&quantity=navbar' : '');
+    const url = '/api/notifications?page=' + currentPage + (navbar ? '&quantity=navbar' : '');
     try {
       const response : Response = await fetch(url);
       if (!response.ok) {

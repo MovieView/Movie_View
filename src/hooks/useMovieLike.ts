@@ -18,7 +18,7 @@ export const useMovieLike = (
   } = useQuery<Like>({ 
     queryKey: ['movies_like', movieId], 
     queryFn: async () => {
-      const response = await fetch(`/api/movie/like/${movieId}`);
+      const response = await fetch(`/api/movies/${movieId}/likes`);
       if (!response.ok) {
           throw new Error('Failed to fetch likes');
       }
@@ -29,7 +29,7 @@ export const useMovieLike = (
 
   const addLikeMutation = useMutation({
     mutationFn: async (movieId: number) => {
-      const response = await fetch(`/api/movie/like/${movieId}`, {
+      const response = await fetch(`/api/movies/${movieId}/likes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,7 +45,7 @@ export const useMovieLike = (
 
   const deleteLikeMutation = useMutation({
     mutationFn: async (movieId: number) => {
-      const response = await fetch(`/api/movie/like/${movieId}`, {
+      const response = await fetch(`/api/movies/${movieId}/likes`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

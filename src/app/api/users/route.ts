@@ -1,90 +1,18 @@
-import { getDBConnection } from '@/lib/db';
-import { formatUserId } from '@/utils/formatUserId';
-import { PoolConnection, RowDataPacket } from 'mysql2/promise';
-import { NextRequest, NextResponse } from 'next/server';
 import { extname, posix } from 'path';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
+import { formatUserId } from '@/utils/formatUserId';
+import { getDBConnection } from '@/lib/db';
+import { NextRequest, NextResponse } from 'next/server';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
+import { PoolConnection } from 'mysql2/promise';
 
 
 interface IUserData {
   username: string;
   filepath: string;
 }
-
-export const GET = async (req: NextRequest) => {
-  const { searchParams } = new URL(req.url);
-  const userId = searchParams.get('user-id');
-  const provider = searchParams.get('provider');
-
-  if (!provider) {
-    return new Response(
-      JSON.stringify({ error: '프로버이더 정보가 올바르지 않습니다.' }),
-      {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
-  }
-
-  if (!userId) {
-    return new Response(
-      JSON.stringify({ error: '사용자 정보가 올바르지 않습니다.' }),
-      {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
-  }
-
-  let connection: PoolConnection | undefined;
-  try {
-    const sql = `
-      SELECT JSON_UNQUOTE(JSON_EXTRACT(extra_data, '$.filepath')) AS filepath
-      FROM social_accounts
-      WHERE uid = ?
-    `;
-
-    connection = await getDBConnection();
-    const [result] = await connection.execute<RowDataPacket[]>(
-      sql, 
-      [formatUserId(provider, userId)]
-    );
-
-    connection.release();
-    if (!result) {
-      return new Response(
-        JSON.stringify({ error: '프로필이 존재하지 않습니다.' }),
-        {
-          status: 404,
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
-    } else {
-      return new Response(
-        JSON.stringify({
-          message: '프로필 사진 불러오기 완료',
-          filepath: result,
-        }),
-        {
-          status: 200,
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
-    }
-  } catch (err) {
-    connection?.release();
-    return new Response(
-      JSON.stringify({ error: '프로필 사진 불러오기 실패' }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
-  }
-};
 
 export async function PUT(req: NextRequest) {
   const session = await getServerSession({ req, ...authOptions });
@@ -114,7 +42,7 @@ export async function PUT(req: NextRequest) {
       username = formData.get('username');
     }
 
-    updateUserProfilePicture(
+    executeQury(
       userId, 
       username, 
       filepath,
@@ -131,6 +59,55 @@ export async function PUT(req: NextRequest) {
   );
 }
 
+async function getExtraData(userId: string, connection: PoolConnection) {
+  try {
+    const [rows]: [any[], any] = await connection.execute(
+      'SELECT extra_data FROM social_accounts WHERE uid = ?',
+      [userId]
+    );
+
+    if (rows.length > 0) {
+      const extraDataString = rows[0].extra_data;
+      const extraData = JSON.parse(extraDataString);
+      return extraData;
+    } else {
+      return null;
+    }
+  } catch (error) {
+    throw new Error('Error parsing extra_data:' + error);
+  }
+}
+
+async function executeQury(
+  userId: string, 
+  username: string, 
+  filepath: string, 
+  connection: PoolConnection
+) {
+  try {
+    await connection.execute('SET SQL_SAFE_UPDATES=0');
+
+    let updateQuery =
+      'UPDATE movie_view.social_accounts SET extra_data = ? WHERE uid = ?';
+    let data: IUserData = {
+      username: '',
+      filepath: '',
+    };
+    if (username) {
+      data['username'] = username;
+    }
+    if (filepath) {
+      data['filepath'] = filepath;
+    }
+
+    await connection.execute(updateQuery, [
+      JSON.stringify(data),
+      userId,
+    ]);
+  } catch (error) {
+    throw new Error('Error execute qury: ' + error);
+  }
+}
 
 function sanitizeFilename(filename: string): string {
   return filename.replace(/[^a-zA-Z0-9_\u0600-\u06FF.]/g, '_');
@@ -189,55 +166,5 @@ async function uploadImage(req: NextRequest) {
     }
   } catch (e) {
     throw new Error('Something went wrong.');
-  }
-}
-
-async function getExtraData(userId: string, connection: PoolConnection) {
-  try {
-    const [rows]: [any[], any] = await connection.execute(
-      'SELECT extra_data FROM social_accounts WHERE uid = ?',
-      [userId]
-    );
-
-    if (rows.length > 0) {
-      const extraDataString = rows[0].extra_data;
-      const extraData = JSON.parse(extraDataString);
-      return extraData;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    throw new Error('Error parsing extra_data:' + error);
-  }
-}
-
-async function updateUserProfilePicture(
-  userId: string, 
-  username: string, 
-  filepath: string, 
-  connection: PoolConnection
-) {
-  try {
-    await connection.execute('SET SQL_SAFE_UPDATES=0');
-
-    let updateQuery =
-      'UPDATE movie_view.social_accounts SET extra_data = ? WHERE uid = ?';
-    let data: IUserData = {
-      username: '',
-      filepath: '',
-    };
-    if (username) {
-      data['username'] = username;
-    }
-    if (filepath) {
-      data['filepath'] = filepath;
-    }
-
-    const result = await connection.execute(updateQuery, [
-      JSON.stringify(data),
-      userId,
-    ]);
-  } catch (error) {
-    throw new Error('Error execute qury: ' + error);
   }
 }

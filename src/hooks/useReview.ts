@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 const MAX_RESULT = 10;
 const getReviews = async (movieId: number, page = 1, sort: string) => {
   const response = await fetch(
-    `/api/movie/${movieId}/review?maxResults=${MAX_RESULT}&page=${page}&sort=${sort}`,
+    `/api/movies/${movieId}/reviews?maxResults=${MAX_RESULT}&page=${page}&sort=${sort}`,
     {
       method: 'GET',
       headers: {
@@ -31,7 +31,7 @@ const updateReview = async ({
   rating,
   content,
 }: IReviewFormData & { reviewId: string }) => {
-  const response = await fetch(`/api/review/${reviewId}`, {
+  const response = await fetch(`/api/reviews/${reviewId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ const createReview = async ({
   movieTitle: string;
   posterPath: string;
 }) => {
-  const response = await fetch(`/api/review`, {
+  const response = await fetch(`/api/reviews`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -81,7 +81,7 @@ const createReview = async ({
 };
 
 const deleteReview = async (reviewId: string) => {
-  const response = await fetch(`/api/review/${reviewId}`, {
+  const response = await fetch(`/api/reviews/${reviewId}`, {
     method: 'DELETE',
     body: JSON.stringify({ reviewId }),
   });

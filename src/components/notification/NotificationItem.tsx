@@ -74,10 +74,9 @@ const NotificationItem : React.FC<INotificationItemProps> = ({
             'Content-Type': 'application/json'
           }
         };
-        const response : Response = await fetch(`/api/notification/${id}`, fetchOptions);
+        const response : Response = await fetch(`/api/notifications/${id}`, fetchOptions);
         if (!response.ok) {
           throw new Error('Failed to delete notification');
-          return;
         }
 
         setIsDeleted(true);
@@ -106,7 +105,7 @@ const NotificationItem : React.FC<INotificationItemProps> = ({
             'Content-Type': 'application/json'
           }
         };
-        const response : Response = await fetch(`/api/notification/${id}/read`, fetchOptions);
+        const response : Response = await fetch(`/api/notifications/${id}`, fetchOptions);
         if (!response.ok) {
           setCurrentRead(false);
           setProcessingRead(false);
