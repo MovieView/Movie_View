@@ -66,11 +66,9 @@ async function uploadImage(req: NextRequest) {
       upload.done();
       return url;
     } catch (e) {
-      console.error('S3 버킷 업로드 중 오류 발생\n', e);
       throw new Error('S3 버킷 업로드 중 오류 발생');
     }
   } catch (e) {
-    console.error('파일 업로드 중 오류 발생\n', e);
     throw new Error('Something went wrong.');
   }
 }

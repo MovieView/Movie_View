@@ -15,7 +15,6 @@ const SearchMoviePoster: React.FC<SearchMoviePosterProps> = ({
   return (
     <button className='w-auto h-auto rounded-lg bg-gray-500 block'>
       <Link href={`/detail/${id}`}>
-        {/* 포스터가 있을 경우 */}
         {posterUrl && (
           <Image
             width={200}
@@ -25,7 +24,6 @@ const SearchMoviePoster: React.FC<SearchMoviePosterProps> = ({
             className='w-full h-full rounded-lg aspect-[9/13]'
           />
         )}
-        {/* 포스터가 없을 경우 */}
         {!posterUrl && (
           <div className='w-full h-full relative'>
             <div className='absolute w-full h-full flex flex-col items-center justify-center'>

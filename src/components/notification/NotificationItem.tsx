@@ -76,7 +76,7 @@ const NotificationItem : React.FC<INotificationItemProps> = ({
         };
         const response : Response = await fetch(`/api/notification/${id}`, fetchOptions);
         if (!response.ok) {
-          console.error('Error deleting notification:', response.statusText);
+          throw new Error('Failed to delete notification');
           return;
         }
 
@@ -108,13 +108,10 @@ const NotificationItem : React.FC<INotificationItemProps> = ({
         };
         const response : Response = await fetch(`/api/notification/${id}/read`, fetchOptions);
         if (!response.ok) {
-          console.error('Error marking notification as read:', response.statusText);
-
           setCurrentRead(false);
           setProcessingRead(false);
           return;
         }
-        console.log('Successfully marked notification as read');
         setCurrentRead(true);
       }
 
@@ -148,7 +145,6 @@ const NotificationItem : React.FC<INotificationItemProps> = ({
   return (
     <div className={className}>
       <div className={iconContainerClassName}>
-        {/* 읽음 처리 여부에 따라 알림 아이콘 색상 변경 */}
         {(!currentRead && !deleteMode) && (
           <div className='rounded-full p-1 bg-red-600'>
           </div>

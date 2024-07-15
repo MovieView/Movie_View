@@ -21,7 +21,7 @@ const SocialLogin = () => {
     try {
       await signIn(provider, { callbackUrl: '/' });
     } catch (err) {
-      console.log(err);
+      return;
     }
   };
 

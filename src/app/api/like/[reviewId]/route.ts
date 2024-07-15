@@ -77,7 +77,6 @@ export const POST = async (
     const result = await postLike(like, connection);
 
     let movieId = '';
-    // 영화 id를 찾기 위해 Referer 헤더를 확인
     if (req.headers.get('Referer') != null) {
       movieId = getMovieIdFromReferer(req.headers.get('Referer') as string);
     }
@@ -87,7 +86,6 @@ export const POST = async (
       connection
     );
 
-    // 리뷰에 작성자의 UID가 존재할 경우에만 알림 생성
     if (reviewWriterSocialAccountsUID) {
       await createReviewLikeNotification(
         reviewWriterSocialAccountsUID,

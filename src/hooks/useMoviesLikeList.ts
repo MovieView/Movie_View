@@ -34,7 +34,7 @@ export const useMoviesLike = () => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    handleResize(); // 초기 렌더링 시 호출하여 초기 상태 설정
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);

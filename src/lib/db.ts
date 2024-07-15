@@ -5,7 +5,6 @@ let dbConnectionPoolAsync: mysqlAsync.Pool;
 
 export async function getDBConnection(): Promise<PoolConnection> {
   if (dbConnectionPoolAsync) {
-    console.log("dbConnectionPoolAsync is already created");
     return await dbConnectionPoolAsync.getConnection();
   }
 
@@ -19,6 +18,5 @@ export async function getDBConnection(): Promise<PoolConnection> {
     connectionLimit: parseInt("20"),
   });
 
-  console.log("dbConnectionPoolAsync is created");
   return await dbConnectionPoolAsync.getConnection();
 }

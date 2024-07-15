@@ -65,9 +65,9 @@ export const useMovieLike = (
       } else {
         await addLikeMutation.mutateAsync(movieId);
       }
-      setEnabled(prevEnabled => !prevEnabled); // 좋아요 추가/취소 후 쿼리 활성화
+      setEnabled(prevEnabled => !prevEnabled); 
     } catch (error) {
-      console.error('Error toggling like:', error);
+      throw new Error('Failed to like');
     }
   };
 

@@ -61,7 +61,7 @@ export const useLike = (reviewId: string) => {
       }
       setEnabled(prevEnabled => !prevEnabled); 
     } catch (error) {
-      console.error('Error toggling like:', error);
+      throw new Error('Failed to like');
     }
   };
 

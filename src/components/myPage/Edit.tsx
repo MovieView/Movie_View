@@ -88,7 +88,7 @@ const Edit = () => {
   
         setIsProfileUpdated(true);
       } catch (error) {
-        console.error(error);
+        alert('프로필 변경에 실패했습니다. 다시 시도해주세요.');
       } finally {
         setInProcess(false);
       }
@@ -110,7 +110,7 @@ const Edit = () => {
 
       setProfileImg(filePath);
     } catch (error) {
-      console.log(`이미지 가져오기 실패 : ${error}`);
+      throw error;
     } finally {
       setIsLoading(false);
     }
