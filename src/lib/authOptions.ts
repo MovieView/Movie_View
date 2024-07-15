@@ -2,8 +2,9 @@ import { NextAuthOptions } from 'next-auth';
 import GithubProvider from 'next-auth/providers/github';
 import KakaoProvider from 'next-auth/providers/kakao';
 import GoogleProvider from 'next-auth/providers/google';
-import { dbConnectionPoolAsync } from './db';
+import { getDBConnection } from './db';
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import { PoolConnection } from 'mysql2/promise';
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -34,8 +35,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     async signIn({ user, account }) {
-      const connection = await dbConnectionPoolAsync.getConnection();
-
+      let connection : PoolConnection | undefined;
       try {
         const userId = user.id;
         const provider = account?.provider as string;
@@ -53,6 +53,8 @@ export const authOptions: NextAuthOptions = {
           }
         };
 
+        connection = await getDBConnection();
+        await connection.beginTransaction();
         const [results] = await connection.execute<RowDataPacket[]>(
           `SELECT COUNT(*) AS count FROM users u LEFT JOIN social_accounts s ON u.id = s.users_id WHERE s.uid = ?`,
           [formUid(provider)]
@@ -69,6 +71,7 @@ export const authOptions: NextAuthOptions = {
         let myAccountId;
 
         if (count >= 1) {
+          await connection.commit();
           connection.release();
           return true;
         }
@@ -123,10 +126,8 @@ export const authOptions: NextAuthOptions = {
         connection.release();
         return true;
       } catch (err) {
-        await connection.rollback();
-        connection.release();
-
-        console.error('Failed to save user:', err);
+        await connection?.rollback();
+        connection?.release();
         return false;
       }
     },
