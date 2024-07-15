@@ -1,4 +1,3 @@
-// 해당 엘리먼트가 화면에 보이는지 확인 함수
 export const isInViewport = (el: HTMLElement) => {
   const rect = el.getBoundingClientRect();
   return (

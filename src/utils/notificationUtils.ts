@@ -1,6 +1,4 @@
 export function splitStringWithPlaceholders(text: string) {
-  // This regular expression finds substrings inside and outside of curly braces
-  // the left curly brace may have a '!' in front of it, which means it should be bold
   const regex = /!?\{[^{}]*\}|\S[^{}]*(?=\s|$)/g;
   return text.match(regex);
 };

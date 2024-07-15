@@ -1,27 +1,38 @@
 import { authOptions } from '@/lib/authOptions';
-import { dbConnectionPoolAsync } from '@/lib/db';
+import { getDBConnection } from '@/lib/db';
 import { formatUserId } from '@/utils/formatUserId';
 import { FieldPacket, RowDataPacket } from 'mysql2';
+import { PoolConnection } from 'mysql2/promise';
 import { getServerSession } from 'next-auth';
 
 const LIMIT = 10;
 
 export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  let filter = searchParams.get('filter') ?? 'like';
+  let page = searchParams.get('page') ?? 1;
+  let userId;
+
+  const session = await getServerSession(authOptions);
+
+  if (!session?.provider && !session?.uid) {
+    return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+      status: 401,
+    });
+  } else {
+    userId = formatUserId(session.provider, session.uid);
+  }
+
+  let connection: PoolConnection | undefined;
   try {
-    const { searchParams } = new URL(req.url);
-    let filter = searchParams.get('filter') ?? 'like';
-    let page = searchParams.get('page') ?? 1;
-    let userId;
-
-    const session = await getServerSession(authOptions);
-    if (!session?.provider && !session?.uid) {
-    } else {
-      userId = formatUserId(session.provider, session.uid);
-    }
-
-    const reviews = await getRecentReviews(filter, userId, Number(page));
-
-    const count = await recentReviewsCount();
+    connection = await getDBConnection();
+    const reviews = await getRecentReviews(
+      filter, 
+      userId, 
+      Number(page), 
+      connection
+    );
+    const count = await recentReviewsCount(connection);
 
     const result = {
       reviews,
@@ -30,9 +41,13 @@ export async function GET(req: Request) {
         totalCount: count ? count.totalCount : 0,
       },
     };
-    return Response.json(result);
+    connection.release();
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { 'Content-Type': 'application/json' },
+    });
   } catch (error) {
-    console.error(error);
+    connection?.release();
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
@@ -42,7 +57,8 @@ export async function GET(req: Request) {
 async function getRecentReviews(
   filter: string,
   userId: string | undefined,
-  page: number
+  page: number,
+  connection: PoolConnection
 ) {
   let liked = ``,
     orderBy = ``;
@@ -73,30 +89,26 @@ async function getRecentReviews(
     WHERE r.created_at BETWEEN DATE_ADD(NOW(), INTERVAL -1 WEEK) AND NOW() 
     ORDER BY ${orderBy}
     LIMIT ?, ?`;
-  const connection = await dbConnectionPoolAsync.getConnection();
+  
   try {
     const [result] = await connection.execute(sql, values);
-    connection.release();
     return result;
   } catch (err) {
-    connection.release();
-    console.error(err);
     throw err;
   }
 }
 
-async function recentReviewsCount() {
+async function recentReviewsCount(
+  connection: PoolConnection
+) {
   const sql = `SELECT COUNT(*) AS totalCount FROM reviews WHERE created_at BETWEEN DATE_ADD(NOW(), INTERVAL -1 WEEK) AND NOW()`;
-  const connection = await dbConnectionPoolAsync.getConnection();
+
   try {
     const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
       sql
     );
-    connection.release();
     return result[0];
   } catch (err) {
-    connection.release();
-    console.error(err);
     throw err;
   }
 }

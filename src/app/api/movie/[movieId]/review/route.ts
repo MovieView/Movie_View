@@ -1,7 +1,8 @@
 import { authOptions } from '@/lib/authOptions';
-import { dbConnectionPoolAsync } from '@/lib/db';
+import { getDBConnection } from '@/lib/db';
 import { formatUserId } from '@/utils/formatUserId';
 import { FieldPacket, RowDataPacket } from 'mysql2';
+import { PoolConnection } from 'mysql2/promise';
 import { getServerSession } from 'next-auth';
 
 const MAX_RESULT = 8;
@@ -12,36 +13,40 @@ export async function GET(
   req: Request,
   { params }: { params: { movieId: number } }
 ) {
+  const { searchParams } = new URL(req.url);
+  let maxResults = searchParams.get('maxResults') ?? MAX_RESULT;
+  let page = searchParams.get('page') ?? PAGE;
+  let sort = searchParams.get('sort') ?? SORT;
+  const session = await getServerSession(authOptions);
+
+  const { provider, uid } = session ?? {};
+  if (!provider || !uid) {
+    return new Response('Authentication Error', { status: 401 });
+  }
+
+  const userId = formatUserId(provider, uid);
+  if (!userId) {
+    return new Response(JSON.stringify({ message: 'Unauthorized' }), {
+      status: 401,
+    });
+  }
+
+  let connection: PoolConnection | undefined;
   try {
-    const { searchParams } = new URL(req.url);
-    let maxResults = searchParams.get('maxResults') ?? MAX_RESULT;
-    let page = searchParams.get('page') ?? PAGE;
-    let sort = searchParams.get('sort') ?? SORT;
-    const session = await getServerSession(authOptions);
-
-    const { provider, uid } = session ?? {};
-
-    if (!provider || !uid) {
-      return new Response('Authentication Error', { status: 401 });
-    }
-
-    const userId = formatUserId(provider, uid);
-
-    if (!userId) {
-      return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-        status: 401,
-      });
-    }
-
+    connection = await getDBConnection();
     const reviews = await getReviews(
       params.movieId,
       Number(maxResults),
       Number(page),
       sort,
-      userId
+      userId,
+      connection
     );
 
-    const count = await reviewsCount(params.movieId);
+    const count = await reviewsCount(
+      params.movieId, 
+      connection
+    );
     const result = {
       reviews,
       pagination: {
@@ -51,7 +56,6 @@ export async function GET(
     };
     return Response.json(result);
   } catch (err) {
-    console.error(err);
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
@@ -63,7 +67,8 @@ async function getReviews(
   maxResults: number,
   page: number,
   sort: string,
-  userId: string | null
+  userId: string | null,
+  connection: PoolConnection
 ) {
   const offset = maxResults * (page - 1);
   const values: Array<string | number> = [movieId, offset, maxResults];
@@ -88,32 +93,26 @@ async function getReviews(
                 ORDER BY ${orderBy}
                 LIMIT ?, ?`;
 
-  const connection = await dbConnectionPoolAsync.getConnection();
   try {
     const [result] = await connection.execute(sql, values);
-    connection.release();
     return result;
   } catch (err) {
-    connection.release();
-    console.error(err);
     throw err;
   }
 }
 
-async function reviewsCount(movieId: number) {
+async function reviewsCount(movieId: number, connection: PoolConnection) {
   const sql = `SELECT COUNT(*) AS totalCount FROM reviews WHERE movies_id=?`;
   const values = [movieId];
-  const connection = await dbConnectionPoolAsync.getConnection();
+
   try {
+    connection = await getDBConnection();
     const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
       sql,
       values
     );
-    connection.release();
     return result[0];
   } catch (err) {
-    connection.release();
-    console.error(err);
     throw err;
   }
 }

@@ -15,7 +15,6 @@ const useNotification = (navbar?: boolean) => {
 
   const location: string = usePathname();
 
-  // 알림을 애플리케이션에서 사용할 수 있도록 가공하는 함수
   const processNotification = (data : any) => {
     const processedData : INotification[] = data.map((item : any) => {
       const templateData = JSON.parse(item.template_data);
@@ -28,7 +27,6 @@ const useNotification = (navbar?: boolean) => {
       };
 
 
-      // URL이 존재한다면 templateData를 이용하여 URL을 가공
       if (item.url_template) {
         let url = item.url_template;
         for (const key in templateData) {
@@ -37,15 +35,11 @@ const useNotification = (navbar?: boolean) => {
         processedData.url = url;
       }
 
-      // 알림 메시지에 placeholder가 존재한다면 templateData를 이용하여 placeholder를 실제 값으로 대체
       if (splitMessage) {
         processedData.value = [];
         for (let i = 0; i < splitMessage.length; i++) {
           const substringObject : {value: string, bold?: boolean} = { value: '' };
 
-          // 만약에 splitMessage[i]가 '!{' 또는 '{'로 시작하고 '}'로 끝난다면
-          // 그리고 splitMessage[i]가 '!{'로 시작한다면 splitMessage[i]의 2번째부터 마지막 전까지의 문자열을 key로 설정
-          // 그렇지 않다면 splitMessage[i]의 1번째부터 마지막 전까지의 문자열을 key로 설정
           if (
             (splitMessage[i].startsWith('!{') || splitMessage[i].startsWith('{')) 
             && splitMessage[i].endsWith('}')
@@ -98,6 +92,7 @@ const useNotification = (navbar?: boolean) => {
   const fetchNotification = useCallback(async () => {
     setIsLoading(true);
     setError(null);
+    setNotification(null);
 
     const url = '/api/notification?page=' + currentPage + (navbar ? '&quantity=navbar' : '');
     try {

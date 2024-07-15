@@ -60,7 +60,6 @@ describe('Redis Mock', () => {
     const data = await client.get('key');
     expect(data).toBe('value');
 
-    // delay for 6 seconds
     await new Promise((resolve) => setTimeout(resolve, 6000));
     const newData = await client.get('key');
     expect(newData).toBeNull();

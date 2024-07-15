@@ -10,7 +10,6 @@ const useMovieSearch = () => {
   const [searchQuery, setSearchQuery] = React.useState<string>('');
   const [queryClient, setQueryClient] = React.useState<QueryClient>(useQueryClient());
 
-  // 영화 리스트 불러오기
   const { 
     data, 
     hasNextPage,

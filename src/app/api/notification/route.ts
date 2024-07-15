@@ -1,5 +1,5 @@
 import { authOptions } from "@/lib/authOptions";
-import { dbConnectionPoolAsync } from "@/lib/db";
+import { getDBConnection } from "@/lib/db";
 import { formatUserId } from "@/utils/formatUserId";
 import { PoolConnection, RowDataPacket } from "mysql2/promise";
 import { getServerSession } from "next-auth";
@@ -84,8 +84,9 @@ export async function GET(req: Request) {
     WHERE social_accounts_uid = ?
   `;
 
-  const connection : PoolConnection = await dbConnectionPoolAsync.getConnection();
+  let connection : PoolConnection | undefined;
   try {
+    connection = await getDBConnection();
     const [rows] = await connection.query<INotification[]>(sqlQueryStatement, [socialAccountsUID]);
     if (rows.length === 0) {
       connection.release();
@@ -108,8 +109,7 @@ export async function GET(req: Request) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    console.error("Internal server error:", error);
-    connection.release();
+    connection?.release();
     return new Response(JSON.stringify({ message: "Internal Server Error" }), {
       status: 500,
     });

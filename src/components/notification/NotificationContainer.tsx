@@ -79,7 +79,6 @@ const NotificationContainer : React.FC<INotificationContainerProps> = ({
     parentContainerClassName += ' hidden';
   }
 
-  /* 알림 메시지를 가공하는 함수 */
   useEffect(() => {
     setIsProcessing(true);
     if (isLoading || !notifications) {
@@ -88,12 +87,11 @@ const NotificationContainer : React.FC<INotificationContainerProps> = ({
     }
 
     try {
-      /* 각 알림 메시지를 가공하여 processedNotifications에 저장 */
       const processedData : IProcessedNotification[] = notifications.map((item) => {
         const processedData : IProcessedNotification = {
-          value: [], // 알림 메시지
+          value: [],
           icon: item.icon ? item.icon : '/icons/notification.svg',
-          read: item.read,
+          read: item.read ? true : false,
           id: item.id,
           createdAt: item.createdAt,
           url: item.url ? item.url : null
@@ -146,7 +144,6 @@ const NotificationContainer : React.FC<INotificationContainerProps> = ({
         closeContainerCallback={changeVisibility}
         toggleSettingsCallback={toggleSettings}
       />
-      {/* 알림 설정 */}
       {settingsOpen && (
         <div className='w-full flex items-stretch text-base text-black bg-fourth font-medium'>
           {(isMarkProcessing) && (
@@ -181,13 +178,11 @@ const NotificationContainer : React.FC<INotificationContainerProps> = ({
           </button>
         </div>
       )}
-      {/* 로딩 중 또는 알림 메시지 처리 중일 때 */}
       {(isLoading || isProcessing) && (
         <div className='my-6'>
           <Spinner size='sm'/>
         </div>
       )}
-      {/* 알림 로딩 중 에러 발생 시 */}
       {(!isLoading && !isProcessing && (fetchError || processingError)) && (
         <div className='p-4 text-base'>
           <p className='text-center text-red-500 font-medium'>알림 로딩중 에러 발생</p>
@@ -205,7 +200,6 @@ const NotificationContainer : React.FC<INotificationContainerProps> = ({
           </button>
         </div>
       )}
-      {/* 알림 메시지가 있을 때 */}
       {
         (
           !isProcessing && !isLoading && 
@@ -227,7 +221,6 @@ const NotificationContainer : React.FC<INotificationContainerProps> = ({
           );
         })
       }
-      {/* 알림 메시지가 없을 때 */}
       {(!isProcessing && !isLoading && !fetchError && !notifications?.length) && (
         <div className='p-4 py-8 text-base flex flex-col items-center justify-center gap-4'>
           <span className='text-gray-500 text-2xl'>{"٭(•﹏•)٭"}</span>
