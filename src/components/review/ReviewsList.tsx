@@ -48,33 +48,6 @@ export default function ReviewsList({
     setSort(value);
   };
 
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       if (entries[0].isIntersecting && hasNextPage) {
-  //         fetchNextPage();
-  //       }
-  //     },
-  //     { threshold: 1 }
-  //   );
-  //   pageEnd.current && observer.observe(pageEnd.current);
-  //   return () => observer.disconnect();
-  // }, [fetchNextPage, hasNextPage]);
-
-  // useEffect(() => {
-  //   const observer = new IntersectionObserver(
-  //     (entries) => {
-  //       console.log(entries);
-  //       if (entries[0].isIntersecting) {
-  //         setEnabled(true);
-  //       }
-  //     },
-  //     { threshold: 1 }
-  //   );
-  //   reviewRef.current && observer.observe(reviewRef.current);
-  //   return () => observer.disconnect();
-  // }, [setEnabled]);
-
   useIntersectionObserver(
     pageEnd,
     ([entry]) => {
