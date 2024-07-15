@@ -1,4 +1,4 @@
-import { extname, join } from 'path';
+import { extname, join, posix } from 'path';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
 import { formatUserId } from '@/utils/formatUserId';
@@ -35,7 +35,7 @@ async function uploadImage(req: NextRequest) {
     const originalFilename = file.name.replace(/\.[^/.]+$/, '');
     const sanitizedFilename = sanitizeFilename(originalFilename);
     const filename = `${sanitizedFilename}_${uniqueSuffix}${fileExtension}`;
-    const fileDirectory = join('images/profile', filename);
+    const fileDirectory = posix.join('images/profile', filename);
 
     const s3Client = new S3Client({
       region: process.env.AWS_REGION,

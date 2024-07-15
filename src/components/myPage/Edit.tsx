@@ -25,7 +25,6 @@ const updateProfile = async (
   });
 
   if (!response.ok) {
-    console.log(await response.json());
     throw new Error('Failed to update profile');
   }
 
@@ -45,16 +44,15 @@ const Edit = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    console.log(session);
+
     if(session){
       const userId = session.uid;
       const provider = session.provider;
   
       getProfileImg(userId, provider);
-      console.log(session.uid);
+
     }
     
-    // 프로필 수정 이후 바로 프로필 적용
     if (isProfileUpdated) {
       window.location.reload();
 
@@ -88,7 +86,7 @@ const Edit = () => {
       try {
         const data = await updateProfile(session.uid, selectedImage, userName);
         alert('프로필이 성공적으로 변경되었습니다.');
-        console.log(data.message);
+  
         setIsProfileUpdated(true);
       } catch (error) {
         console.error(error);
