@@ -44,7 +44,6 @@ const Edit = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-
     if(session){
       const userId = session.uid;
       const provider = session.provider;
@@ -143,7 +142,6 @@ const Edit = () => {
             onChange={handleImageChange}
             className='absolute inset-0 opacity-0 cursor-pointer'
           />
-
           {preview ? (
             <img
               src={preview}

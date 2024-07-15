@@ -98,6 +98,7 @@ const useNotification = (navbar?: boolean) => {
   const fetchNotification = useCallback(async () => {
     setIsLoading(true);
     setError(null);
+    setNotification(null);
 
     const url = '/api/notification?page=' + currentPage + (navbar ? '&quantity=navbar' : '');
     try {

@@ -93,7 +93,7 @@ const NotificationContainer : React.FC<INotificationContainerProps> = ({
         const processedData : IProcessedNotification = {
           value: [], // 알림 메시지
           icon: item.icon ? item.icon : '/icons/notification.svg',
-          read: item.read,
+          read: item.read ? true : false,
           id: item.id,
           createdAt: item.createdAt,
           url: item.url ? item.url : null

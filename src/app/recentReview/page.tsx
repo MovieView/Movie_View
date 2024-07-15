@@ -8,14 +8,11 @@ import ReviewButton from '@/components/review/ReviewButton';
 import ReviewError from '@/components/review/ReviewError';
 import { sortOptions } from '@/components/review/ReviewsList';
 import { useInfiniteRecentReviews } from '@/hooks/useRecentReviews';
-import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
 export default function RecentReview() {
-  const searchParam = useSearchParams();
-  const [filter, setFilter] = useState<string | null>(
-    searchParam.get('filter')
-  );
+  const [searchParams, setSearchParams] = useState<URLSearchParams>();
+  const [filter, setFilter] = useState<string>('like');
   const moreRef = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -23,16 +20,21 @@ export default function RecentReview() {
     useInfiniteRecentReviews(filter);
 
   useEffect(() => {
+    setSearchParams(new URLSearchParams(window.location.search));
+  }, []);
+
+  useEffect(() => {
     setLoading(true);
     refetch().finally(() => setLoading(false));
   }, [refetch, filter]);
 
   useEffect(() => {
-    const paramFilter = searchParam.get('filter');
+    if (!searchParams) return;
+    const paramFilter = searchParams.get('filter');
     if (paramFilter !== null) {
       setFilter(paramFilter);
     }
-  }, [searchParam]);
+  }, [searchParams]);
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
@@ -55,6 +57,7 @@ export default function RecentReview() {
       '',
       `${window.location.pathname}?${params}`
     );
+    setSearchParams(params);
   };
 
   if (isPending || loading) {

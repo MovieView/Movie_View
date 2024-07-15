@@ -2,11 +2,12 @@ import { extname, join, posix } from 'path';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/authOptions';
 import { formatUserId } from '@/utils/formatUserId';
-import { dbConnectionPoolAsync } from '@/lib/db';
+import { getDBConnection } from '@/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
 import { url } from 'inspector';
+import { PoolConnection } from 'mysql2/promise';
 
 interface IUserData {
   username: string;
@@ -75,16 +76,20 @@ async function uploadImage(req: NextRequest) {
 }
 
 export async function PUT(req: NextRequest) {
+  const session = await getServerSession({ req, ...authOptions });
+  if (!session || !session.user) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
+
+  const userId = formatUserId(session.provider, session.uid);
+  if (!userId) {
+    return NextResponse.json({ message: 'Invalid User' }, { status: 401 });
+  }
+
+  let connection : PoolConnection | undefined;
   try {
-    const session = await getServerSession({ req, ...authOptions });
-    if (!session || !session.user) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-    }
-    const userId = formatUserId(session.provider, session.uid);
-    if (!userId) {
-      return NextResponse.json({ message: 'Invalid User' }, { status: 401 });
-    }
-    const beforeData = await getExtraData(userId);
+    connection = await getDBConnection();
+    const beforeData = await getExtraData(userId, connection);
     let filepath = beforeData.filepath;
     let username = beforeData.username;
 
@@ -98,9 +103,15 @@ export async function PUT(req: NextRequest) {
       username = formData.get('username');
     }
 
-    executeQury(userId, username, filepath);
+    executeQury(
+      userId, 
+      username, 
+      filepath,
+      connection
+    );
+    connection?.release();
   } catch (err: any) {
-    console.error('Error in PUT request\n');
+    connection?.release();
     return NextResponse.json({ error: err.message }, { status: 400 });
   }
   return NextResponse.json(
@@ -109,9 +120,7 @@ export async function PUT(req: NextRequest) {
   );
 }
 
-async function getExtraData(userId: string) {
-  const connection = await dbConnectionPoolAsync.getConnection();
-
+async function getExtraData(userId: string, connection: PoolConnection) {
   try {
     const [rows]: [any[], any] = await connection.execute(
       'SELECT extra_data FROM social_accounts WHERE uid = ?',
@@ -121,21 +130,21 @@ async function getExtraData(userId: string) {
     if (rows.length > 0) {
       const extraDataString = rows[0].extra_data;
       const extraData = JSON.parse(extraDataString);
-      connection.release();
       return extraData;
     } else {
-      connection.release();
       return null;
     }
   } catch (error) {
-    connection.release();
     throw new Error('Error parsing extra_data:' + error);
   }
 }
 
-async function executeQury(userId: string, username: string, filepath: string) {
-  const connection = await dbConnectionPoolAsync.getConnection();
-
+async function executeQury(
+  userId: string, 
+  username: string, 
+  filepath: string, 
+  connection: PoolConnection
+) {
   try {
     await connection.execute('SET SQL_SAFE_UPDATES=0');
 
@@ -156,11 +165,7 @@ async function executeQury(userId: string, username: string, filepath: string) {
       JSON.stringify(data),
       userId,
     ]);
-    connection.release();
-    console.log('Update successful:', result);
   } catch (error) {
-    connection.release();
-    console.error('Error execute qury:', error);
     throw new Error('Error execute qury: ' + error);
   }
 }
