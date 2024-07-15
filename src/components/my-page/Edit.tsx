@@ -41,13 +41,26 @@ const Edit = () => {
   const [userName, setUserName] = useState<string>('');
   const [inProcess, setInProcess] = useState<boolean>(true);
   const [isProfileUpdated, setIsProfileUpdated] = useState<boolean>(false);
+  const [profileImg, setProfileImg] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    console.log(session);
+    if(session){
+      const userId = session.uid;
+      const provider = session.provider;
+  
+      getProfileImg(userId, provider);
+      console.log(session.uid);
+    }
+    
     // 프로필 수정 이후 바로 프로필 적용
     if (isProfileUpdated) {
       window.location.reload();
+
     }
-  }, [isProfileUpdated]);
+
+  }, [isProfileUpdated, session]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -82,6 +95,27 @@ const Edit = () => {
       } finally {
         setInProcess(false);
       }
+    }
+  };
+  const getProfileImg = async (userId: string, provider: string) => {
+    try {
+      const response = await fetch(
+        `/api/profile-image?user-id=${userId}&provider=${provider}`
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to get filepath');
+      }
+
+      const result = await response.json();
+
+      const filePath = result.filepath[0].filepath;
+
+      setProfileImg(filePath);
+    } catch (error) {
+      console.log(`이미지 가져오기 실패 : ${error}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -120,7 +154,7 @@ const Edit = () => {
             />
           ) : (
             <img
-              src={session.user?.image || '/default-profile.png'}
+              src={profileImg || '/default-profile.png'}
               alt='Profile'
               className='w-full h-full object-cover rounded-full'
             />
