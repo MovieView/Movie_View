@@ -3,8 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { FaHeart } from 'react-icons/fa6';
 import Link from 'next/link';
-import useUserProfilePicture from '@/hooks/useUserProfilePicture';
-import Spinner from '../common/Spinner';
 
 const updateProfile = async (
   userId: string,
@@ -35,12 +33,6 @@ const updateProfile = async (
 
 const Edit = () => {
   const { data: session } = useSession();
-  const { 
-    profilePicture, 
-    getProfilePicture,
-    isLoading,
-    error,
-  } = useUserProfilePicture();
   const [selectedImage, setSelectedImage] = useState<File | undefined>(
     undefined
   );
@@ -122,25 +114,6 @@ const Edit = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const chooseImageForDisplay = () => {
-    if (!isLoading) {
-      if (preview) {
-        return <img src={preview} alt='Preview' className='w-full h-full object-cover rounded-full' />;
-      } else {
-        if (error) {
-          return <img src={'/default-profile.png'} alt='Profile' className='w-full h-full object-cover rounded-full' />;
-        } else {
-          if (profilePicture) {
-            return <img src={profilePicture} alt='Profile' className='w-full h-full object-cover rounded-full' />;
-          } else {
-            return <img src={'/default-profile.png'} alt='Profile' className='w-full h-full object-cover rounded-full' />;
-          }
-        }
-      }
-    }
-    return <Spinner size='sm' />;
   };
 
   if (!session) {
