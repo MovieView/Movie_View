@@ -1,5 +1,5 @@
 import { authOptions } from "@/lib/authOptions";
-import { dbConnectionPoolAsync } from "@/lib/db";
+import { getDBConnection } from "@/lib/db";
 import { formatUserId } from "@/utils/formatUserId";
 import { PoolConnection, ResultSetHeader } from "mysql2/promise";
 import { getServerSession } from "next-auth";
@@ -21,13 +21,17 @@ export async function PUT(req: Request) {
     SET checked=1
     WHERE social_accounts_uid=?
   `;
-  const connection : PoolConnection = await dbConnectionPoolAsync.getConnection();
-  await connection.beginTransaction();
 
+  let connection : PoolConnection | undefined;
   try {
+    connection = await getDBConnection();
+    await connection.beginTransaction();
+
     const [result] = await connection.query<ResultSetHeader>(sqlQueryStatement, [socialAccountsUID]);
     if (result.affectedRows === 0) {
+      await connection.rollback();
       connection.release();
+
       return new Response(JSON.stringify({ message: "No data" }), {
         status: 404,
       });
@@ -41,10 +45,9 @@ export async function PUT(req: Request) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
-    await connection.rollback();
-    connection.release();
+    await connection?.rollback();
+    connection?.release();
 
-    console.error("Internal server error:", error);
     return new Response(JSON.stringify({ message: "Internal Server Error" }), {
       status: 500,
     });

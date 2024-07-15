@@ -1,9 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { dbConnectionPoolAsync } from '@/lib/db';
+import { getDBConnection } from '@/lib/db';
+import { PoolConnection } from 'mysql2/promise';
 
 export const POST = async (req: NextRequest, res: NextResponse) => {
-  const connection = await dbConnectionPoolAsync.getConnection();
-
+  let connection: PoolConnection | undefined;
   try {
     const { nickname, userId, provider } = await req.json();
 
@@ -36,6 +36,8 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       WHERE sa.uid = ?
     `;
 
+    connection = await getDBConnection();
+    await connection.beginTransaction();
     const [result] = await connection.execute(sql, [
       nickname,
       formUid(provider),
@@ -49,9 +51,8 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (err) {
-    console.error('Database error:', err);
-    await connection.rollback();
-    connection.release();
+    await connection?.rollback();
+    connection?.release();
 
     return new Response(JSON.stringify({ error: '닉네임 업데이트 실패' }), {
       status: 500,

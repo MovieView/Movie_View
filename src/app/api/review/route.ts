@@ -1,7 +1,8 @@
 import { authOptions } from '@/lib/authOptions';
-import { dbConnectionPoolAsync } from '@/lib/db';
+import { getDBConnection } from '@/lib/db';
 import { formatUserId } from '@/utils/formatUserId';
 import { ResultSetHeader } from 'mysql2';
+import { PoolConnection } from 'mysql2/promise';
 import { getServerSession } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -15,28 +16,40 @@ interface ReviewData {
 }
 
 export async function POST(req: Request) {
+  const session = await getServerSession(authOptions);
+
+  const { provider, uid } = session ?? {};
+  if (!provider || !uid) {
+    return new Response('Authentication Error', { status: 401 });
+  }
+
+  const userId = formatUserId(provider, uid);
+  if (!userId) {
+    return new Response(JSON.stringify({ message: 'Authentication Error' }), {
+      status: 401,
+    });
+  }
+
+  let connection: PoolConnection | undefined;
   try {
-    const session = await getServerSession(authOptions);
-
-    const { provider, uid } = session ?? {};
-
-    if (!provider || !uid) {
-      return new Response('Authentication Error', { status: 401 });
-    }
-
-    const userId = formatUserId(provider, uid);
-
-    if (!userId) {
-      return new Response(JSON.stringify({ message: 'Authentication Error' }), {
-        status: 401,
-      });
-    }
+    connection = await getDBConnection();
+    await connection.beginTransaction();
 
     const data: ReviewData = await req.json();
+    await addMovieId(
+      data.movieId, 
+      data.movieTitle, 
+      data.posterPath, 
+      connection
+    );
+    const review = await addReview(
+      userId, 
+      data, 
+      connection
+    );
 
-    await addMovieId(data.movieId, data.movieTitle, data.posterPath);
-
-    const review = await addReview(userId, data);
+    await connection.commit();
+    connection.release();
 
     if (!review) {
       return new Response(JSON.stringify({ message: 'Bad Request' }), {
@@ -51,14 +64,16 @@ export async function POST(req: Request) {
       }
     );
   } catch (err) {
-    console.error(err);
+    await connection?.rollback();
+    connection?.release();
+
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
   }
 }
 
-async function addReview(userId: string, data: ReviewData) {
+async function addReview(userId: string, data: ReviewData, connection: PoolConnection) {
   const id = uuidv4().replace(/-/g, '');
   const sql = `INSERT INTO reviews (id, movies_id, social_accounts_uid, rating, title, content) VALUES(UNHEX(?), ?, ?, ?, ?, ?)`;
   const values = [
@@ -70,14 +85,10 @@ async function addReview(userId: string, data: ReviewData) {
     data.content,
   ];
 
-  const connection = await dbConnectionPoolAsync.getConnection();
   try {
     const [result] = await connection.execute(sql, values);
-    connection.release();
     return (result as ResultSetHeader).affectedRows;
   } catch (err) {
-    connection.release();
-    console.error(err);
     throw err;
   }
 }
@@ -85,19 +96,16 @@ async function addReview(userId: string, data: ReviewData) {
 async function addMovieId(
   movieId: number,
   movieTitle: string,
-  posterPath: string
+  posterPath: string,
+  connection: PoolConnection
 ) {
   const sql = `INSERT IGNORE INTO movies (id, title, poster_path) VALUES (?,?,?)`;
   const values = [movieId, movieTitle, posterPath];
 
-  const connection = await dbConnectionPoolAsync.getConnection();
   try {
     const [result] = await connection.execute(sql, values);
-    connection.release();
     return (result as ResultSetHeader).affectedRows;
   } catch (err) {
-    connection.release();
-    console.error(err);
     throw err;
   }
 }

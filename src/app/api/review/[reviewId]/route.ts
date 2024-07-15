@@ -1,4 +1,4 @@
-import { dbConnectionPoolAsync } from '@/lib/db';
+import { getDBConnection } from '@/lib/db';
 import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
@@ -6,6 +6,7 @@ import { formatUserId } from '@/utils/formatUserId';
 import { v4 as uuidv4 } from 'uuid';
 import { ICommentContent } from '@/models/comment.model';
 import { IReviewData } from '@/models/review.model';
+import { PoolConnection } from 'mysql2/promise';
 
 // 대댓글 조회
 const MAX_RESULT = 8;
@@ -15,18 +16,21 @@ export async function GET(
   req: Request,
   { params }: { params: { reviewId: string } }
 ) {
+  let connection: PoolConnection | undefined;
   try {
     const { searchParams } = new URL(req.url);
     const maxResults = searchParams.get('maxResults') ?? MAX_RESULT;
     const page = searchParams.get('page') ?? PAGE;
 
+    connection = await getDBConnection();
     const comments = await getComments(
       params.reviewId,
       Number(maxResults),
-      Number(page)
+      Number(page),
+      connection
     );
 
-    const count = await commentsCount(params.reviewId);
+    const count = await commentsCount(params.reviewId, connection);
     const result = {
       comments,
       pagination: {
@@ -35,11 +39,12 @@ export async function GET(
       },
     };
 
+    connection.release();
     return new Response(JSON.stringify(result), {
       status: 200,
     });
   } catch (err) {
-    console.error(err);
+    connection?.release();
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
@@ -51,25 +56,26 @@ export async function POST(
   req: Request,
   { params }: { params: { reviewId: string } }
 ) {
+  const session = await getServerSession(authOptions);
+
+  const { provider, uid } = session ?? {};
+  if (!provider || !uid) {
+    return new Response('Authentication Error', { status: 401 });
+  }
+
+  const formattedUid = formatUserId(provider, uid);
+  if (!formattedUid) {
+    return new Response(JSON.stringify({ message: 'Authentication Error' }), {
+      status: 401,
+    });
+  }
+
+  let connection: PoolConnection | undefined;
   try {
-    const session = await getServerSession(authOptions);
+    connection = await getDBConnection();
+    await connection.beginTransaction();
 
-    const { provider, uid } = session ?? {};
-
-    if (!provider || !uid) {
-      return new Response('Authentication Error', { status: 401 });
-    }
-
-    const formattedUid = formatUserId(provider, uid);
-
-    if (!formattedUid) {
-      return new Response(JSON.stringify({ message: 'Authentication Error' }), {
-        status: 401,
-      });
-    }
-
-    const user = await getUser(formattedUid);
-
+    const user = await getUser(formattedUid, connection);
     if (!user) {
       return new Response(JSON.stringify({ message: 'User does not exist.' }), {
         status: 404,
@@ -80,7 +86,15 @@ export async function POST(
     const data: ICommentContent = await req.json();
 
     // 대댓글 내용 DB 저장
-    await addComment(params.reviewId, user.userId, data.content);
+    await addComment(
+      params.reviewId, 
+      user.userId, 
+      data.content,
+      connection
+    );
+
+    await connection.commit();
+    connection.release();
 
     return new Response(
       JSON.stringify({ message: 'Comment has been created.' }),
@@ -89,7 +103,9 @@ export async function POST(
       }
     );
   } catch (err) {
-    console.error(err);
+    await connection?.rollback();
+    connection?.release();
+
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
@@ -100,24 +116,33 @@ export async function DELETE(
   _req: Request,
   { params }: { params: { reviewId: string } }
 ) {
+  const session = await getServerSession(authOptions);
+
+  const { provider, uid } = session ?? {};
+  if (!provider || !uid) {
+    return new Response('Authentication Error', { status: 401 });
+  }
+
+  const userId = formatUserId(provider, uid);
+  if (!userId) {
+    return new Response('Authentication Error', { status: 401 });
+  }
+
+  let connection: PoolConnection | undefined;
   try {
-    const session = await getServerSession(authOptions);
+    connection = await getDBConnection();
+    await connection.beginTransaction();
 
-    const { provider, uid } = session ?? {};
-
-    if (!provider || !uid) {
-      return new Response('Authentication Error', { status: 401 });
-    }
-
-    const userId = formatUserId(provider, uid);
-
-    if (!userId) {
-      return new Response('Authentication Error', { status: 401 });
-    }
-
-    const review = await getReviewById(params.reviewId, userId);
+    const review = await getReviewById(
+      params.reviewId, 
+      userId, 
+      connection
+    );
 
     if (!review) {
+      await connection.rollback();
+      connection.release();
+
       return new Response(
         JSON.stringify({ message: 'Review does not exist.' }),
         {
@@ -126,7 +151,9 @@ export async function DELETE(
       );
     }
 
-    await deleteReview(params.reviewId, userId);
+    await deleteReview(params.reviewId, userId, connection);
+    await connection.commit();
+    connection.release();
 
     return new Response(
       JSON.stringify({ message: 'Review has been deleted.' }),
@@ -135,7 +162,9 @@ export async function DELETE(
       }
     );
   } catch (err) {
-    console.error(err);
+    await connection?.rollback();
+    connection?.release();
+
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
@@ -146,26 +175,31 @@ export async function PUT(
   req: Request,
   { params }: { params: { reviewId: string } }
 ) {
+  const session = await getServerSession(authOptions);
+
+  const { provider, uid } = session ?? {};
+  if (!provider || !uid) {
+    return new Response('Authentication Error', { status: 401 });
+  }
+
+  const userId = formatUserId(provider, uid);
+  if (!userId) {
+    return new Response(JSON.stringify({ message: 'Authentication Error' }), {
+      status: 401,
+    });
+  }
+
+  let connection: PoolConnection | undefined;
   try {
-    const session = await getServerSession(authOptions);
+    connection = await getDBConnection();
+    await connection.beginTransaction();
 
-    const { provider, uid } = session ?? {};
-
-    if (!provider || !uid) {
-      return new Response('Authentication Error', { status: 401 });
-    }
-
-    const userId = formatUserId(provider, uid);
-
-    if (!userId) {
-      return new Response(JSON.stringify({ message: 'Authentication Error' }), {
-        status: 401,
-      });
-    }
-
-    const review = await getReviewById(params.reviewId, userId);
+    const review = await getReviewById(params.reviewId, userId, connection);
 
     if (!review) {
+      await connection.rollback();
+      connection.release();
+
       return new Response(
         JSON.stringify({ message: 'Review does not exist.' }),
         {
@@ -176,7 +210,15 @@ export async function PUT(
 
     const data: IReviewData = await req.json();
 
-    await updateReview(params.reviewId, userId, data);
+    await updateReview(
+      params.reviewId, 
+      userId, 
+      data, 
+      connection
+    );
+
+    await connection.commit();
+    connection.release();
 
     return new Response(
       JSON.stringify({ message: 'Review has been updated.' }),
@@ -185,44 +227,37 @@ export async function PUT(
       }
     );
   } catch (err) {
-    console.error(err);
+    await connection?.rollback();
+    connection?.release();
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
   }
 }
 
-async function getReviewById(reviewId: string, userId: string) {
+async function getReviewById(reviewId: string, userId: string, connection: PoolConnection) {
   const sql = `SELECT * FROM reviews WHERE id=UNHEX(?) AND social_accounts_uid=? `;
   const values: Array<string | number> = [reviewId, userId];
 
-  const connection = await dbConnectionPoolAsync.getConnection();
   try {
     const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
       sql,
       values
     );
-    connection.release();
     return result[0];
   } catch (err) {
-    connection.release();
-    console.error(err);
     throw err;
   }
 }
 
-async function deleteReview(reviewId: string, userId: string) {
+async function deleteReview(reviewId: string, userId: string, connection: PoolConnection) {
   const sql = `DELETE FROM reviews WHERE id=UNHEX(?) AND social_accounts_uid=? `;
   const values: Array<string | number> = [reviewId, userId];
 
-  const connection = await dbConnectionPoolAsync.getConnection();
   try {
     const [result] = await connection.execute(sql, values);
-    connection.release();
     return result;
   } catch (err) {
-    connection.release();
-    console.error(err);
     throw err;
   }
 }
@@ -230,7 +265,8 @@ async function deleteReview(reviewId: string, userId: string) {
 async function updateReview(
   reviewId: string,
   userId: string,
-  data: IReviewData
+  data: IReviewData,
+  connection: PoolConnection
 ) {
   const sql = `UPDATE reviews SET title=?, rating=?, content=? WHERE id=UNHEX(?) AND social_accounts_uid=? `;
   const values: Array<string | number> = [
@@ -241,19 +277,20 @@ async function updateReview(
     userId,
   ];
 
-  const connection = await dbConnectionPoolAsync.getConnection();
   try {
     const [result] = await connection.execute(sql, values);
-    connection.release();
     return result;
   } catch (err) {
-    connection.release();
-    console.error(err);
     throw err;
   }
 }
 
-async function getComments(reviewId: string, maxResults: number, page: number) {
+async function getComments(
+  reviewId: string,
+  maxResults: number, 
+  page: number,
+  connection: PoolConnection
+) {
   const offset = maxResults * (page - 1);
   const values: Array<number | string> = [reviewId, offset, maxResults];
   const sql = `SELECT HEX(rc.id) AS id, rc.content, s.uid AS userId,
@@ -267,69 +304,58 @@ async function getComments(reviewId: string, maxResults: number, page: number) {
                 ORDER BY createdAt
                 LIMIT ?, ?`;
 
-  const connection = await dbConnectionPoolAsync.getConnection();
   try {
     const [result] = await connection.execute(sql, values);
-    connection.release();
     return result;
   } catch (err) {
-    connection.release();
-    console.error(err);
     throw err;
   }
 }
 
-async function addComment(reviewId: string, userId: string, content: string) {
+async function addComment(
+  reviewId: string, 
+  userId: string, 
+  content: string,
+  connection: PoolConnection
+) {
   const id = uuidv4().replace(/-/g, '');
   const sql = `INSERT INTO reviews_comments (id, users_id, reviews_id, content) VALUES(UNHEX(?), ?, UNHEX(?), ?)`;
   const values = [id, userId, reviewId, content];
 
-  const connection = await dbConnectionPoolAsync.getConnection();
   try {
     const [result] = await connection.execute(sql, values);
-    connection.release();
     return (result as ResultSetHeader).affectedRows;
   } catch (err) {
-    connection.release();
-    console.error(err);
     throw err;
   }
 }
 
-async function getUser(uid: string) {
+async function getUser(uid: string, connection: PoolConnection) {
   const sql = `SELECT users_id AS userId, uid FROM social_accounts WHERE uid=?`;
   const values = [uid];
 
-  const connection = await dbConnectionPoolAsync.getConnection();
   try {
     const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
       sql,
       values
     );
-    connection.release();
     return result[0];
   } catch (err) {
-    connection.release();
-    console.error(err);
     throw err;
   }
 }
 
-async function commentsCount(reviewId: string) {
+async function commentsCount(reviewId: string, connection: PoolConnection) {
   const sql = `SELECT COUNT(*) AS totalCount FROM reviews_comments WHERE HEX(reviews_id)=?`;
   const values = [reviewId];
 
-  const connection = await dbConnectionPoolAsync.getConnection();
   try {
     const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
       sql,
       values
     );
-    connection.release();
     return result[0];
   } catch (err) {
-    connection.release();
-    console.error(err);
     throw err;
   }
 }
