@@ -27,7 +27,6 @@ const updateProfile = async (
   });
 
   if (!response.ok) {
-    console.log(await response.json());
     throw new Error('Failed to update profile');
   }
 
@@ -49,22 +48,24 @@ const Edit = () => {
   const [userName, setUserName] = useState<string>('');
   const [inProcess, setInProcess] = useState<boolean>(true);
   const [isProfileUpdated, setIsProfileUpdated] = useState<boolean>(false);
+  const [profileImg, setProfileImg] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (session && session.user) {
+    if(session){
       const userId = session.uid;
       const provider = session.provider;
+  
+      getProfileImg(userId, provider);
 
-      getProfilePicture(userId, provider);
-    }  
-  }, [session]);
-
-  useEffect(() => {
-    // 프로필 수정 이후 바로 프로필 적용
+    }
+    
     if (isProfileUpdated) {
       window.location.reload();
+
     }
-  }, [isProfileUpdated]);
+
+  }, [isProfileUpdated, session]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -92,13 +93,34 @@ const Edit = () => {
       try {
         const data = await updateProfile(session.uid, selectedImage, userName);
         alert('프로필이 성공적으로 변경되었습니다.');
-        console.log(data.message);
+  
         setIsProfileUpdated(true);
       } catch (error) {
         console.error(error);
       } finally {
         setInProcess(false);
       }
+    }
+  };
+  const getProfileImg = async (userId: string, provider: string) => {
+    try {
+      const response = await fetch(
+        `/api/profile-image?user-id=${userId}&provider=${provider}`
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to get filepath');
+      }
+
+      const result = await response.json();
+
+      const filePath = result.filepath[0].filepath;
+
+      setProfileImg(filePath);
+    } catch (error) {
+      console.log(`이미지 가져오기 실패 : ${error}`);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -147,7 +169,19 @@ const Edit = () => {
             onChange={handleImageChange}
             className='absolute inset-0 opacity-0 cursor-pointer'
           />
-          {chooseImageForDisplay()}
+          {preview ? (
+            <img
+              src={preview}
+              alt='Preview'
+              className='w-full h-full object-cover rounded-full'
+            />
+          ) : (
+            <img
+              src={profileImg || '/default-profile.png'}
+              alt='Profile'
+              className='w-full h-full object-cover rounded-full'
+            />
+          )}
         </div>
 
         <input
