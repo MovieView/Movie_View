@@ -20,13 +20,11 @@ export const GET = async (request: NextRequest) => {
 
   const userIP : string = getIP(request);
 
-  // Redis 클라이언트 생성 / 연결
   const client : RedisClient = createClient({
     url: process.env.REDIS_URL
   });
   await client.connect();
   
-  // Rate Limiting : 2초에 1번 요청 가능
   const redisSearchUserKey : string = `search_movie:${userIP}`;
   const redisData : string | null = await getRedisData(client, redisSearchUserKey);
   if (redisData) {
@@ -47,12 +45,10 @@ export const GET = async (request: NextRequest) => {
     );
   }
 
-  // API key가 없을 경우 에러 발생
   if (!accessTokenTMDB) {
     throw new Error('API key is missing');
   }
  
-  // Fetch 설정
   const fetchParams : RequestInit = {
     method: 'GET',
     body: null,
@@ -62,7 +58,6 @@ export const GET = async (request: NextRequest) => {
     },
   };
 
-  // URL 생성
   let url : string;
   if (title) {
     const encodedTitle : string = encodeURIComponent(title);
@@ -75,12 +70,9 @@ export const GET = async (request: NextRequest) => {
     url += `&page=${page}`;
   }
 
-  // TMDB API 캐싱 결과 가져오가
   const cacheAPIResultKey : string = `tmdb:${url}`;
   const cacheAPIData : string | null = await getRedisData(client, cacheAPIResultKey);
-  // 캐싱된 데이터가 있을 경우 캐싱된 데이터 반환
   if (cacheAPIData) {
-    console.log('Cache hit'); // Debugging
     return new Response(cacheAPIData, {
       status: 200,
       headers: {
@@ -89,7 +81,6 @@ export const GET = async (request: NextRequest) => {
     });
   }
 
-  // TMDB API 호출
   const resp : Response = await fetch(url, fetchParams);
   if (!resp.ok) {
     throw new Error('Failed to fetch data');
@@ -107,7 +98,6 @@ export const GET = async (request: NextRequest) => {
 
   respJSON['results'] = data;
 
-  // TMDB API 캐싱 결과 저장, 2분간 유효
   await setRedisData(
     client, 
     cacheAPIResultKey, 

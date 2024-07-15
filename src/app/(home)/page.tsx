@@ -19,7 +19,6 @@ import Spinner from '@/components/common/Spinner';
 export default function Home() {
   const getNextPageButton = React.useRef(null);
 
-  // 영화 리스트 불러오기
   const {
     searchQuery,
     setSearchQuery,
@@ -59,12 +58,10 @@ export default function Home() {
     e: React.MouseEvent
   ) => {
     e.preventDefault();
-    // 검색 전에 캐시를 비워 주기
     queryClient.clear();
     await refetch();
   };
 
-  // 1초마다 다음 페이지 버튼이 화면에 있는지 확인
   useEffect(() => {
     const interval = setInterval(() => {
       if (
@@ -73,7 +70,7 @@ export default function Home() {
         !isFetchingNextPage
       ) {
         fetchNextPage().then(() => {
-          console.log('Fetched next page');
+          return;
         });
       }
     }, 1000);
@@ -83,7 +80,6 @@ export default function Home() {
     };
   }, [fetchNextPage, isFetchingNextPage]);
 
-  // 모달 관련
   const [showModal, setShowModal] = useState(false);
   const { data: session } = useSession();
   const [nickname, setNickname] = useState<string | undefined>(
@@ -125,7 +121,7 @@ export default function Home() {
         setShowModal(false);
       }
     } catch (err) {
-      console.error(err);
+      return;
     }
   };
 
@@ -137,7 +133,6 @@ export default function Home() {
     setShowModal(true);
   };
 
-  // 최초 로그인 시에만 닉네임 설정
   useEffect(() => {
     const provider = session?.provider;
     const nicknameUpdated = localStorage.getItem(`nicknameUpdated_${provider}`);
@@ -156,7 +151,6 @@ export default function Home() {
   return (
     <div className='w-full bg-white relative flex flex-col grow'>
       <div className='flex flex-col w-full grow'>
-        {/* 검색 바 표시하기 */}
         {!isError && !isLoadingError && !isRefetchError && (
           <SearchBar
             searchBarStyle={searchBarStyle}
@@ -166,7 +160,6 @@ export default function Home() {
           />
         )}
 
-        {/*지금 뜨는 코멘트*/}
         {isRecentReviewsError && (
           <LoadingError refetch={recentReviewsRefetch} />
         )}
@@ -178,14 +171,11 @@ export default function Home() {
             <RecentReview reviews={recentReviews.reviews.slice(0, 6)} />
           )}
 
-        {/* 로딩 중일 경우 */}
         {(isLoading || isRefetching || isPending) && <LoadingPing />}
-        {/* 에러 발생 시 */}
         {(isError || isRefetchError || isLoadingError) && (
           <LoadingError refetch={refetch} />
         )}
 
-        {/* 영화 포스터 표시하기 */}
         {isSuccess && !(isLoading || isRefetching) && data && (
           <div className='grid w-[90%] md:w-[70%] mx-auto mb-10 grid-cols-2 gap-6 lg:grid-cols-3 lg:gap-10 xl:grid-cols-4'>
             {data.pages.map((page) => {
@@ -202,7 +192,6 @@ export default function Home() {
           </div>
         )}
 
-        {/* 다음 페이지 버튼 */}
         {isSuccess && hasNextPage && !isFetchingNextPage && (
           <LoadMoreButton
             fetchNextPage={fetchNextPage}
@@ -210,10 +199,8 @@ export default function Home() {
           />
         )}
 
-        {/* 다음 페이지 버튼이 로딩 중일 경우 */}
         {isSuccess && isFetchingNextPage && <LoadingPing loadMore={true} />}
 
-        {/* 닉네임 설정 모달 */}
         {showModal && (
           <div className='fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50'>
             <form onSubmit={handleSubmitForm(handleUpdateNickname)}>

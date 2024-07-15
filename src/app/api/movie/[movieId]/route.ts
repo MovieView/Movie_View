@@ -21,7 +21,6 @@ export const GET = async (
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Internal server error:', error);
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
@@ -38,11 +37,9 @@ async function fetchMovie(movieId: string): Promise<Movie | null> {
     if (response.ok) {
       return data;
     } else {
-      console.error('Error fetching movie:', data.status_message);
       return null;
     }
   } catch (error) {
-    console.error('Error fetching movie:', error);
     throw error;
   }
 }
@@ -56,11 +53,9 @@ async function fetchMovieCredits(movieId: string): Promise<Credits | null> {
     if (response.ok) {
       return data;
     } else {
-      console.error('Error fetching movie credits:', data.status_message);
       return null;
     }
   } catch (error) {
-    console.error('Error fetching movie credits:', error);
     throw error;
   }
 }
@@ -76,11 +71,9 @@ async function fetchSimilarMovies(
     if (response.ok) {
       return data;
     } else {
-      console.error('Error fetching similar movie:', data.status_message);
       return null;
     }
   } catch (error) {
-    console.error('Error fetching similar movie:', error);
     throw error;
   }
 }

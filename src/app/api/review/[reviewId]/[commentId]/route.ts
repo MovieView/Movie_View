@@ -6,7 +6,6 @@ import { ICommentContent } from '@/models/comment.model';
 import { authOptions } from '@/lib/authOptions';
 import { PoolConnection } from 'mysql2/promise';
 
-// 대댓글 삭제
 export async function DELETE(
   _req: Request,
   { params }: { params: { commentId: number } }
@@ -65,7 +64,6 @@ export async function DELETE(
   }
 }
 
-// 대댓글 수정
 export async function PUT(
   req: Request,
   { params }: { params: { commentId: number } }
@@ -99,10 +97,8 @@ export async function PUT(
       });
     }
 
-    // 대댓글 수정 내용 받아오기
     const data: ICommentContent = await req.json();
 
-    // DB에서 데이터 수정
     await updateCommentById(
       params.commentId, 
       user.userId, 
