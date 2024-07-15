@@ -194,7 +194,6 @@ async function deleteLike(
   const sql = `DELETE FROM movie_view.reviews_likes WHERE reviews_id=UNHEX(?) AND social_accounts_uid=?;`;
 
   try {
-    connection = await getDBConnection() as PoolConnection;
     const [result] = await connection
       .execute(sql, [reviewId, social_accounts_uid]);
 

@@ -212,7 +212,6 @@ async function reviewsCount(movieId: number, connection: PoolConnection) {
   const values = [movieId];
 
   try {
-    connection = await getDBConnection();
     const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
       sql,
       values
