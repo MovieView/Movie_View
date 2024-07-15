@@ -3,7 +3,7 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 const LIMIT = 10;
 
 const getRecentReviews = async (pageParam: number, filter: string | null) => {
-  if (!filter) filter = `liked`;
+  if (!filter) filter = `like`;
 
   const response = await fetch(
     `/api/recent-review?page=${pageParam}&filter=${filter}`,
