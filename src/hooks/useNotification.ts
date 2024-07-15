@@ -98,6 +98,10 @@ const useNotification = (navbar?: boolean) => {
     try {
       const response : Response = await fetch(url);
       if (!response.ok) {
+        if (currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+          return;
+        }
         throw new Error('Failed to fetch notification');
       }
       const data = await response.json();
