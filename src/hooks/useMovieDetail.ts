@@ -3,7 +3,7 @@ import { MovieDetail, SimilarMovieInfo } from '@/models/movie.model';
 import { useQuery } from '@tanstack/react-query';
 
 const getMovieAndCredits = async (movieId: string) => {
-  const response = await fetch(`/api/movie/${movieId}`, {
+  const response = await fetch(`/api/movies/${movieId}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

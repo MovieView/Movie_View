@@ -1,5 +1,5 @@
-import { formatDate } from '@/utils/formatDate';
-import { formatUserId } from '@/utils/formatUserId';
+import { formatDate } from '@/utils/dateUtils';
+import { formatUserId } from '@/utils/authUtils';
 import { useSession } from 'next-auth/react';
 import React, { FormEvent, useEffect, useState } from 'react';
 import CommentForm from './CommentForm';

@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 
 
 const useUserProfilePicture = () => {
@@ -11,7 +11,7 @@ const useUserProfilePicture = () => {
     setError(null);
     try {
       const response = await fetch(
-        `/api/profile-image?user-id=${userId}&provider=${provider}`
+        `/api/users/profile-image?user-id=${userId}&provider=${provider}`
       );
 
       if (!response.ok) {

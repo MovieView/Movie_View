@@ -1,35 +1,10 @@
 'use client';
+
 import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { FaHeart } from 'react-icons/fa6';
 import Link from 'next/link';
 
-const updateProfile = async (
-  userId: string,
-  profilePicture?: File,
-  userName?: string
-) => {
-  const formData = new FormData();
-
-  formData.append('userId', userId);
-  if (profilePicture) {
-    formData.append('profilePicture', profilePicture);
-  }
-  if (userName) {
-    formData.append('username', userName);
-  }
-
-  const response = await fetch('/api/my-page', {
-    method: 'PUT',
-    body: formData,
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to update profile');
-  }
-
-  return response.json();
-};
 
 const Edit = () => {
   const { data: session } = useSession();
@@ -97,7 +72,7 @@ const Edit = () => {
   const getProfileImg = async (userId: string, provider: string) => {
     try {
       const response = await fetch(
-        `/api/profile-image?user-id=${userId}&provider=${provider}`
+        `/api/users/profile-image?user-id=${userId}&provider=${provider}`
       );
 
       if (!response.ok) {
@@ -180,6 +155,33 @@ const Edit = () => {
       </form>
     </div>
   );
+};
+
+const updateProfile = async (
+  userId: string,
+  profilePicture?: File,
+  userName?: string
+) => {
+  const formData = new FormData();
+
+  formData.append('userId', userId);
+  if (profilePicture) {
+    formData.append('profilePicture', profilePicture);
+  }
+  if (userName) {
+    formData.append('username', userName);
+  }
+
+  const response = await fetch('/api/users', {
+    method: 'PUT',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update profile');
+  }
+
+  return response.json();
 };
 
 export default Edit;

@@ -6,7 +6,7 @@ const getRecentReviews = async (pageParam: number, filter: string | null) => {
   if (!filter) filter = `like`;
 
   const response = await fetch(
-    `/api/recent-review?page=${pageParam}&filter=${filter}`,
+    `/api/reviews/recent?page=${pageParam}&filter=${filter}`,
     {
       method: 'GET',
       headers: {

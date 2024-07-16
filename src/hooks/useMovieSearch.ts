@@ -26,7 +26,7 @@ const useMovieSearch = () => {
   } = useInfiniteQuery({
     queryKey: ['movies'],
     queryFn: async ({ pageParam = 1 }) => {
-      let url : string = `api/movie?page=${pageParam}`;
+      let url : string = `/api/movies?page=${pageParam}`;
       if (searchQuery) {
         url += `&title=${searchQuery}`;
       }

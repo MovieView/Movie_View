@@ -9,7 +9,7 @@ import {
 const MAX_RESULT = 5;
 export const getComments = async (reviewId: string, page = 1) => {
   const response = await fetch(
-    `/api/review/${reviewId}?maxResults=${MAX_RESULT}&page=${page}`,
+    `/api/reviews/${reviewId}/comments?maxResults=${MAX_RESULT}&page=${page}`,
     {
       method: 'GET',
       headers: {
@@ -29,7 +29,7 @@ const createComment = async ({
   reviewId,
   content,
 }: Pick<ICommentData, 'reviewId' | 'content'>) => {
-  const response = await fetch(`/api/review/${reviewId}`, {
+  const response = await fetch(`/api/reviews/${reviewId}/comments`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -38,7 +38,7 @@ const createComment = async ({
   });
 
   if (!response.ok) {
-    throw new Error('Failed to delete the comment');
+    throw new Error('Failed to create a comment');
   }
 
   return response.json();
@@ -49,7 +49,7 @@ export const updateComment = async ({
   commentId,
   content,
 }: ICommentData) => {
-  const response = await fetch(`/api/review/${reviewId}/${commentId}`, {
+  const response = await fetch(`/api/reviews/${reviewId}/comments/${commentId}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ export const updateComment = async ({
   });
 
   if (!response.ok) {
-    throw new Error('Failed to delete the comment');
+    throw new Error('Failed to update the comment');
   }
 
   return response.json();
@@ -68,7 +68,7 @@ const deleteComment = async ({
   reviewId,
   commentId,
 }: Omit<ICommentData, 'content'>) => {
-  const response = await fetch(`/api/review/${reviewId}/${commentId}`, {
+  const response = await fetch(`/api/reviews/${reviewId}/comments/${commentId}`, {
     method: 'DELETE',
     body: JSON.stringify({ commentId }),
   });

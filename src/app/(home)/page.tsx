@@ -82,9 +82,6 @@ export default function Home() {
 
   const [showModal, setShowModal] = useState(false);
   const { data: session } = useSession();
-  const [nickname, setNickname] = useState<string | undefined>(
-    session?.user.name
-  );
   const modalShownRef = useRef(false);
 
   interface INicknameForm {
@@ -98,17 +95,13 @@ export default function Home() {
     setValue,
   } = useForm<INicknameForm>();
 
-  const handleNickname = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNickname(e.target.value);
-  };
-
   const handleUpdateNickname = async (data: INicknameForm) => {
     try {
       const userId = session?.uid;
       const provider = session?.provider;
       const nickname = data.nickname;
 
-      const response = await fetch('/api/nickname', {
+      const response = await fetch('/api/users/nickname', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

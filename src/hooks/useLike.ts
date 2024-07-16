@@ -13,7 +13,7 @@ export const useLike = (reviewId: string) => {
   } = useQuery<Like>({ 
     queryKey: ['reviews_like', reviewId], 
     queryFn: async () => {
-      const response = await fetch(`/api/like/${reviewId}`);
+      const response = await fetch(`/api/reviews/${reviewId}/likes`);
       if (!response.ok) {
           throw new Error('Failed to fetch likes');
       }
@@ -24,7 +24,7 @@ export const useLike = (reviewId: string) => {
 
   const addLikeMutation = useMutation({
     mutationFn: async (reviewId: string) => {
-      const response = await fetch(`/api/like/${reviewId}`, {
+      const response = await fetch(`/api/reviews/${reviewId}/likes`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ export const useLike = (reviewId: string) => {
 
   const deleteLikeMutation = useMutation({
     mutationFn: async (reviewId: string) => {
-      const response = await fetch(`/api/like/${reviewId}`, {
+      const response = await fetch(`/api/reviews/${reviewId}/likes`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

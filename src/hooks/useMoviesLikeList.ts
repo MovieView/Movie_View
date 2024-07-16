@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 const getMoviesLike = async () => {
   const response = await fetch(
-    `/api/user/movies`,
+    `/api/users/movies`,
     {
       method: 'GET',
       headers: {
