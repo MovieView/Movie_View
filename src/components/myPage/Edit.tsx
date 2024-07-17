@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { FaHeart } from 'react-icons/fa6';
 import Link from 'next/link';
+import useUserProfilePicture from '@/hooks/useUserProfilePicture';
 
 
 const Edit = () => {
@@ -15,23 +16,21 @@ const Edit = () => {
   const [userName, setUserName] = useState<string>('');
   const [inProcess, setInProcess] = useState<boolean>(true);
   const [isProfileUpdated, setIsProfileUpdated] = useState<boolean>(false);
-  const [profileImg, setProfileImg] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { profilePicture, getProfilePicture, isLoading, error } =
+    useUserProfilePicture();
 
   useEffect(() => {
     if(session){
       const userId = session.uid;
       const provider = session.provider;
-  
-      getProfileImg(userId, provider);
-
+      
+      getProfilePicture(userId, provider);
     }
     
     if (isProfileUpdated) {
       window.location.reload();
 
     }
-
   }, [isProfileUpdated, session]);
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,27 +68,6 @@ const Edit = () => {
       }
     }
   };
-  const getProfileImg = async (userId: string, provider: string) => {
-    try {
-      const response = await fetch(
-        `/api/users/profile-image?user-id=${userId}&provider=${provider}`
-      );
-
-      if (!response.ok) {
-        throw new Error('Failed to get filepath');
-      }
-
-      const result = await response.json();
-
-      const filePath = result.filepath[0].filepath;
-
-      setProfileImg(filePath);
-    } catch (error) {
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   if (!session) {
     return <div>먼저 로그인해주세요.</div>;
@@ -125,7 +103,7 @@ const Edit = () => {
             />
           ) : (
             <img
-              src={profileImg || '/default-profile.png'}
+              src={profilePicture || '/default-profile.png'}
               alt='Profile'
               className='w-full h-full object-cover rounded-full'
             />

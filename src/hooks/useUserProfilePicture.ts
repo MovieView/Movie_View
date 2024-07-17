@@ -19,8 +19,7 @@ const useUserProfilePicture = () => {
       }
 
       const result = await response.json();
-
-      const filePath = result.filepath[0].filepath;
+      const filePath = result.filepath;
 
       setProfilePicture(filePath);
     } catch (error) {
