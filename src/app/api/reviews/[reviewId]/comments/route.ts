@@ -103,11 +103,12 @@ export async function POST(
     );
 
     const reviewWriterUID = await getSocialAccountsUIDByReviewId(params.reviewId, connection);
-    const {username} = await getSocialAccountsUsername(formattedUid, connection);
+    const {username, filepath} = await getSocialAccountsUsername(formattedUid, connection);
     
     if (reviewWriterUID && username) {
       await createReviewCommentNotification(
         connection, 
+        filepath,
         username,
         reviewWriterUID,
         params.reviewId,
@@ -263,6 +264,7 @@ async function getReviewWriterDataByReviewId(reviewId: string, connection: PoolC
 
 const createReviewCommentNotification = async (
   connection: PoolConnection, 
+  icon: string, 
   username: string,
   userId: string, 
   reviewId: string,
@@ -278,7 +280,7 @@ const createReviewCommentNotification = async (
   const createNotificationModelsData = {
     username,
     movieId,
-    icon: reviewWriterData.filepath,
+    icon
   }
 
   const createNotificationModelsSocialAccountsSql = `
