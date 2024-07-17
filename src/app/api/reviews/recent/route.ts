@@ -15,11 +15,7 @@ export async function GET(req: Request) {
 
   const session = await getServerSession(authOptions);
 
-  if (!session?.provider && !session?.uid) {
-    return new Response(JSON.stringify({ message: 'Unauthorized' }), {
-      status: 401,
-    });
-  } else {
+  if (session?.provider && session?.uid) {
     userId = formatUserId(session.provider, session.uid);
   }
 
@@ -27,9 +23,9 @@ export async function GET(req: Request) {
   try {
     connection = await getDBConnection();
     const reviews = await getRecentReviews(
-      filter, 
-      userId, 
-      Number(page), 
+      filter,
+      userId,
+      Number(page),
       connection
     );
     const count = await recentReviewsCount(connection);
@@ -89,7 +85,7 @@ async function getRecentReviews(
     WHERE r.created_at BETWEEN DATE_ADD(NOW(), INTERVAL -1 WEEK) AND NOW() 
     ORDER BY ${orderBy}
     LIMIT ?, ?`;
-  
+
   try {
     const [result] = await connection.execute(sql, values);
     return result;
@@ -98,9 +94,7 @@ async function getRecentReviews(
   }
 }
 
-async function recentReviewsCount(
-  connection: PoolConnection
-) {
+async function recentReviewsCount(connection: PoolConnection) {
   const sql = `SELECT COUNT(*) AS totalCount FROM reviews WHERE created_at BETWEEN DATE_ADD(NOW(), INTERVAL -1 WEEK) AND NOW()`;
 
   try {
