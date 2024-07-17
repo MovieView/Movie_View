@@ -170,4 +170,12 @@ AWS_S3_NAME=**<AWS_S3_NAME>**
 <img width="1200" alt="image" src="https://github.com/user-attachments/assets/accce130-5d60-4620-9095-6a2f53c62c69">
 
 <img width="1200" alt="image" src="https://github.com/user-attachments/assets/44e11aec-fefa-425d-a6ad-ec092b51e453">
+
+### 알림
+<div style="display: flex">
+<img width="500" height="600" alt="image" src="https://github.com/user-attachments/assets/54b89b30-d185-4576-bb6f-109c877c8a9a">
+<img width="500" height="600" alt="image" src="https://github.com/user-attachments/assets/b51e8a7d-4203-44e5-88c9-76d617ed9b8c">
+</div>
+
+
 <br />
