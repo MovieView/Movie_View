@@ -55,6 +55,10 @@ export async function POST(
 ) {
   const session = await getServerSession(authOptions);
 
+  if (!session) {
+    return new Response('Authentication Error', { status: 401 });
+  }
+
   const { provider, uid } = session ?? {};
   if (!provider || !uid) {
     return new Response('Authentication Error', { status: 401 });
@@ -98,12 +102,18 @@ export async function POST(
       connection
     );
 
-    await createReviewCommentNotification(
-      connection, 
-      formattedUid,
-      params.reviewId,
-      movieId
-    );
+    const reviewWriterUID = await getSocialAccountsUIDByReviewId(params.reviewId, connection);
+    const {username} = await getSocialAccountsUsername(formattedUid, connection);
+    
+    if (reviewWriterUID && username) {
+      await createReviewCommentNotification(
+        connection, 
+        username,
+        reviewWriterUID,
+        params.reviewId,
+        movieId
+      );
+    }
 
     await connection.commit();
     connection.release();
@@ -115,9 +125,9 @@ export async function POST(
       }
     );
   } catch (err) {
-    console.error(err);
     await connection?.rollback();
     connection?.release();
+    console.log(err);
 
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
@@ -200,6 +210,24 @@ async function commentsCount(reviewId: string, connection: PoolConnection) {
   }
 }
 
+async function getSocialAccountsUIDByReviewId(reviewId: string, connection: PoolConnection) {
+  const sql = `SELECT social_accounts_uid AS uid FROM reviews WHERE id=UNHEX(?)`;
+  const values = [reviewId];
+
+  try {
+    const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
+      sql,
+      values
+    );
+    if (!result.length) {
+      return null
+    }
+    return result[0].uid;
+  } catch (err) {
+    throw err;
+  }
+}
+
 async function getMoviesIdByReviewId(reviewId: string, connection: PoolConnection) {
   const sql = `SELECT movies_id FROM reviews WHERE HEX(id)=?`;
   const values = [reviewId];
@@ -235,6 +263,7 @@ async function getReviewWriterDataByReviewId(reviewId: string, connection: PoolC
 
 const createReviewCommentNotification = async (
   connection: PoolConnection, 
+  username: string,
   userId: string, 
   reviewId: string,
   movieId: string
@@ -247,7 +276,7 @@ const createReviewCommentNotification = async (
 
   const reviewWriterData = await getReviewWriterDataByReviewId(reviewId, connection);
   const createNotificationModelsData = {
-    username: reviewWriterData.username,
+    username,
     movieId,
     icon: reviewWriterData.filepath,
   }
@@ -282,5 +311,23 @@ const createReviewCommentNotification = async (
     return true;
   } catch (err) {
     return false;
+  }
+}
+
+const getSocialAccountsUsername = async (uid: string, connection: PoolConnection) => {
+  const sql = `SELECT extra_data FROM social_accounts WHERE uid=?`;
+  const values = [uid];
+
+  try {
+    const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
+      sql,
+      values
+    );
+    if (!result.length) {
+      return null;
+    }
+    return JSON.parse(result[0].extra_data);
+  } catch (err) {
+    throw err;
   }
 }
