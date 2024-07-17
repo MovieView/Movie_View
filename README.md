@@ -34,6 +34,12 @@ KAKAO_CLIENT_ID=**<KAKAO CLIENT ID>**
 KAKAO_CLIENT_SECRET=**<KAKAO CLIENT SECRET>**
 GOOGLE_CLIENT_ID=**<GOOGLE CLIENT ID>**
 GOOGLE_CLIENT_SECRET=**<GOOGLE CLIENT SECRET>**
+
+## AWS S3
+AWS_ACCESS_KEY=**<AWS ACCESS KEY>**
+AWS_SECRET_KEY=**<AWS SECRET KEY>**
+AWS_REGION=**<AWS REGION>**
+AWS_S3_NAME=**<AWS S3 NAME>**
 ```
 * 설치 전에 .env 파일을 생성하고 위와 같이 설정해주세요.
   * Before the installation, create a .env file in the root of the project, and set it up as above.
@@ -69,7 +75,7 @@ GOOGLE_CLIENT_SECRET=**<GOOGLE CLIENT SECRET>**
 <br />
 
 ### 개발 기간 & 팀원 소개
-- 개발 기간 : 3주
+- 개발 기간 : 한달
 - 팀원
 <table>
     <tr>
