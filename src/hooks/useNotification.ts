@@ -17,7 +17,7 @@ const useNotification = (navbar?: boolean) => {
 
   const processNotification = (data : any) => {
     const processedData : INotification[] = data.map((item : any) => {
-      const templateData = JSON.parse(item.template_data);
+      const templateData = item.template_data ? JSON.parse(item.template_data) : {};
       const splitMessage = splitStringWithPlaceholders(item.template_message);
       const processedData : INotification = {
         value: '', 
@@ -99,10 +99,12 @@ const useNotification = (navbar?: boolean) => {
       const response : Response = await fetch(url);
       if (!response.ok) {
         if (currentPage > 1) {
-          setCurrentPage(currentPage - 1);
+          setCurrentPage(1);
           return;
         }
-        throw new Error('Failed to fetch notification');
+        setError('Failed to fetch notification');
+        setIsLoading(false);
+        return;
       }
       const data = await response.json();
       processNotification(data.rows);

@@ -79,15 +79,30 @@ export async function POST(
       });
     }
 
-    // 대댓글 내용 받아오기
     const data: ICommentContent = await req.json();
 
-    // 대댓글 내용 DB 저장
+    const movieId = await getMoviesIdByReviewId(params.reviewId, connection);
+    if (!movieId) {
+      await connection.rollback();
+      connection.release();
+
+      return new Response(JSON.stringify({ message: 'Review does not exist.' }), {
+        status: 404,
+      });
+    }
+
     await addComment(
       params.reviewId, 
       user.userId, 
       data.content,
       connection
+    );
+
+    await createReviewCommentNotification(
+      connection, 
+      formattedUid,
+      params.reviewId,
+      movieId
     );
 
     await connection.commit();
@@ -100,6 +115,7 @@ export async function POST(
       }
     );
   } catch (err) {
+    console.error(err);
     await connection?.rollback();
     connection?.release();
 
@@ -181,5 +197,91 @@ async function commentsCount(reviewId: string, connection: PoolConnection) {
     return result[0];
   } catch (err) {
     throw err;
+  }
+}
+
+async function getMoviesIdByReviewId(reviewId: string, connection: PoolConnection) {
+  const sql = `SELECT movies_id FROM reviews WHERE HEX(id)=?`;
+  const values = [reviewId];
+
+  try {
+    const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
+      sql,
+      values
+    );
+    if (!result.length) {
+      return null;
+    }
+    return result[0].movies_id;
+  } catch (err) {
+    throw err;
+  }
+}
+
+async function getReviewWriterDataByReviewId(reviewId: string, connection: PoolConnection) {
+  const sql = `SELECT extra_data FROM social_accounts WHERE HEX(uid)=(SELECT HEX(social_accounts_uid) FROM reviews WHERE id=UNHEX(?))`;
+  const values = [reviewId];
+
+  try {
+    const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
+      sql,
+      values
+    );
+    return JSON.parse(result[0].extra_data);
+  } catch (err) {
+    throw err;
+  }
+}
+
+const createReviewCommentNotification = async (
+  connection: PoolConnection, 
+  userId: string, 
+  reviewId: string,
+  movieId: string
+) => {
+  const notificationModelsId = uuidv4().replace(/-/g, '');
+  const createNotificationModelsSql = `
+    INSERT INTO movie_view.notification_models (id, notification_templates_id, data) VALUES
+    (UNHEX(?), 2, ?);
+  `;
+
+  const reviewWriterData = await getReviewWriterDataByReviewId(reviewId, connection);
+  const createNotificationModelsData = {
+    username: reviewWriterData.username,
+    movieId,
+    icon: reviewWriterData.filepath,
+  }
+
+  const createNotificationModelsSocialAccountsSql = `
+    INSERT INTO movie_view.notification_models_social_accounts (id, notification_models_id, social_accounts_uid) VALUES
+    (UNHEX(?), UNHEX(?), ?);
+  `;
+  const createNotificationModelsSocialAccountsSqlData = [
+    uuidv4().replace(/-/g, ''),
+    notificationModelsId,
+    userId,
+  ];
+
+  try {
+    const [createNotificationModelsResult] = await connection.execute<ResultSetHeader>(
+      createNotificationModelsSql, 
+      [notificationModelsId, JSON.stringify(createNotificationModelsData)]
+    );
+    if (!createNotificationModelsResult.affectedRows) {
+      return false;
+    }
+
+    const [createNotificationModelsSocialAccountsResult] = await connection.execute<ResultSetHeader>(
+      createNotificationModelsSocialAccountsSql,
+      createNotificationModelsSocialAccountsSqlData
+    );
+    if (!createNotificationModelsSocialAccountsResult.affectedRows) {
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
   }
 }

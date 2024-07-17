@@ -11,6 +11,7 @@ import {
   generateUniqueInt 
 } from '@/utils/authUtils';
 import { formatDateToMySQL } from '@/utils/dateUtils';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export const authOptions: NextAuthOptions = {
@@ -62,14 +63,20 @@ export const authOptions: NextAuthOptions = {
         );
         const count = results[0].count;
 
-        const usersId = generateUniqueInt();
-        let myAccountId;
-
         if (count >= 1) {
-          await connection.rollback();
+          const notifCreationResult = await createLoginNotification(connection, officialUID);
+          if (!notifCreationResult) {
+            await connection.rollback();
+          } else {
+            await connection.commit();
+          }
           connection.release();
           return true;
         }
+
+        const usersId = generateUniqueInt();
+        let myAccountId;
+
 
         if (count === 0) {
           const [result] = await connection.execute<ResultSetHeader>(
@@ -100,3 +107,43 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
+
+const createLoginNotification = async (connection: PoolConnection, userId: string) => {
+  const notificationModelsId = uuidv4().replace(/-/g, '');
+  const createNotificationModelsSql = `
+    INSERT INTO movie_view.notification_models (id, notification_templates_id, data) VALUES
+    (UNHEX(?), 3, NULL);
+  `;
+
+  const createNotificationModelsSocialAccountsSql = `
+    INSERT INTO movie_view.notification_models_social_accounts (id, notification_models_id, social_accounts_uid) VALUES
+    (UNHEX(?), UNHEX(?), ?);
+  `;
+  const createNotificationModelsSocialAccountsSqlData = [
+    uuidv4().replace(/-/g, ''),
+    notificationModelsId,
+    userId,
+  ];
+
+  try {
+    const [createNotificationModelsResult] = await connection.execute<ResultSetHeader>(
+      createNotificationModelsSql, 
+      [notificationModelsId]
+    );
+    if (!createNotificationModelsResult.affectedRows) {
+      return false;
+    }
+
+    const [createNotificationModelsSocialAccountsResult] = await connection.execute<ResultSetHeader>(
+      createNotificationModelsSocialAccountsSql, 
+      createNotificationModelsSocialAccountsSqlData
+    );
+    if (!createNotificationModelsSocialAccountsResult.affectedRows) {
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
+  }
+}

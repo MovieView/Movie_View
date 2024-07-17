@@ -9,7 +9,7 @@ import { PoolConnection } from 'mysql2/promise';
 
 
 export async function GET(
-    req: Request,
+  req: Request,
 ) {
   const searchParams = new URL(req.url).searchParams;
   let page = searchParams.get('page') ?? 1;
@@ -51,7 +51,7 @@ export async function GET(
 
 export async function POST(
   req: Request,
-  { params }: { params: { reviewId: string } }
+  { params }: { params: { reviewId: string, movieId: string } }
 ) {
   const session = await getServerSession(authOptions);
 
@@ -86,6 +86,13 @@ export async function POST(
       user.userId, 
       data.content,
       connection
+    );
+
+    await createReviewCommentNotification(
+      connection, 
+      user.userId, 
+      params.reviewId,
+      params.movieId
     );
 
     await connection.commit();
@@ -125,6 +132,21 @@ async function addComment(
   }
 }
 
+async function getReviewWriterDataByReviewId(reviewId: string, connection: PoolConnection) {
+  const sql = `SELECT extra_data FROM social_accounts WHERE HEX(id)=(SELECT HEX(social_accounts_uid) FROM reviews WHERE id=UNHEX(?))`;
+  const values = [reviewId];
+
+  try {
+    const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
+      sql,
+      values
+    );
+    return JSON.parse(result[0].extra_data);
+  } catch (err) {
+    throw err;
+  }
+}
+
 async function getUser(uid: string, connection: PoolConnection) {
   const sql = `SELECT users_id AS userId, uid FROM social_accounts WHERE uid=?`;
   const values = [uid];
@@ -141,9 +163,9 @@ async function getUser(uid: string, connection: PoolConnection) {
 }
 
 async function getComments(
-    page: number, 
-    quantity: number,
-    connection: PoolConnection
+  page: number, 
+  quantity: number,
+  connection: PoolConnection
 ) : Promise<RowDataPacket[]> {
   const sql = `SELECT * FROM reviews_comments ORDER BY createdAt DESC LIMIT ?, ?`;
   const values = [page, quantity];
@@ -153,5 +175,58 @@ async function getComments(
     return result;
   } catch (err) {
     throw err;
+  }
+}
+
+const createReviewCommentNotification = async (
+  connection: PoolConnection, 
+  userId: string, 
+  reviewId: string,
+  movieId: string
+) => {
+  const notificationModelsId = uuidv4().replace(/-/g, '');
+  const createNotificationModelsSql = `
+    INSERT INTO movie_view.notification_models (id, notification_templates_id, data) VALUES
+    (UNHEX(?), 2, NULL);
+  `;
+
+  const reviewWriterData = await getReviewWriterDataByReviewId(reviewId, connection);
+  const createNotificationModelsData = {
+    username: reviewWriterData.username,
+    movieId,
+    icon: reviewWriterData.filepath,
+  }
+
+  const createNotificationModelsSocialAccountsSql = `
+    INSERT INTO movie_view.notification_models_social_accounts (id, notification_models_id, social_accounts_uid) VALUES
+    (UNHEX(?), UNHEX(?), ?);
+  `;
+  const createNotificationModelsSocialAccountsSqlData = [
+    uuidv4().replace(/-/g, ''),
+    notificationModelsId,
+    userId,
+  ];
+
+  try {
+    const [createNotificationModelsResult] = await connection.execute<ResultSetHeader>(
+      createNotificationModelsSql, 
+      [notificationModelsId, JSON.stringify(createNotificationModelsData)]
+    );
+    if (!createNotificationModelsResult.affectedRows) {
+      return false;
+    }
+
+    const [createNotificationModelsSocialAccountsResult] = await connection.execute<ResultSetHeader>(
+      createNotificationModelsSocialAccountsSql,
+      createNotificationModelsSocialAccountsSqlData
+    );
+    if (!createNotificationModelsSocialAccountsResult.affectedRows) {
+      return false;
+    }
+
+    return true;
+  } catch (err) {
+    console.error(err);
+    return false;
   }
 }
