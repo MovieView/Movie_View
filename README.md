@@ -34,12 +34,6 @@ KAKAO_CLIENT_ID=**<KAKAO CLIENT ID>**
 KAKAO_CLIENT_SECRET=**<KAKAO CLIENT SECRET>**
 GOOGLE_CLIENT_ID=**<GOOGLE CLIENT ID>**
 GOOGLE_CLIENT_SECRET=**<GOOGLE CLIENT SECRET>**
-
-## AWS S3
-AWS_ACCESS_KEY=**<AWS ACCESS KEY>**
-AWS_SECRET_KEY=**<AWS SECRET KEY>**
-AWS_REGION=**<AWS REGION>**
-AWS_S3_NAME=**<AWS S3 NAME>**
 ```
 * 설치 전에 .env 파일을 생성하고 위와 같이 설정해주세요.
   * Before the installation, create a .env file in the root of the project, and set it up as above.
@@ -75,7 +69,7 @@ AWS_S3_NAME=**<AWS S3 NAME>**
 <br />
 
 ### 개발 기간 & 팀원 소개
-- 개발 기간 : 한달
+- 개발 기간 : 3주
 - 팀원
 <table>
     <tr>
@@ -146,14 +140,28 @@ AWS_S3_NAME=**<AWS S3 NAME>**
 
 ## 🖥️ 화면 구성
 ### 첫 화면
-<img src="https://github.com/MovieView/Movie_View/assets/70255311/95e9d83c-5f6f-48eb-aa8f-a467384e5b90" width="800px;">
+<img width="1200" alt="image" src="https://github.com/user-attachments/assets/39eaf9e1-2c08-421a-9cd2-0d49d36edb99">
 
 ### 로그인 화면
-<img src="https://github.com/MovieView/Movie_View/assets/70255311/67088ae8-1e8d-4383-b338-6cf827690a2a" width="800px;">
+<img width="1200" alt="image" src="https://github.com/user-attachments/assets/cb0c1e2c-9885-46b1-b61b-c40221dc3135">
+
+### 닉네임 설정 화면
+<img width="1200" alt="image" src="https://github.com/user-attachments/assets/f26892a5-0be3-44e7-82a1-ed93d17ccd37">
 
 ### 디테일 화면
-<img src="https://github.com/MovieView/Movie_View/assets/70255311/13d2f329-2918-4dba-9a3a-4d5f2199c812" width="800px;">
+<img width="1200" alt="image" src="https://github.com/user-attachments/assets/e5191066-c94c-43ca-af88-6092880226d5">
 
 ### 디테일 화면 - 리뷰
-<img src="https://github.com/MovieView/Movie_View/assets/70255311/cc1fa62b-3ea7-45f9-a25e-98c9ac2d2c8b" width="500px;">
+<img width="1200" alt="image" src="https://github.com/user-attachments/assets/ea71e9f7-c28d-44cf-89d6-5a5c7450e8df">
+
+### 마이 페이지 - 프로필 수정
+<img width="1200" alt="image" src="https://github.com/user-attachments/assets/afc94f39-c7e3-4360-82c4-abb7ff6b7a7d">
+
+### 마이페이지 - 좋아요한 영화 리스트
+<img width="1200" alt="image" src="https://github.com/user-attachments/assets/7ac0fa09-fd79-49b4-8852-f19be8f839bf">
+
+### 지금 뜨는 코멘트
+<img width="1200" alt="image" src="https://github.com/user-attachments/assets/accce130-5d60-4620-9095-6a2f53c62c69">
+
+<img width="1200" alt="image" src="https://github.com/user-attachments/assets/44e11aec-fefa-425d-a6ad-ec092b51e453">
 <br />
