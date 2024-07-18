@@ -67,7 +67,7 @@ const RecentReview = ({ reviews }: Props) => {
       <div className='flex justify-between mb-4 items-center mx-auto md:w-[70%] w-[90%]'>
         <h2 className='font-bold text-2xl'>지금 뜨는 코멘트</h2>
         <Link
-          href={'/recentReview?filter=like'}
+          href={'/reviews/recent?filter=like'}
           className='text-gray-500 flex items-center'
         >
           더보기
@@ -89,7 +89,7 @@ const RecentReview = ({ reviews }: Props) => {
                 key={review.id}
                 className='flex-shrink-0 xl:w-[calc((100%-24px)/3)] md:w-[calc((100%-12px)/2)] w-full'
               >
-                <Link href={'/recentReview?filter=like'}>
+                <Link href={'/reviews/recent?filter=like'}>
                   <RecentReviewItem review={review} type={'small'} />
                 </Link>
               </div>

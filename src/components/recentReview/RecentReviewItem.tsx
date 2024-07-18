@@ -1,9 +1,9 @@
-import Image from 'next/image';
 import { FaStar } from 'react-icons/fa';
 import LikeButton from '../like/LikeButton';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ReviewItemType } from '../recentReview/RecentReview';
 import { debounce } from '../review/ReviewItem';
+import Link from 'next/link';
 
 export interface IRecentReview {
   id: string;
@@ -99,6 +99,7 @@ const RecentReviewItem = ({ review, type }: Props) => {
 
       <div className='flex gap-2'>
         <div className='w-20 h-24 flex-shrink-0'>
+          <Link href={`/movies/${review.movieId}`}>
           {
             // eslint-disable-next-line @next/next/no-img-element
             review.posterPath ? (
@@ -111,6 +112,7 @@ const RecentReviewItem = ({ review, type }: Props) => {
               <div className='w-full h-full bg-second' />
             )
           }
+          </Link>
         </div>
 
         <div className='w-4/5'>
