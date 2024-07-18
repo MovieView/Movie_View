@@ -1,12 +1,13 @@
 import { getDBConnection } from '@/lib/db';
-import { FieldPacket, ResultSetHeader, RowDataPacket } from 'mysql2';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authOptions';
 import { formatUserId } from '@/utils/authUtils';
 import { IReviewData } from '@/models/review.model';
 import { PoolConnection } from 'mysql2/promise';
+import { deleteReview, getReviewById, updateReview } from '@/services/reviewServices';
+import { getComments, getReviewCommentsCount } from '@/services/reviewCommentServices';
 
-// 대댓글 조회
+
 const MAX_RESULT = 8;
 const PAGE = 1;
 
@@ -28,7 +29,7 @@ export async function GET(
       connection
     );
 
-    const count = await commentsCount(params.reviewId, connection);
+    const count = await getReviewCommentsCount(params.reviewId, connection);
     const result = {
       comments,
       pagination: {
@@ -169,97 +170,5 @@ export async function PUT(
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
-  }
-}
-
-async function getReviewById(reviewId: string, userId: string, connection: PoolConnection) {
-  const sql = `SELECT * FROM reviews WHERE id=UNHEX(?) AND social_accounts_uid=? `;
-  const values: Array<string | number> = [reviewId, userId];
-
-  try {
-    const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
-      sql,
-      values
-    );
-    return result[0];
-  } catch (err) {
-    throw err;
-  }
-}
-
-async function deleteReview(reviewId: string, userId: string, connection: PoolConnection) {
-  const sql = `DELETE FROM reviews WHERE id=UNHEX(?) AND social_accounts_uid=? `;
-  const values: Array<string | number> = [reviewId, userId];
-
-  try {
-    const [result] = await connection.execute(sql, values);
-    return result;
-  } catch (err) {
-    throw err;
-  }
-}
-
-async function updateReview(
-  reviewId: string,
-  userId: string,
-  data: IReviewData,
-  connection: PoolConnection
-) {
-  const sql = `UPDATE reviews SET title=?, rating=?, content=? WHERE id=UNHEX(?) AND social_accounts_uid=? `;
-  const values: Array<string | number> = [
-    data.title,
-    data.rating,
-    data.content,
-    reviewId,
-    userId,
-  ];
-
-  try {
-    const [result] = await connection.execute(sql, values);
-    return result;
-  } catch (err) {
-    throw err;
-  }
-}
-
-async function getComments(
-  reviewId: string,
-  maxResults: number, 
-  page: number,
-  connection: PoolConnection
-) {
-  const offset = maxResults * (page - 1);
-  const values: Array<number | string> = [reviewId, offset, maxResults];
-  const sql = `SELECT HEX(rc.id) AS id, rc.content, s.uid AS userId,
-                REPLACE(JSON_EXTRACT(s.extra_data, '$.filepath'), '"', '') AS filePath,
-                REPLACE(JSON_EXTRACT(s.extra_data, '$.username'), '"', '') AS nickname, 
-                rc.created_at AS createdAt, rc.updated_at AS updatedAt
-                FROM reviews_comments AS rc
-                LEFT JOIN users AS u ON u.id = rc.users_id
-                LEFT JOIN social_accounts AS s ON rc.users_id = s.users_id
-                WHERE HEX(rc.reviews_id) = ?
-                ORDER BY createdAt
-                LIMIT ?, ?`;
-
-  try {
-    const [result] = await connection.execute(sql, values);
-    return result;
-  } catch (err) {
-    throw err;
-  }
-}
-
-async function commentsCount(reviewId: string, connection: PoolConnection) {
-  const sql = `SELECT COUNT(*) AS totalCount FROM reviews_comments WHERE HEX(reviews_id)=?`;
-  const values = [reviewId];
-
-  try {
-    const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
-      sql,
-      values
-    );
-    return result[0];
-  } catch (err) {
-    throw err;
   }
 }

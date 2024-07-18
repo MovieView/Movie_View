@@ -1,4 +1,5 @@
 import { getDBConnection } from '@/lib/db';
+import { getUserProfilePictureBySocialAccountsUID } from '@/services/userServices';
 import { formatUserId } from '@/utils/authUtils';
 import { PoolConnection } from 'mysql2/promise';
 import { NextRequest } from 'next/server';
@@ -29,22 +30,28 @@ export const GET = async (req: NextRequest) => {
     );
   }
 
+  const socialAccountsUID = formatUserId(provider, userId);
+  if (!socialAccountsUID) {
+    return new Response(
+      JSON.stringify({ error: '사용자 정보가 올바르지 않습니다.' }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+
   let connection: PoolConnection | undefined;
   try {
-    const sql = `
-      SELECT JSON_UNQUOTE(JSON_EXTRACT(extra_data, '$.filepath')) AS filepath
-      FROM social_accounts
-      WHERE uid = ?
-    `;
-
     connection = await getDBConnection();
-    const [result, rows] = await connection.execute(
-      sql, 
-      [formatUserId(provider, userId)]
+    const filepath = await getUserProfilePictureBySocialAccountsUID(
+      socialAccountsUID,
+      connection
     );
 
     connection.release();
-    if (!result) {
+
+    if (!filepath) {
       return new Response(
         JSON.stringify({ error: '프로필이 존재하지 않습니다.' }),
         {
@@ -56,7 +63,7 @@ export const GET = async (req: NextRequest) => {
       return new Response(
         JSON.stringify({
           message: '프로필 사진 불러오기 완료',
-          filepath: result,
+          filepath,
         }),
         {
           status: 200,

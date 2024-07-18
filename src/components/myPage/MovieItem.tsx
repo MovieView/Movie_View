@@ -11,7 +11,7 @@ interface Props {
 export default function MovieItem({ movieId, movieTitle, posterPath }: Props) {
   return (
     <div>
-      <Link href={`/detail/${movieId}`} className='cursor-pointer'>
+      <Link href={`/movies/${movieId}`} className='cursor-pointer'>
         <Image
           className='w-full max-w-sm lg:h-auto h-64 rounded-lg shadow-lg mb-3'
           src={`https://image.tmdb.org/t/p/original/${posterPath}`}
@@ -23,7 +23,7 @@ export default function MovieItem({ movieId, movieTitle, posterPath }: Props) {
       </Link>
       <div className='flex justify-between items-center'>
         <div className='flex-grow text-xs hover:text-gray-500 cursor-pointer'>
-          <Link href={`/detail/${movieId}`}>
+          <Link href={`/movies/${movieId}`}>
             {movieTitle}
           </Link>
         </div>

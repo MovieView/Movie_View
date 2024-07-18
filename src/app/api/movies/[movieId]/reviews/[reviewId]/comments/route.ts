@@ -133,7 +133,10 @@ async function addComment(
 }
 
 async function getReviewWriterDataByReviewId(reviewId: string, connection: PoolConnection) {
-  const sql = `SELECT extra_data FROM social_accounts WHERE HEX(id)=(SELECT HEX(social_accounts_uid) FROM reviews WHERE id=UNHEX(?))`;
+  const sql = `
+    SELECT extra_data FROM social_accounts 
+    WHERE HEX(id)=(SELECT HEX(social_accounts_uid) FROM reviews WHERE id=UNHEX(?))
+  `;
   const values = [reviewId];
 
   try {
@@ -226,7 +229,6 @@ const createReviewCommentNotification = async (
 
     return true;
   } catch (err) {
-    console.error(err);
     return false;
   }
 }

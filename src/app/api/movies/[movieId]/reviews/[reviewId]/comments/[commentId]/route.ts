@@ -5,6 +5,9 @@ import { FieldPacket, RowDataPacket } from 'mysql2';
 import { ICommentContent } from '@/models/comment.model';
 import { authOptions } from '@/lib/authOptions';
 import { PoolConnection } from 'mysql2/promise';
+import { deleteCommentById, updateCommentById } from '@/services/reviewCommentServices';
+import { getUserIDBySocialAccountsUID } from '@/services/userServices';
+
 
 export async function GET(
   req: Request,
@@ -70,7 +73,7 @@ export async function DELETE(
     connection = await getDBConnection();
     await connection.beginTransaction();
 
-    const user = await getUser(formattedUid, connection);
+    const user = await getUserIDBySocialAccountsUID(formattedUid, connection);
     if (!user) {
       await connection.rollback();
       connection.release();
@@ -128,7 +131,7 @@ export async function PUT(
     connection = await getDBConnection();
     await connection.beginTransaction();
 
-    const user = await getUser(formattedUid, connection);
+    const user = await getUserIDBySocialAccountsUID(formattedUid, connection);
     if (!user) {
       await connection.rollback();
       connection.release();
@@ -163,53 +166,5 @@ export async function PUT(
     return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
-  }
-}
-
-async function deleteCommentById(
-  commentId: number, 
-  userId: number, 
-  connection: PoolConnection
-) {
-  const values: Array<string | number> = [commentId, userId];
-  const sql = `DELETE FROM reviews_comments WHERE id=UNHEX(?) AND users_id=?`;
-
-  try {
-    const [result] = await connection.execute(sql, values);
-    return result;
-  } catch (err) {
-    throw err;
-  }
-}
-
-async function updateCommentById(
-  commentId: number,
-  userId: number,
-  content: string,
-  connection: PoolConnection
-) {
-  const sql = `UPDATE reviews_comments SET content=? WHERE id=UNHEX(?) AND users_id=? `;
-  const values: Array<string | number> = [content, commentId, userId];
-
-  try {
-    const [result] = await connection.execute(sql, values);
-    return result;
-  } catch (err) {
-    throw err;
-  }
-}
-
-async function getUser(uid: string, connection: PoolConnection) {
-  const sql = `SELECT users_id AS userId, uid FROM social_accounts WHERE uid=?`;
-  const values = [uid];
-
-  try {
-    const [result]: [RowDataPacket[], FieldPacket[]] = await connection.execute(
-      sql,
-      values
-    );
-    return result[0];
-  } catch (err) {
-    throw err;
   }
 }

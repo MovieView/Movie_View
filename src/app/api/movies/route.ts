@@ -18,6 +18,7 @@ export const GET = async (request: NextRequest) => {
   const accessTokenTMDB : string | undefined = process.env.TMDB_ACCESS_TOKEN;
 
   const userIP : string = getIP(request);
+  console.log(userIP);
 
   const client : RedisClient = createClient({
     url: process.env.REDIS_URL

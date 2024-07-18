@@ -3,7 +3,7 @@ import GithubProvider from 'next-auth/providers/github';
 import KakaoProvider from 'next-auth/providers/kakao';
 import GoogleProvider from 'next-auth/providers/google';
 import { getDBConnection } from './db';
-import { ResultSetHeader, RowDataPacket } from 'mysql2';
+import { RowDataPacket } from 'mysql2';
 import { PoolConnection } from 'mysql2/promise';
 import { 
   formProviderId, 
@@ -12,6 +12,8 @@ import {
 } from '@/utils/authUtils';
 import { formatDateToMySQL } from '@/utils/dateUtils';
 import { v4 as uuidv4 } from 'uuid';
+import { addSocialAccount, addUser } from '@/services/userServices';
+import { createLoginNotification } from '@/services/notificationServices';
 
 
 export const authOptions: NextAuthOptions = {
@@ -41,15 +43,19 @@ export const authOptions: NextAuthOptions = {
       session.uid = token.sub as string;
       return session;
     },
-
     async signIn({ user, account }) {
       const userId = user.id;
       const provider = account?.provider as string;
-      const username = user.name;
       const filepath = user.image;
+      let username = user.name;
 
       const officialUID = formatUserId(provider, userId);
       if (!officialUID) {
+        return false;
+      }
+
+      const providerId = formProviderId(provider);
+      if (providerId == undefined) {
         return false;
       }
 
@@ -61,7 +67,7 @@ export const authOptions: NextAuthOptions = {
           `SELECT COUNT(*) AS count FROM users u LEFT JOIN social_accounts s ON u.id = s.users_id WHERE s.uid = ?`,
           [officialUID]
         );
-        const count = results[0].count;
+        const count : number = results[0].count;
 
         if (count >= 1) {
           const notifCreationResult = await createLoginNotification(connection, officialUID);
@@ -74,27 +80,41 @@ export const authOptions: NextAuthOptions = {
           return true;
         }
 
-        const usersId = generateUniqueInt();
-        let myAccountId;
-
+        const usersId : number = generateUniqueInt();
+        if (!username) {
+          username = 'user' + uuidv4().replace(/-/g, '');
+        }
 
         if (count === 0) {
-          const [result] = await connection.execute<ResultSetHeader>(
-            'INSERT INTO users (id, nickname) VALUES (?, ?)',
-            [usersId, username]
+          const addUserQueryResult = await addUser(
+            username, 
+            usersId, 
+            connection
           );
-          myAccountId = result.insertId;
+          if (!addUserQueryResult) {
+            await connection.rollback();
+            connection.release();
+            return false;
+          }
         }
 
         const extraData = JSON.stringify({ username, filepath });
-
-        const providerId = formProviderId(provider);
         const lastLogin = formatDateToMySQL(new Date());
 
-        await connection.execute(
-          'INSERT INTO social_accounts (users_id, providers_id, uid, last_login, extra_data) VALUES (?, ?, ?, ?, ?)',
-          [myAccountId, providerId, officialUID, lastLogin, extraData]
+        const addSocialAccountQueryResult : boolean = await addSocialAccount(
+          officialUID,
+          usersId,
+          providerId,
+          extraData,
+          lastLogin,
+          connection
         );
+
+        if (!addSocialAccountQueryResult) {
+          await connection.rollback();
+          connection.release();
+          return false;
+        }
 
         await connection.commit();
         connection.release();
@@ -107,43 +127,3 @@ export const authOptions: NextAuthOptions = {
     },
   },
 };
-
-const createLoginNotification = async (connection: PoolConnection, userId: string) => {
-  const notificationModelsId = uuidv4().replace(/-/g, '');
-  const createNotificationModelsSql = `
-    INSERT INTO movie_view.notification_models (id, notification_templates_id, data) VALUES
-    (UNHEX(?), 3, NULL);
-  `;
-
-  const createNotificationModelsSocialAccountsSql = `
-    INSERT INTO movie_view.notification_models_social_accounts (id, notification_models_id, social_accounts_uid) VALUES
-    (UNHEX(?), UNHEX(?), ?);
-  `;
-  const createNotificationModelsSocialAccountsSqlData = [
-    uuidv4().replace(/-/g, ''),
-    notificationModelsId,
-    userId,
-  ];
-
-  try {
-    const [createNotificationModelsResult] = await connection.execute<ResultSetHeader>(
-      createNotificationModelsSql, 
-      [notificationModelsId]
-    );
-    if (!createNotificationModelsResult.affectedRows) {
-      return false;
-    }
-
-    const [createNotificationModelsSocialAccountsResult] = await connection.execute<ResultSetHeader>(
-      createNotificationModelsSocialAccountsSql, 
-      createNotificationModelsSocialAccountsSqlData
-    );
-    if (!createNotificationModelsSocialAccountsResult.affectedRows) {
-      return false;
-    }
-    return true;
-  } catch (err) {
-    console.error(err);
-    return false;
-  }
-}

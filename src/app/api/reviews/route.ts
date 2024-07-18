@@ -1,10 +1,10 @@
 import { authOptions } from '@/lib/authOptions';
 import { getDBConnection } from '@/lib/db';
+import { addReview } from '@/services/reviewServices';
 import { formatUserId } from '@/utils/authUtils';
 import { ResultSetHeader } from 'mysql2';
 import { PoolConnection } from 'mysql2/promise';
 import { getServerSession } from 'next-auth';
-import { v4 as uuidv4 } from 'uuid';
 
 
 interface ReviewData {
@@ -74,25 +74,6 @@ export async function POST(req: Request) {
   }
 }
 
-async function addReview(userId: string, data: ReviewData, connection: PoolConnection) {
-  const id = uuidv4().replace(/-/g, '');
-  const sql = `INSERT INTO reviews (id, movies_id, social_accounts_uid, rating, title, content) VALUES(UNHEX(?), ?, ?, ?, ?, ?)`;
-  const values = [
-    id,
-    data.movieId,
-    userId,
-    data.rating,
-    data.title,
-    data.content,
-  ];
-
-  try {
-    const [result] = await connection.execute(sql, values);
-    return (result as ResultSetHeader).affectedRows;
-  } catch (err) {
-    throw err;
-  }
-}
 
 async function addMovieId(
   movieId: number,

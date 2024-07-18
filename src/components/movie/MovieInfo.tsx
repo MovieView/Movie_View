@@ -1,6 +1,6 @@
 'use client';
 import { Genre } from '@/models/movie.model';
-import ErrorOMG from '@/app/detail/[movieId]/error';
+import ErrorOMG from '@/app/movies/[movieId]/error';
 import ReviewsList from '../review/ReviewsList';
 import Image from 'next/image';
 import MovieLikeButton from '../like/MovieLikeButton';

@@ -8,6 +8,7 @@ import NotificationButton from '../notification/NotificationButton';
 import { useSession } from 'next-auth/react';
 import NotificationFakeButton from '../notification/NotificationFakeButton';
 
+
 interface INavBarProps {
   isFixed: boolean;
 }

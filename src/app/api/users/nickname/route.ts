@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getDBConnection } from '@/lib/db';
 import { PoolConnection } from 'mysql2/promise';
-import { formatUserId } from '@/utils/authUtils';
+import { formatUserId, replaceSpecialCharactersWithRandomAlphanumberic } from '@/utils/authUtils';
+import { setUserNickname } from '@/services/userServices';
 
 
 export const POST = async (req: NextRequest, res: NextResponse) => {
@@ -26,22 +27,41 @@ export const POST = async (req: NextRequest, res: NextResponse) => {
     );
   }
 
+  const socialAccountUID = formatUserId(provider, userId);
+  if (!socialAccountUID) {
+    return new Response(
+      JSON.stringify({ error: '사용자 정보가 올바르지 않습니다.' }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      }
+    );
+  }
+  
+  const sanitizedNickname = replaceSpecialCharactersWithRandomAlphanumberic(nickname.trim().substring(0, 20));
+
   let connection: PoolConnection | undefined;
   try {
-    const sql = `
-      UPDATE users AS u
-      JOIN social_accounts AS sa ON u.id = sa.users_id
-      SET u.nickname = ?, u.updated_at = NOW()
-      WHERE sa.uid = ?
-    `;
-
     connection = await getDBConnection();
     await connection.beginTransaction();
 
-    const [result] = await connection.execute(sql, [
-      nickname,
-      formatUserId(provider, userId),
-    ]);
+    const queryResult = await setUserNickname(
+      socialAccountUID,
+      sanitizedNickname,
+      connection
+    );
+    if (!queryResult) {
+      await connection.rollback();
+      connection.release();
+
+      return new Response(
+        JSON.stringify({ error: '닉네임 업데이트 실패' }),
+        {
+          status: 500,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
 
     await connection.commit();
     connection.release();

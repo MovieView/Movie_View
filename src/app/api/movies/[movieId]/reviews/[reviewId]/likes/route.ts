@@ -1,19 +1,13 @@
 import { authOptions } from '@/lib/authOptions';
 import { getDBConnection } from '@/lib/db';
-import { Like } from '@/models/likes.model';
+import { createReviewLikeNotification } from '@/services/notificationServices';
+import { getReviewWriterSocialAccountsUID } from '@/services/reviewCommentServices';
+import { deleteLike, getLike, postLike } from '@/services/reviewLikeServices';
 import { formatUserId } from '@/utils/authUtils';
-import { RowDataPacket } from 'mysql2';
-import { PoolConnection, ResultSetHeader } from 'mysql2/promise';
+import { PoolConnection } from 'mysql2/promise';
 import { getServerSession } from 'next-auth';
 import { v4 as uuidv4 } from 'uuid';
 
-interface LikeQueryResult extends Like, RowDataPacket {}
-
-interface ILike {
-  id: string;
-  reviews_id: string;
-  social_accounts_uid: string | undefined;
-}
 
 export const GET = async (
   req: Request,
@@ -150,133 +144,3 @@ export const DELETE = async (
     });
   }
 };
-
-async function getLike(
-  reviewId: string,
-  social_accounts_uid: string,
-  connection: PoolConnection
-): Promise<Like> {
-  const sql = `SELECT 
-                COALESCE(SUM(CASE WHEN social_accounts_uid = ? THEN 1 ELSE 0 END), 0) AS liked,
-                COUNT(*) AS likes
-              FROM movie_view.reviews_likes
-              WHERE HEX(reviews_id) = ?;`;
-
-  try {
-    const [result] = await connection
-      .execute<LikeQueryResult[]>(sql, [social_accounts_uid, reviewId]);
-
-    return result[0];
-  } catch (err) {
-    throw err;
-  }
-}
-
-async function postLike(like: ILike, connection: PoolConnection) {
-  const sql = `INSERT IGNORE INTO movie_view.reviews_likes (id, reviews_id, social_accounts_uid)
-             VALUES ( UNHEX(?), UNHEX(?), ? );`;
-
-  try {
-    const [result] = await connection
-      .execute(sql, [like.id, like.reviews_id, like.social_accounts_uid]);
-    
-    return result;
-  } catch (err) {
-    throw err;
-  }
-}
-
-async function deleteLike(
-  reviewId: string, 
-  social_accounts_uid: string,
-  connection: PoolConnection
-) {
-  const sql = `DELETE FROM movie_view.reviews_likes WHERE reviews_id=UNHEX(?) AND social_accounts_uid=?;`;
-
-  try {
-    const [result] = await connection
-      .execute(sql, [reviewId, social_accounts_uid]);
-
-    return result;
-  } catch (err) {
-    throw err;
-  }
-}
-
-async function createReviewLikeNotification(
-  recipientSocialAccountsUID: string,
-  initiatorUsername: string,
-  initiatorIconURL: string,
-  movieId: string,
-  connection: PoolConnection
-): Promise<void> {
-  const notificationModelsId = uuidv4().replace(/-/g, '');
-  const createNotificationModelsSql = `
-    INSERT INTO movie_view.notification_models (id, notification_templates_id, data) VALUES
-    (UNHEX(?), 1, ?);
-  `;
-  const createNotificationModelsSqlData = [
-    notificationModelsId,
-    JSON.stringify({
-      username: initiatorUsername,
-      movieId: movieId,
-      icon: initiatorIconURL || '',
-    })
-  ];
-
-  const createNotificationModelsSocialAccountsSql = `
-    INSERT INTO movie_view.notification_models_social_accounts (id, notification_models_id, social_accounts_uid) VALUES
-    (UNHEX(?), UNHEX(?), ?);
-  `;
-  const createNotificationModelsSocialAccountsSqlData = [
-    uuidv4().replace(/-/g, ''),
-    notificationModelsId,
-    recipientSocialAccountsUID,
-  ];
-
-  try {
-    const [createNotificationModelsSqlResult] = await connection.execute<ResultSetHeader>(
-      createNotificationModelsSql, 
-      createNotificationModelsSqlData
-    );
-    if (createNotificationModelsSqlResult.affectedRows === 0) {
-      throw new Error('Failed to create notification model');
-    }
-
-    const [createNotificationModelsSocialAccountsSqlResult] =  await connection.execute<ResultSetHeader>(
-      createNotificationModelsSocialAccountsSql, 
-      createNotificationModelsSocialAccountsSqlData
-    );
-    if (createNotificationModelsSocialAccountsSqlResult.affectedRows === 0) {
-      throw new Error('Failed to create notification model social accounts');
-    }
-  } catch (err) {
-    throw err;
-  }
-}
-
-async function getReviewWriterSocialAccountsUID(
-  reviewId: string,
-  connection: PoolConnection
-) {
-  const sql = `
-    SELECT social_accounts_uid
-    FROM movie_view.reviews
-    WHERE HEX(id) = ?;
-  `;
-
-  try {
-    const [result] = await connection.execute<RowDataPacket[]>(sql, [reviewId]);
-    if (result.length === 0) {
-      return null;
-    }
-
-    if (!result[0].social_accounts_uid) {
-      return null;
-    }
-
-    return result[0].social_accounts_uid;
-  } catch (err) {
-    throw err;
-  }
-}

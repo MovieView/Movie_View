@@ -13,7 +13,7 @@ interface MovieCardProps {
 }
 const MovieCard = ({ movie }: MovieCardProps) => {
   return (
-    <Link href={`/detail/${movie.id}`}>
+    <Link href={`/movies/${movie.id}`}>
       {movie.poster_path ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img

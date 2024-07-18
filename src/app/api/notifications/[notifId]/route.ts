@@ -1,7 +1,11 @@
 import { authOptions } from "@/lib/authOptions";
 import { getDBConnection } from "@/lib/db";
+import { 
+  deleteNotificationModelSocialAccounts, 
+  updateNotificationModelSocialAccountsAsRead 
+} from "@/services/notificationServices";
 import { formatUserId } from "@/utils/authUtils";
-import { PoolConnection, ResultSetHeader } from "mysql2/promise";
+import { PoolConnection } from "mysql2/promise";
 import { getServerSession } from "next-auth";
 
 
@@ -23,21 +27,17 @@ export async function DELETE(
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const sqlQueryStatement = `
-    DELETE FROM notification_models_social_accounts
-    WHERE social_accounts_uid=? AND notification_models_id=UNHEX(?)
-  `;
-
   let connection: PoolConnection | undefined;
   try {
     connection = await getDBConnection();
     await connection.beginTransaction();
 
-    const [result] = await connection.query<ResultSetHeader>(
-      sqlQueryStatement, 
-      [socialAccountsUID, params.notifId]
+    const queryResult = await deleteNotificationModelSocialAccounts(
+      params.notifId,
+      socialAccountsUID,
+      connection
     );
-    if (result.affectedRows === 0) {
+    if (!queryResult) {
       await connection.rollback();
       connection.release();
       return new Response(JSON.stringify({ message: "No data" }), {
@@ -80,22 +80,18 @@ export async function PUT(
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const sqlQueryStatement = `
-    UPDATE notification_models_social_accounts
-    SET checked=1
-    WHERE social_accounts_uid=? AND notification_models_id=UNHEX(?)
-  `;
 
   let connection: PoolConnection | undefined;
   try {
     connection = await getDBConnection();
     await connection.beginTransaction();
 
-    const [result] = await connection.query<ResultSetHeader>(
-      sqlQueryStatement, 
-      [socialAccountsUID, params.notifId]
+    const queryResult : boolean = await updateNotificationModelSocialAccountsAsRead(
+      params.notifId,
+      socialAccountsUID,
+      connection
     );
-    if (result.affectedRows === 0) {
+    if (!queryResult) {
       await connection.rollback();
       connection.release();
       return new Response(JSON.stringify({ message: "No data" }), {

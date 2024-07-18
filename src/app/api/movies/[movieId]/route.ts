@@ -1,5 +1,4 @@
-import { API_URL } from '@/constants';
-import { Credits, Movie, SimilarMovieInfo } from '@/models/movie.model';
+import { fetchMovie, fetchMovieCredits, fetchSimilarMovies } from '@/services/movieServices';
 
 export const GET = async (
   req: Request,
@@ -26,54 +25,3 @@ export const GET = async (
     });
   }
 };
-
-async function fetchMovie(movieId: string): Promise<Movie | null> {
-  try {
-    const response = await fetch(
-      `${API_URL}/${movieId}?api_key=${process.env.TMDB_API_KEY}&language=ko-KR`
-    );
-
-    const data = await response.json();
-    if (response.ok) {
-      return data;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function fetchMovieCredits(movieId: string): Promise<Credits | null> {
-  try {
-    const response = await fetch(
-      `${API_URL}/${movieId}/credits?api_key=${process.env.TMDB_API_KEY}&language=ko-KR`
-    );
-    const data = await response.json();
-    if (response.ok) {
-      return data;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    throw error;
-  }
-}
-
-async function fetchSimilarMovies(
-  movieId: string
-): Promise<SimilarMovieInfo | null> {
-  try {
-    const response = await fetch(
-      `${API_URL}/${movieId}/similar?api_key=${process.env.TMDB_API_KEY}&language=ko-KR`
-    );
-    const data = await response.json();
-    if (response.ok) {
-      return data;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    throw error;
-  }
-}

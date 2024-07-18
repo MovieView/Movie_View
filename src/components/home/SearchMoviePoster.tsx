@@ -14,7 +14,7 @@ const SearchMoviePoster: React.FC<SearchMoviePosterProps> = ({
 }) => {
   return (
     <button className='w-auto h-auto rounded-lg bg-gray-500 block'>
-      <Link href={`/detail/${id}`}>
+      <Link href={`/movies/${id}`}>
         {posterUrl && (
           <Image
             width={200}
