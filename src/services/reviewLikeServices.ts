@@ -1,5 +1,5 @@
-import { Like } from "@/models/likes.model";
-import { PoolConnection, RowDataPacket } from "mysql2/promise";
+import { Like } from '@/models/likes.model';
+import { PoolConnection, RowDataPacket } from 'mysql2/promise';
 
 
 interface LikeQueryResult extends Like, RowDataPacket {}

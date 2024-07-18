@@ -12,7 +12,7 @@ const LoadingError : React.FC<LoadingErrorProps> = ({ refetch }) => {
     <div className='grow flex flex-col justify-center items-center gap-3 text-black'>
       <Image 
         src={`/icons/fail-red.svg`} 
-        alt="error" 
+        alt='error' 
         width={48} 
         height={48}
         className='w-[30%] h-auto md:w-[25%] lg:w-[15%]'

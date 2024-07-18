@@ -1,4 +1,4 @@
-export type TProvider = "github" | "kakao" | "naver";
+export type TProvider = 'github' | 'kakao' | 'naver';
 
 export interface LoginRequestBody {
   userId: BigInt;

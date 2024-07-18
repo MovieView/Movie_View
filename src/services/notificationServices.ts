@@ -1,5 +1,5 @@
-import { PoolConnection, ResultSetHeader } from "mysql2/promise";
-import { v4 as uuidv4 } from "uuid";
+import { PoolConnection, ResultSetHeader } from 'mysql2/promise';
+import { v4 as uuidv4 } from 'uuid';
 
 
 export const createLoginNotification = async (connection: PoolConnection, userId: string) => {

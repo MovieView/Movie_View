@@ -1,8 +1,8 @@
 'use client'
  
 import { usePathname } from 'next/navigation'
-import { splitStringWithPlaceholders } from "@/utils/notificationUtils";
-import { useCallback, useEffect, useState } from "react";
+import { splitStringWithPlaceholders } from '@/utils/notificationUtils';
+import { useCallback, useEffect, useState } from 'react';
 
 
 const useNotification = (navbar?: boolean) => {

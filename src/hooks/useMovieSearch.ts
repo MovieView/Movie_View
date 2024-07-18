@@ -2,8 +2,8 @@ import {
   QueryClient, 
   useInfiniteQuery, 
   useQueryClient 
-} from "@tanstack/react-query";
-import React from "react";
+} from '@tanstack/react-query';
+import React from 'react';
 
 
 const useMovieSearch = () => {

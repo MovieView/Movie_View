@@ -9,7 +9,7 @@ const NotificationFakeButton = () => {
       <button>
         <Image 
           src={'/icons/notification.svg'} 
-          alt="Notification" 
+          alt='notification'
           width={8} 
           height={8} 
           className='w-9 h-9'

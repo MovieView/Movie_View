@@ -1,8 +1,8 @@
-import { authOptions } from "@/lib/authOptions";
-import { getDBConnection } from "@/lib/db";
-import { formatUserId } from "@/utils/authUtils";
-import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
-import { getServerSession } from "next-auth";
+import { authOptions } from '@/lib/authOptions';
+import { getDBConnection } from '@/lib/db';
+import { formatUserId } from '@/utils/authUtils';
+import { PoolConnection, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
+import { getServerSession } from 'next-auth';
 
 
 interface INotification extends RowDataPacket{
@@ -26,8 +26,8 @@ interface INotification extends RowDataPacket{
   
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  let quantity : string | number | null = searchParams.get("quantity");
-  let page : string | number | null = searchParams.get("page");
+  let quantity : string | number | null = searchParams.get('quantity');
+  let page : string | number | null = searchParams.get('page');
 
   if (quantity === 'navbar') {
     quantity = 5;
@@ -43,12 +43,12 @@ export async function GET(req: Request) {
 
   const session = await getServerSession(authOptions);
   if (!session?.provider && !session?.uid) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
   }
 
   const socialAccountsUID : string | undefined = formatUserId(session.provider, session.uid);
   if (!socialAccountsUID) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
   }
 
   const sqlQueryStatement = `
@@ -90,7 +90,7 @@ export async function GET(req: Request) {
     const [rows] = await connection.query<INotification[]>(sqlQueryStatement, [socialAccountsUID]);
     if (rows.length === 0) {
       connection.release();
-      return new Response(JSON.stringify({ message: "No data" }), {
+      return new Response(JSON.stringify({ message: 'No data' }), {
         status: 404,
       });
     }
@@ -107,12 +107,12 @@ export async function GET(req: Request) {
       totalPage: Math.ceil(totalCountRows[0].total_count / quantity) || 1,
     }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     connection?.release();
 
-    return new Response(JSON.stringify({ message: "Internal Server Error" }), {
+    return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
   }
@@ -121,12 +121,12 @@ export async function GET(req: Request) {
 export async function PUT(req: Request) {
   const session = await getServerSession(authOptions);
   if (!session?.provider && !session?.uid) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
   }
 
   const socialAccountsUID : string | undefined = formatUserId(session.provider, session.uid);
   if (!socialAccountsUID) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
   }
 
   const sqlQueryStatement = `
@@ -145,7 +145,7 @@ export async function PUT(req: Request) {
       await connection.rollback();
       connection.release();
 
-      return new Response(JSON.stringify({ message: "No data" }), {
+      return new Response(JSON.stringify({ message: 'No data' }), {
         status: 404,
       });
     }
@@ -153,15 +153,15 @@ export async function PUT(req: Request) {
     await connection.commit();
     connection.release();
 
-    return new Response(JSON.stringify({ message: "Success" }), {
+    return new Response(JSON.stringify({ message: 'Success' }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     await connection?.rollback();
     connection?.release();
 
-    return new Response(JSON.stringify({ message: "Internal Server Error" }), {
+    return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
   }

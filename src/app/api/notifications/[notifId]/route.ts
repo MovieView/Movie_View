@@ -1,12 +1,12 @@
-import { authOptions } from "@/lib/authOptions";
-import { getDBConnection } from "@/lib/db";
+import { authOptions } from '@/lib/authOptions';
+import { getDBConnection } from '@/lib/db';
 import { 
   deleteNotificationModelSocialAccounts, 
   updateNotificationModelSocialAccountsAsRead 
-} from "@/services/notificationServices";
-import { formatUserId } from "@/utils/authUtils";
-import { PoolConnection } from "mysql2/promise";
-import { getServerSession } from "next-auth";
+} from '@/services/notificationServices';
+import { formatUserId } from '@/utils/authUtils';
+import { PoolConnection } from 'mysql2/promise';
+import { getServerSession } from 'next-auth';
 
 
 export async function DELETE(
@@ -14,17 +14,17 @@ export async function DELETE(
   { params }: { params: { notifId: string } }
 ) {
   if (!params.notifId) {
-    return new Response("Bad Request", { status: 400 });
+    return new Response('Bad Request', { status: 400 });
   }
 
   const session = await getServerSession(authOptions);
   if (!session?.provider && !session?.uid) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
   }
 
   const socialAccountsUID : string | undefined = formatUserId(session.provider, session.uid);
   if (!socialAccountsUID) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
   }
 
   let connection: PoolConnection | undefined;
@@ -40,7 +40,7 @@ export async function DELETE(
     if (!queryResult) {
       await connection.rollback();
       connection.release();
-      return new Response(JSON.stringify({ message: "No data" }), {
+      return new Response(JSON.stringify({ message: 'No data' }), {
         status: 404,
       });
     }
@@ -48,15 +48,15 @@ export async function DELETE(
     await connection.commit();
     connection.release();
 
-    return new Response(JSON.stringify({ message: "Success" }), {
+    return new Response(JSON.stringify({ message: 'Success' }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     await connection?.rollback();
     connection?.release();
 
-    return new Response(JSON.stringify({ message: "Internal Server Error" }), {
+    return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
   }
@@ -67,17 +67,17 @@ export async function PUT(
   { params }: { params: { notifId: string } }
 ) {
   if (!params.notifId) {
-    return new Response("Bad Request", { status: 400 });
+    return new Response('Bad Request', { status: 400 });
   }
 
   const session = await getServerSession(authOptions);
   if (!session?.provider && !session?.uid) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
   }
 
   const socialAccountsUID : string | undefined = formatUserId(session.provider, session.uid);
   if (!socialAccountsUID) {
-    return new Response("Unauthorized", { status: 401 });
+    return new Response('Unauthorized', { status: 401 });
   }
 
 
@@ -94,7 +94,7 @@ export async function PUT(
     if (!queryResult) {
       await connection.rollback();
       connection.release();
-      return new Response(JSON.stringify({ message: "No data" }), {
+      return new Response(JSON.stringify({ message: 'No data' }), {
         status: 404,
       });
     }
@@ -102,15 +102,15 @@ export async function PUT(
     await connection.commit();
     connection.release();
 
-    return new Response(JSON.stringify({ message: "Success" }), {
+    return new Response(JSON.stringify({ message: 'Success' }), {
       status: 200,
-      headers: { "Content-Type": "application/json" },
+      headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
     await connection?.rollback();
     connection?.release();
 
-    return new Response(JSON.stringify({ message: "Internal Server Error" }), {
+    return new Response(JSON.stringify({ message: 'Internal Server Error' }), {
       status: 500,
     });
   }

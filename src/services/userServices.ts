@@ -3,8 +3,8 @@ import {
   PoolConnection, 
   ResultSetHeader, 
   RowDataPacket 
-} from "mysql2/promise";
-import { NextRequest } from "next/server";
+} from 'mysql2/promise';
+import { NextRequest } from 'next/server';
 import { extname, posix } from 'path';
 import { S3Client } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';

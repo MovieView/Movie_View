@@ -1,7 +1,7 @@
 import { API_URL } from '@/constants';
 import { Like } from '@/models/likes.model';
 import { Credits, Movie, SimilarMovieInfo } from '@/models/movie.model';
-import { FieldPacket, PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import { FieldPacket, PoolConnection, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 
 
 export interface LikeMovieQueryResult extends Like, RowDataPacket {}

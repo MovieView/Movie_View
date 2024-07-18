@@ -106,7 +106,7 @@ const RecentReviewItem = ({ review, type }: Props) => {
               <img
                 className='w-full h-full object-cover'
                 src={`https://image.tmdb.org/t/p/original/${review.posterPath}`}
-                alt={`"${review.movieTitle}"`}
+                alt={`'${review.movieTitle}'`}
               />
             ) : (
               <div className='w-full h-full bg-second' />

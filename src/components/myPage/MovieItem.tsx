@@ -18,7 +18,7 @@ export default function MovieItem({ movieId, movieTitle, posterPath }: Props) {
           alt={`${movieTitle} Poster`}
           width={500}
           height={500}
-          loading="lazy"
+          loading='lazy'
         />
       </Link>
       <div className='flex justify-between items-center'>
