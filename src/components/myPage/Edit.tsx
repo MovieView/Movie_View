@@ -74,7 +74,7 @@ const Edit = () => {
   }
 
   return (
-    <div className='bg-gray-100 w-2/5 h-auto text-black-600 rounded-lg mb-20 pb-10 border border-first'>
+    <div className='bg-gray-100 w-[90%] sm:w-4/5 md:w-3/5 lg:w-2/5 h-auto text-black-600 rounded-lg mb-20 pb-10 border border-first'>
       <form
         onSubmit={handleSubmit}
         className='flex flex-col justify-center items-center space-y-4'

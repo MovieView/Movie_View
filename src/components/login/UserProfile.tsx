@@ -44,7 +44,7 @@ const UserProfile = () => {
       {session ? (
         <>
           <Link href='/my-page'>
-            <div className='relative h-9 w-9'>
+            <div className='relative h-7 w-7 md:h-9 md:w-9'>
               {chooseImageForDisplay()}
             </div>
           </Link>

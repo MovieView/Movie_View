@@ -5,7 +5,7 @@ import { splitStringWithPlaceholders } from '@/utils/notificationUtils';
 import { useCallback, useEffect, useState } from 'react';
 
 
-const useNotification = (navbar?: boolean) => {
+const useNotification = (navbar?: boolean, trigger?: boolean) => {
   const [unreadCount, setUnreadCount] = useState<number>(0);
   const [notification, setNotification] = useState<INotification[] | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);

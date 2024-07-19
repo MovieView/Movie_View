@@ -134,6 +134,8 @@ const NotificationContainer : React.FC<INotificationContainerProps> = ({
     }
   }, [visibility]);
 
+  if (!visibility) return null;
+
   return (
     <div 
       className={parentContainerClassName}
