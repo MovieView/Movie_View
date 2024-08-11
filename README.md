@@ -55,10 +55,6 @@ AWS_S3_NAME=**<AWS_S3_NAME>**
 ## ✨ 프로젝트 소개
 - 영화 정보 조회와 리뷰 작성을 할 수 있는 웹 프로젝트.
 - This is a website that provides movie information, as well as the ability to write reviews and ratings.
-<br />
-
-### 🔗 프로젝트 주소
-- https://movieview.online
 
 <br />
 
